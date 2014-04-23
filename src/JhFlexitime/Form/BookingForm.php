@@ -17,40 +17,20 @@ class BookingForm extends Form
 {
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Zend\Form\FieldsetInterface
-     */
-    protected $bookingFieldset;
-
-    /**
      * @param ObjectManager $objectManager
      * @param FieldsetInterface $bookingFieldset
      */
     public function __construct(ObjectManager $objectManager, FieldsetInterface $bookingFieldset)
     {
-        $this->objectManager    = $objectManager;
-        $this->bookingFieldset  = $bookingFieldset;
-        parent::__construct('new-time-booking-form');
-        $this->addElements();
-    }
+        parent::__construct('booking-form');
 
-    /**
-     * Add elements
-     */
-    public function addElements()
-    {
-        $this->setHydrator(new DoctrineHydrator($this->objectManager, 'JhFlexiTime\Entity\Booking'))
+        $this->setHydrator(new DoctrineHydrator($objectManager, 'JhFlexiTime\Entity\Booking'))
             ->setInputFilter(new InputFilter())
             ->setAttribute('method', 'post')
             ->setAttribute('class', 'form-horizontal')
-            ->setAttribute('id', 'new-time-booking-form');
+            ->setAttribute('id', 'booking-form');
 
         // Add the sample request fieldset
-        $bookingFieldset = $this->bookingFieldset;
         $bookingFieldset->setUseAsBaseFieldset(true);
         $this->add($bookingFieldset);
 
@@ -63,5 +43,6 @@ class BookingForm extends Form
                 'class' => 'btn btn-danger',
             )
         ));
+
     }
 }

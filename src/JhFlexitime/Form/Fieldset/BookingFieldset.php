@@ -27,7 +27,7 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
     public function __construct(ObjectManager $objectManager)
     {
         $this->objectManager = $objectManager;
-        parent::__construct('time');
+        parent::__construct('booking');
         $this->addElements();
     }
 
