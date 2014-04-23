@@ -1,0 +1,63 @@
+<tr class="edit-booking hidden" data-date="<?php echo $day['date']->format('d-m-Y');?>">
+    <td></td>
+    <td colspan="5">
+        <?php $form = $this->form;
+        $form->setAttribute('action', $this->url('time', array('action' => 'add')));
+        $form->prepare();
+        echo $this->form()->openTag($form); ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <?php echo $this->formHidden($form->get('time')->get('id')); ?>
+                <div class="form-group hidden <?php if ($this->formElementErrors($form->get('time')->get('date'))) echo 'has-error'; ?>">
+                    <?php echo $this->formLabel($form->get('time')->get('date')); ?>
+                    <div class="col-sm-3">
+                        <?php echo $this->formText($form->get('time')->get('date')); ?>
+                    </div>
+
+                </div>
+
+                <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('startTime'))) echo 'has-error'; ?>">
+                    <?php echo $this->formLabel($form->get('time')->get('startTime')); ?>
+                    <div class="col-sm-8">
+
+                        <div class='input-group date timepicker' id='start-timepicker'>
+                            <?php echo $this->formText($form->get('time')->get('startTime')); ?>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('endTime'))) echo 'has-error'; ?>">
+                    <?php echo $this->formLabel($form->get('time')->get('endTime')); ?>
+                    <div class="col-sm-8">
+
+                        <div class='input-group date timepicker' id='end-timepicker'>
+                            <?php echo $this->formText($form->get('time')->get('endTime')); ?>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('notes'))) echo 'has-error'; ?>">
+                    <?php echo $this->formLabel($form->get('time')->get('notes')); ?>
+                    <div class="col-sm-8">
+                        <?php echo $this->formTextArea($form->get('time')->get('notes')); ?>
+                    </div>
+                </div>
+                <div class="col-sm-offset-3 btn-group pull-right">
+                    <button name="submit" id="submitbutton" class="btn btn-sm btn-default has-spinner save-booking" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span><span class="glyphicon glyphicon-ok"></span></button>
+                    <button name="cancel" id="cancelbutton" class="btn btn-sm btn-default cancel-edit"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button name="clear" id="clearbutton" class="btn btn-sm btn-default has-spinner remove-booking" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span><span class="glyphicon glyphicon-trash"></span></button>
+                </div>
+            </div>
+        </div>
+        <?php echo $this->form()->closeTag(); ?>
+        <div class="alert alert-danger time-book-errors hidden">
+            <ul class="form-errors">
+            </ul>
+        </div>
+    </td>
+</tr>

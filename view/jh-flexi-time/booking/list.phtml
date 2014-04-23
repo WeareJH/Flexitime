@@ -1,0 +1,173 @@
+<?php $this->HeadScript()->appendFile('/js/time-booking.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/js/time-utils.js','text/javascript'); ?>
+
+<?php $title = $this->translate('Viewing your records');
+$this->headTitle($title); ?>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="text-center">
+
+            <h1>
+                <a class="m-pager" href="<?php echo $this->url('time', [], ['query' => $this->pagination['prev']]) ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                <?php echo strtoupper($this->date->format('F Y')) ?>
+                <a class="m-pager" href="<?php echo $this->url('time', [], ['query' => $this->pagination['next']]) ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
+            </h1>
+
+            <?php $totals = $this->time['totals']; ?>
+            <div id="totals-brief">
+                <p>
+                    <span class="worked-to-date"><?php echo $this->numberFormat($totals['monthTotalWorkedHours']); ?></span>&nbsp;&nbsp;/&nbsp;&nbsp;
+                    <span class="month-available"><?php echo $this->numberFormat($totals['monthTotalHours']); ?></span>&nbsp; &bull; &nbsp;
+                    <span class="balance-month"><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $this->numberFormat($totals['monthBalance'])); ?> </span> &nbsp; &bull; &nbsp;
+                    <span class="balance-running"><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $this->numberFormat($totals['runningBalance'])); ?> </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-sm-offset-1 col-sm-7 ">
+
+        <div class="col-container">
+            <?php $weeks = $this->time['records']['weeks']; ?>
+            <?php foreach($weeks as $key => $week): ?>
+                <?php echo $this->partial('time/week', array('week' => $week, 'weekNum' => $key, 'form' => $this->form)); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="col-container">
+            <table class="table" id="totals">
+                <tbody>
+                    <tr>
+                        <td><?php echo $this->translate('Hours Worked this Month') ?></td>
+                        <td class="worked-to-date total-right"><?php echo $totals['monthTotalWorkedHours']; ?> / <?php echo $this->numberFormat($totals['monthTotalHours']); ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo $this->translate('Balance') ?></td>
+                        <td class="balance-month total-right">
+                            <span class="<?php echo ($totals['monthBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                                <b><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['monthBalance']); ?></b>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table" id="running-balance">
+                <thead>
+                    <tr><th colspan="2"><?php echo $this->today->format('F j, Y'); ?></th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><?php echo $this->translate('Running balance') ?></td>
+                        <td class="balance-running total-right">
+                            <span class="<?php echo ($totals['runningBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                                <b><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['runningBalance']); ?></b>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<div id="popover-content" class="hidden">
+    <div class="row">
+        <div class="col-sm-12">
+            <?php $form = $this->form;
+            $form->setAttribute('action', $this->url('time', array('action' => 'add')));
+            $form->prepare();
+            echo $this->form()->openTag($form); ?>
+
+            <?php echo $this->formHidden($form->get('time')->get('id')); ?>
+            <div class="form-group hidden <?php if ($this->formElementErrors($form->get('time')->get('date'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('time')->get('date')); ?>
+                <div class="col-sm-3">
+                    <?php echo $this->formText($form->get('time')->get('date')); ?>
+                </div>
+
+            </div>
+
+            <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('startTime'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('time')->get('startTime')); ?>
+                <div class="col-sm-8">
+
+                    <div class='input-group date timepicker' id='start-timepicker'>
+                        <?php echo $this->formText($form->get('time')->get('startTime')); ?>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('endTime'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('time')->get('endTime')); ?>
+                <div class="col-sm-8">
+
+                    <div class='input-group date timepicker' id='end-timepicker'>
+                        <?php echo $this->formText($form->get('time')->get('endTime')); ?>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('notes'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('time')->get('notes')); ?>
+                <div class="col-sm-8">
+                    <?php echo $this->formTextArea($form->get('time')->get('notes')); ?>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-4">
+                    <button name="submit" type="submit" id="submitbutton" class="btn btn-sm btn-success has-spinner" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span> Submit</button>
+                </div>
+            </div>
+
+            <?php echo $this->form()->closeTag(); ?>
+
+            <div id="time-book-errors" class="alert alert-danger hidden">
+                <ul id="form-errors">
+                    <li><strong>Date Required:</strong> Value is required and can't be empty</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="edit-row-content" class="hidden">
+
+</div>
+
+<span class="fx-tooltip fx-tooltip-note hidden" id="notepop-template" data-toggle="tooltip" data-placement="top" title="" data-original-title="">
+    <span class="glyphicon glyphicon-comment"></span>
+</span>
+
+<div id="edit-book-action-template" class="hidden">
+    <div class="btn-group pull-right">
+        <button id="popover-edit-template" class="btn btn-xs btn-default popover-edit" data-id="" data-date="">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+    </div>
+</div>
+
+<div id="add-book-action-template" class="hidden">
+    <button data-date="" class="btn btn-success btn-xs pull-right popover-book has-spinner" type="button">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</div>
+
+<div id="remove-popover-template" class="hidden">
+    <button data-date="" data-id="" class="btn btn-danger btn-block remove-booking has-spinner">
+        <span class="spinner glyphicon glyphicon-refresh spin"></span> Yes
+    </button>
+    <button data-date="" class="btn btn-default btn-block cancel-remove-booking">No</button>
+</div>
