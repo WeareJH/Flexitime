@@ -169,7 +169,7 @@ $(function() {
 
         $.ajax({
             type    : "DELETE",
-            url     : "/time-rest/" + id
+            url     : "/flexi-time-rest/" + id
         }).fail(function(jqXHR, textStatus, errorThrown) {
             handleAjaxFail(jqXHR, textStatus, errorThrown, button, row);
         }).done(function(data) {
@@ -311,10 +311,10 @@ $(function() {
         }
 
         if(type == "edit") {
-            var url = "/time-rest/" + id;
+            var url = "/flexi-time-rest/" + id;
             var method = 'PUT';
         } else if(type == "add") {
-            var url = "/time-rest";
+            var url = "/flexi-time-rest";
             var method = 'POST';
         }
 
