@@ -122,4 +122,17 @@ return array(
             'bookingClasses' => 'JhFlexiTime\View\Helper\BookingClasses',
         ),
     ),
+
+    //Add Flexitime Link to Hub navigation
+    'navigation' => [
+        'default' => [
+            [
+                'name'      => 'Flexitime',
+                'label'     => 'Flexitime',
+                'route'     => '/booking',
+                'resource'  => 'user',
+                'privilege' => 'user',
+            ],
+        ],
+    ],
 );
