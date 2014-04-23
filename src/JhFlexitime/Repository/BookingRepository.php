@@ -59,7 +59,7 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
             'lastDay'   => $lastDay
         );
         
-        $qb = $this->bookingRepository->createQueryBuilder('t');
+        $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('b')
             ->where('b.user = :user')
             ->andWhere('b.date >= :firstDay')
@@ -89,7 +89,7 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
             'lastDay'       => $lastDay
         );
 
-        $qb = $this->bookingRepository->createQueryBuilder('t');
+        $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('b')
             ->where('b.user = :user')
             ->andWhere('b.date >= :firstDay')

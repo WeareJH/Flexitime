@@ -32,10 +32,10 @@ return array(
     //routing
     'router' => array(
         'routes' => array(
-            'time' => array(
+            'flexi-time' => array(
                 'type'    => 'segment',
                 'options' => array(
-                    'route'    => '/booking[/][:action][/:id]',
+                    'route'    => '/flexi-time[/][:action][/:id]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'     => '[0-9]+',
@@ -46,7 +46,7 @@ return array(
                     ),
                 ),
             ),
-            'booking-rest' => array(
+            'flexi-time-rest' => array(
                 'type' => 'segment',
                 'options' => array(
                     'route' => '/booking-rest[/:id]',
@@ -96,7 +96,7 @@ return array(
             'BookingOptions'                => 'JhFlexiTime\Options\BookingOptions',
         ),
     ),
-    
+
     //template
     'view_manager' => array(
         'template_path_stack' => array(
@@ -129,7 +129,7 @@ return array(
             [
                 'name'      => 'Flexitime',
                 'label'     => 'Flexitime',
-                'route'     => '/booking',
+                'route'     => 'flexi-time',
                 'resource'  => 'user',
                 'privilege' => 'user',
             ],
