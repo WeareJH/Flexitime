@@ -49,7 +49,7 @@ return array(
             'flexi-time-rest' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/booking-rest[/:id]',
+                    'route' => '/flexi-time-rest[/:id]',
                     'constraints' => array(
                         'id' => '[0-9]+',
                     ),
