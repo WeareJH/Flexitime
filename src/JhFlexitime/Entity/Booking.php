@@ -13,7 +13,7 @@ use JsonSerializable;
  * @author Ben Lill <ben@wearejh.com>
  *
  * @ORM\Entity
- * @ORM\Table(name="bookinh")
+ * @ORM\Table(name="booking")
  */
 class Booking implements JsonSerializable
 {
