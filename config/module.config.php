@@ -103,8 +103,8 @@ return array(
             __DIR__ . '/../view',
         ),
         'template_map' => array(
-            'time/week' => __DIR__ . '/../view/partial/booking-week.phtml',
-            'time/edit' => __DIR__ . '/../view/partial/booking-edit.phtml',
+            'booking/week' => __DIR__ . '/../view/partial/booking-week.phtml',
+            'booking/edit' => __DIR__ . '/../view/partial/booking-edit.phtml',
         ),
         'strategies' => array(
             'ViewJsonStrategy',

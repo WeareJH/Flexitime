@@ -9,9 +9,9 @@ $this->headTitle($title); ?>
         <div class="text-center">
 
             <h1>
-                <a class="m-pager" href="<?php echo $this->url('time', [], ['query' => $this->pagination['prev']]) ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                <a class="m-pager" href="<?php echo $this->url('flexi-time', [], ['query' => $this->pagination['prev']]) ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
                 <?php echo strtoupper($this->date->format('F Y')) ?>
-                <a class="m-pager" href="<?php echo $this->url('time', [], ['query' => $this->pagination['next']]) ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                <a class="m-pager" href="<?php echo $this->url('flexi-time', [], ['query' => $this->pagination['next']]) ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
             </h1>
 
             <?php $totals = $this->time['totals']; ?>
@@ -33,7 +33,7 @@ $this->headTitle($title); ?>
         <div class="col-container">
             <?php $weeks = $this->time['records']['weeks']; ?>
             <?php foreach($weeks as $key => $week): ?>
-                <?php echo $this->partial('time/week', array('week' => $week, 'weekNum' => $key, 'form' => $this->form)); ?>
+                <?php echo $this->partial('booking/week', array('week' => $week, 'weekNum' => $key, 'form' => $this->form)); ?>
             <?php endforeach; ?>
         </div>
     </div>
@@ -81,47 +81,47 @@ $this->headTitle($title); ?>
     <div class="row">
         <div class="col-sm-12">
             <?php $form = $this->form;
-            $form->setAttribute('action', $this->url('time', array('action' => 'add')));
+            $form->setAttribute('action', $this->url('flexi-time', array('action' => 'add')));
             $form->prepare();
             echo $this->form()->openTag($form); ?>
 
-            <?php echo $this->formHidden($form->get('time')->get('id')); ?>
-            <div class="form-group hidden <?php if ($this->formElementErrors($form->get('time')->get('date'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('time')->get('date')); ?>
+            <?php echo $this->formHidden($form->get('booking')->get('id')); ?>
+            <div class="form-group hidden <?php if ($this->formElementErrors($form->get('booking')->get('date'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('booking')->get('date')); ?>
                 <div class="col-sm-3">
-                    <?php echo $this->formText($form->get('time')->get('date')); ?>
+                    <?php echo $this->formText($form->get('booking')->get('date')); ?>
                 </div>
 
             </div>
 
-            <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('startTime'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('time')->get('startTime')); ?>
+            <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('startTime'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('booking')->get('startTime')); ?>
                 <div class="col-sm-8">
 
                     <div class='input-group date timepicker' id='start-timepicker'>
-                        <?php echo $this->formText($form->get('time')->get('startTime')); ?>
+                        <?php echo $this->formText($form->get('booking')->get('startTime')); ?>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                     </div>
                 </div>
 
             </div>
 
-            <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('endTime'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('time')->get('endTime')); ?>
+            <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('endTime'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('booking')->get('endTime')); ?>
                 <div class="col-sm-8">
 
                     <div class='input-group date timepicker' id='end-timepicker'>
-                        <?php echo $this->formText($form->get('time')->get('endTime')); ?>
+                        <?php echo $this->formText($form->get('booking')->get('endTime')); ?>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                     </div>
                 </div>
 
             </div>
 
-            <div class="form-group <?php if ($this->formElementErrors($form->get('time')->get('notes'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('time')->get('notes')); ?>
+            <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('notes'))) echo 'has-error'; ?>">
+                <?php echo $this->formLabel($form->get('booking')->get('notes')); ?>
                 <div class="col-sm-8">
-                    <?php echo $this->formTextArea($form->get('time')->get('notes')); ?>
+                    <?php echo $this->formTextArea($form->get('booking')->get('notes')); ?>
                 </div>
 
             </div>
