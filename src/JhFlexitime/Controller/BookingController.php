@@ -66,7 +66,7 @@ class BookingController extends AbstractActionController
 
         $viewModel = $this->acceptableViewModelSelector($this->acceptCriteria);
         $viewModel->setVariables(array(
-            'booking' => array(
+            'bookings' => array(
                 'records'       => $records,
                 'totals'        => $totals,
                 'user'          => $user,
