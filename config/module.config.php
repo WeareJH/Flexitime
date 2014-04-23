@@ -80,7 +80,7 @@ return array(
 
     'service_manager' => array(
         'factories' => array(
-            'JhFlexiTime\Repository\TimeRepository'          => 'JhFlexiTime\Repository\Factory\TimeRepositoryFactory',
+            'JhFlexiTime\Repository\BookingRepository'       => 'JhFlexiTime\Repository\Factory\BookingRepositoryFactory',
             'JhFlexiTime\Repository\BalanceRepository'       => 'JhFlexiTime\Repository\Factory\BalanceRepositoryFactory',
             'JhFlexiTime\Service\BookingService'             => 'JhFlexiTime\Service\Factory\BookingServiceFactory',
             'JhFlexiTime\Service\TimeCalculatorService'      => 'JhFlexiTime\Service\Factory\TimeCalculatorServiceFactory',
