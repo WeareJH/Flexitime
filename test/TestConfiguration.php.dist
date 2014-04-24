@@ -4,6 +4,7 @@ return [
     'modules' => [
         'DoctrineModule',
         'DoctrineORMModule',
+		'JhFlexiTime',
     ],
     'module_listener_options' => [
         'config_glob_paths' => [
