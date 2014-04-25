@@ -1,11 +1,11 @@
-var app = angular.module("FlexiTime", ['ui.bootstrap']);
+var app = angular.module("JhHubAdmin", ['ui.bootstrap']);
 var today = new Date();
 
 app.controller("AdminTimeCtrl", function ($scope, $http) {
 
     $scope.currentDate = new Date();
 
-    $http.get('/admintime/users').success(function(data) {
+    $http.get('/admin/flexi-time/users').success(function(data) {
         var users = [];
         for(var i in data.users) {
             var user = data.users[i];
@@ -26,21 +26,21 @@ app.controller("AdminTimeCtrl", function ($scope, $http) {
     $scope.updatePeriod = function(month, year, user) {
 
         $http({
-            url: '/admintime/view/' + user.id,
+            url: '/admin/flexi-time/view/' + user.id,
             method: 'GET',
             params: {
                 y: year,
                 m: month
             }
         }).success(function(data) {
-            $scope.records      = data.time;
-            $scope.totals       = data.time.totals;
+            $scope.records      = data.bookings;
+            $scope.totals       = data.bookings.totals;
             $scope.pagination   = data.pagination;
             var user = {
-                fName   : data.time.user.name.split(' ')[0],
-                email   : data.time.user.email,
-                name    : data.time.user.name,
-                id      : data.time.user.id
+                fName   : data.bookings.user.name.split(' ')[0],
+                email   : data.bookings.user.email,
+                name    : data.bookings.user.name,
+                id      : data.bookings.user.id
             }
             $scope.user     = user;
             $scope.date     = new Date(data.date.date.split(" ")[0]);
@@ -50,15 +50,15 @@ app.controller("AdminTimeCtrl", function ($scope, $http) {
     };
 
     $scope.loadUserRecords = function(userId) {
-        $http.get('/admintime/view/' + userId).success(function(data) {
-            $scope.records      = data.time;
-            $scope.totals       = data.time.totals;
+        $http.get('/admin/flexi-time/view/' + userId).success(function(data) {
+            $scope.records      = data.bookings;
+            $scope.totals       = data.bookings.totals;
             $scope.pagination   = data.pagination;
             var user = {
-                fName   : data.time.user.name.split(' ')[0],
-                email   : data.time.user.email,
-                name    : data.time.user.name,
-                id      : data.time.user.id
+                fName   : data.bookings.user.name.split(' ')[0],
+                email   : data.bookings.user.email,
+                name    : data.bookings.user.name,
+                id      : data.bookings.user.id
             }
             $scope.user     = user;
             $scope.date     = new Date(data.date.date.split(" ")[0]);
