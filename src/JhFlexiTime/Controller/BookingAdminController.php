@@ -29,26 +29,18 @@ class BookingAdminController extends AbstractActionController
     protected $userRepository;
 
     /**
-     * @var Gravatar
-     */
-    protected $gravaterHelper;
-
-    /**
      * @param BookingService $bookingService
      * @param TimeCalculatorService $timeCalculatorService
      * @param UserRepositoryInterface $userRepository
-     * @param Gravatar $gravatarHelper
      */
     public function __construct(
         BookingService $bookingService,
         TimeCalculatorService $timeCalculatorService,
-        UserRepositoryInterface $userRepository,
-        Gravatar $gravatarHelper
+        UserRepositoryInterface $userRepository
     ) {
         $this->timeCalculatorService    = $timeCalculatorService;
         $this->bookingService           = $bookingService;
         $this->userRepository           = $userRepository;
-        $this->gravaterHelper           = $gravatarHelper;
     }
 
     /**
@@ -77,10 +69,7 @@ class BookingAdminController extends AbstractActionController
 
         $gravatarImages = [];
         foreach ($users as $user) {
-            $url = $this->gravaterHelper->__invoke($user->getEmail(),  array('img_size' => '40'))->__toString();
-            //strip image link from HTML
-            preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $url, $result);
-            $url = array_pop($result);
+            $url = 'http://www.gravatar.com/avatar/' . md5($user->getEmail()) . '/?s=40&d=mm&r=r';
             $gravatarImages[$user->getEmail()] = $url;
         }
 

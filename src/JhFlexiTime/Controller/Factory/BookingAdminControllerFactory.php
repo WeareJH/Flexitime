@@ -25,8 +25,7 @@ class BookingAdminControllerFactory implements FactoryInterface
         return new BookingAdminController(
             $serviceLocator->get('JhFlexiTime\Service\BookingService'),
             $serviceLocator->get('JhFlexiTime\Service\TimeCalculatorService'),
-            $serviceLocator->get('JhUser\Repository\UserRepository'),
-            $serviceLocator->get('ViewHelperManager')->get('gravatar')
+            $serviceLocator->get('JhUser\Repository\UserRepository')
         );
     }
 }

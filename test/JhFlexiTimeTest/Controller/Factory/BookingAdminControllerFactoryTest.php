@@ -26,14 +26,10 @@ class BookingAdminControllerFactoryTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $viewHelperManager = new HelperPluginManager();
-        $viewHelperManager->setService('gravatar', $this->getMock('Zend\View\Helper\Gravatar'));
-
         $services = array(
             'JhFlexiTime\Service\BookingService'            => $bookingService,
             'JhFlexiTime\Service\TimeCalculatorService'     => $timeCalculatorService,
             'JhUser\Repository\UserRepository'              => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
-            'ViewHelperManager'                             => $viewHelperManager,
         );
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');

@@ -30,7 +30,6 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
     protected $bookingService;
     protected $timeCalculatorService;
     protected $userRepository;
-    protected $gravatarHelper;
 
     public function setUp()
     {
@@ -38,8 +37,7 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $this->controller = new BookingAdminController(
             $this->getBookingService(),
             $this->getTimeCalculatorService(),
-            $this->getUserRepositoryMock(),
-            $this->getGravatarMock()
+            $this->getUserRepositoryMock()
         );
 
         $this->request      = new Request();
@@ -96,23 +94,8 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
             ->with(false)
             ->will($this->returnValue($users));
 
-        foreach($users as $key => $user) {
-
-            $index = $key * 2;
-            $this->gravatarHelper
-                ->expects($this->at($index))
-                ->method('__invoke')
-                ->with($user->getEmail(), ['img_size' => '40'])
-                ->will($this->returnSelf());
-
-            $this->gravatarHelper
-                ->expects($this->at($index + 1))
-                ->method('__toString')
-                ->will($this->returnValue('<img src="http://domain.com/test.jpg">'));
-        }
-
         $this->routeMatch->setParam('action', 'users');
-        $result   = $this->controller->dispatch($this->request);
+        $result = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -120,7 +103,11 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->users));
         $this->assertTrue(isset($result->images));
 
-        $expectedImages = ['jack.bauer@ctu.com' => 'http://domain.com/test.jpg', 'chloe.obrian@ctu.com' => 'http://domain.com/test.jpg'];
+        $expectedImages = [];
+        foreach ($users as $user) {
+            $expectedImages[$user->getEmail()] = 'http://www.gravatar.com/avatar/' . md5($user->getEmail()) . '/?s=40&d=mm&r=r';
+        }
+
         $this->assertEquals($expectedImages, $result->images);
         $this->assertEquals($users, $result->users);
     }
@@ -231,12 +218,6 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
     {
         $this->userRepository = $this->getMock('JhUser\Repository\UserRepositoryInterface');
         return $this->userRepository;
-    }
-
-    public function getGravatarMock()
-    {
-        $this->gravatarHelper = $this->getMock('Zend\View\Helper\Gravatar');
-        return $this->gravatarHelper;
     }
 
     public function getMockBooking()
