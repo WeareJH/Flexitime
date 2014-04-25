@@ -82,7 +82,7 @@ return [
                                 'id'     => '[0-9]+',
                             ],
                             'defaults' => [
-                                'controller' => 'JhFlexiTime\Controller\BookingAdminController',
+                                'controller' => 'JhFlexiTime\Controller\BookingAdmin',
                                 'action'     => 'view',
                             ],
                         ],
