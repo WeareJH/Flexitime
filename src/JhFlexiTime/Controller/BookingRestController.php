@@ -15,6 +15,7 @@ use JhFlexiTime\Service\BookingService;
  */
 class BookingRestController extends AbstractRestfulController
 {
+    use GetSetDateTrait;
 
     /**
      * @var \JhFlexiTime\Service\BookingService
@@ -26,10 +27,6 @@ class BookingRestController extends AbstractRestfulController
      */
     protected $timeCalculatorService;
 
-    /**
-     * @var \DateTime
-     */
-    protected $date;
 
     /**
      * @param BookingService $bookingService
@@ -41,34 +38,6 @@ class BookingRestController extends AbstractRestfulController
     ) {
         $this->bookingService           = $bookingService;
         $this->timeCalculatorService    = $timeCalculatorService;
-    }
-
-    /**
-     * @param string $month
-     * @param string $year
-     * @return \DateTime
-     */
-    public function getDate($month = null, $year = null) {
-
-        if(!$this->date) {
-            $validator  = new DateValidator(array('format' => 'M Y'));
-            if ($validator->isValid(sprintf("%s %s", $month, $year))) {
-                $period = new \DateTime(sprintf('last day of %s %s 23:59:59', $month, $year));
-            } else {
-                $period = new \DateTime;
-            }
-            $this->date = $period;
-        }
-
-        return $this->date;
-    }
-
-    /**
-     * @param \DateTime $date
-     */
-    public function setDate(\DateTime $date)
-    {
-        $this->date = $date;
     }
 
     /**

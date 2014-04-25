@@ -171,51 +171,6 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertSame($booking, $result->getVariable('booking'));
     }
 
-    public function testGetDateReturnsCurrentlySetObjectIfSet()
-    {
-        $date = new \DateTime();
-        $this->controller->setDate($date);
-        $this->assertEquals($date, $this->controller->getDate());
-        $this->assertEquals($date, $this->controller->getDate("Mar", 2014));
-    }
-
-    /**
-     * @dataProvider validDateParamsProvider
-     */
-    public function testGetDateReturnsDateTimeObjectBasedOnParams($month, $year, $expected)
-    {
-        $this->assertEquals($expected, $this->controller->getDate($month, $year));
-    }
-
-    public function validDateParamsProvider()
-    {
-        return array(
-            array("Mar", 2014, new \DateTime("last day of March 2014 23:59:59")),
-            array("Apr", 1988, new \DateTime("last day of April 1988 23:59:59")),
-        );
-    }
-
-    /**
-     * @dataProvider invalidDateParamsProvider
-     */
-    public function testGetDateReturnsCurrentDateTmeObjectWhenParamsInvalid($month, $year, $notExpected)
-    {
-        $date = $this->controller->getDate($month, $year);
-        $this->assertNotEquals($date, $notExpected);
-        $this->assertInstanceOf('\DateTime', $date);
-
-        $today = new \DateTime;
-        $this->assertEquals($date->format('d-m-Y'), $today->format('d-m-Y'));
-    }
-
-    public function invalidDateParamsProvider()
-    {
-        return array(
-            array("not-a-month", 20145, new \DateTime("last day of March 2014 23:59:59")),
-            array("Apr", '1988v', new \DateTime("last day of April 1988 23:59:59")),
-        );
-    }
-
     public function testCreateCanBeAccessed()
     {
         $booking = $this->getMockBooking();
