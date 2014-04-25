@@ -1,0 +1,117 @@
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular/angular.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/js/time-admin.js','text/javascript'); ?>
+
+<?php $this->headTitle($this->translate("Admin Time")); ?>
+
+<div class="row" id="admin-users" ng-controller="AdminTimeCtrl">
+    <div class="col-sm-12">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-center">
+
+                    <h1>
+                        <a class="m-pager" href="#" ng-click="updatePeriod(pagination.prev.m, pagination.prev.y, user)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                        {{ user.fName | uppercase }} - {{ date | date: 'MMMM yyyy' | uppercase }}
+                        <a class="m-pager" href="#" ng-click="updatePeriod(pagination.next.m, pagination.next.y, user)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </h1>
+
+                    <?php $totals = $this->time['totals']; ?>
+                    <div id="totals-brief">
+                        <p>
+                            <span class="worked-to-date">{{ totals.monthTotalWorkedHours }}</span>&nbsp;&nbsp;/&nbsp;&nbsp;
+                            <span class="month-available">{{ totals.monthTotalHours }}</span>&nbsp; &bull; &nbsp;
+                            <span class="balance-month"> {{  totals.monthBalance | signTotal }} </span>
+                            &nbsp; &bull; &nbsp;
+                            <span class="balance-running"> {{ totals.runningBalance | signTotal}} </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-3" >
+                <div class="list-group col-container" id="users"  >
+                    <a href class="list-group-item user" ng-click="loadUserRecords(user.id)" ng-repeat="user in users">
+                        <img ng-src="{{ user.img }}"/> &nbsp;&nbsp; {{ user.name }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="col-container" id="bookings">
+                    <table class="table table-hover booking-table booking-table-admin" ng-repeat="(weekNum, week) in records.records.weeks">
+                        <thead ng-if="weekNum == 0">
+                            <tr>
+                                <th style="width: 25%"></th>
+                                <th style="width: 25%"><?php echo $this->translate('Date') ?></th>
+                                <th style="width: 25%"><?php echo $this->translate('Time') ?></th>
+                                <th style="width: 10%"><?php echo $this->translate('Total') ?></th>
+                                <th style="width: 20%"><?php echo $this->translate('Notes') ?></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- repeat -->
+                            <tr ng-repeat="(dayNum, day) in week.dates" class="{{ day | bookingClasses }}">
+                                <td style="width: 25%" ng-if="!dayNum"><b>WEEK {{ weekNum + 1 }}</b> - <span class="text-muted">{{ week.workedHours }} / {{ week.totalHours}}</span></td>
+                                <td style="width: 25%" ng-if="dayNum"></td>
+                                <td style="width: 25%" class="col-date">{{ day.date.date | isoDate | date: 'EEEE, d' }}</td>
+                                <td style="width: 25%" ng-if="day.booking"  class="col-time">{{ day.booking.startTime }} - {{ day.booking.endTime }}</td>
+                                <td style="width: 25%" ng-if="!day.booking" ></td>
+                                <td style="width: 10%" class="col-total">{{ day.booking.total }}</td>
+                                <td style="width: 20%" class="col-notes">
+                                    <span ng-if="day.booking.notes" class="fx-tooltip fx-tooltip-note" tooltip="{{day.booking.notes}}">
+                                        <span class="glyphicon glyphicon-comment"></span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="col-container">
+                    <table class="table" id="totals">
+                        <tbody>
+                        <tr>
+                            <td><?php echo $this->translate('Hours Worked this Month') ?></td>
+                            <td class="worked-to-date total-right">{{ totals.monthTotalWorkedHours }}</td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Balance') ?></td>
+                            <td class="balance-month total-right">
+                                <span ng-class="(totals.monthBalance >= 0) ? 'balance-success' : 'balance-danger'">
+                                    <b>{{ totals.monthBalance | signTotal }}</b>
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table" id="running-balance">
+                        <thead>
+                            <tr>
+                                <th colspan="2">{{ today | date: 'MMMM d, yyyy' }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><?php echo $this->translate('Running balance') ?></td>
+                            <td class="balance-running total-right">
+                                <span ng-class="(totals.runningBalance >= 0) ? 'balance-success' : 'balance-danger'">
+                                    <b>{{ totals.runningBalance | signTotal }}</b>
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
