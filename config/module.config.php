@@ -155,6 +155,13 @@ return [
                 'privilege' => 'view',
             ],
         ],
+
+        'admin' => [
+            'flexitime' => [
+                'label' => 'Flexitime',
+                'route' => 'zfcadmin/flexi-time',
+            ],
+        ],
     ],
 
     'asset_manager' => [
