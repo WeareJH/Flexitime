@@ -23,7 +23,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url" : "/Users/Aydin/sites/jh-user"
+            "url" : "https://github.com/WeareJH/JhUser.git"
 
         }
     ],

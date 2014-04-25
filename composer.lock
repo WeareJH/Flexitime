@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f851ed79524afa5bbdef0898679263a4",
+    "hash": "3afe8b19b70e19fc78e86180c3f898c1",
     "packages": [
         {
             "name": "bjyoungblood/bjy-authorize",
@@ -1082,8 +1082,14 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "/Users/Aydin/sites/jh-user",
+                "url": "https://github.com/WeareJH/JhUser.git",
                 "reference": "7b57b923c7d76a342cfc24f1f081b6b634a13b78"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WeareJH/JhUser/zipball/7b57b923c7d76a342cfc24f1f081b6b634a13b78",
+                "reference": "7b57b923c7d76a342cfc24f1f081b6b634a13b78",
+                "shasum": ""
             },
             "require": {
                 "bjyoungblood/bjy-authorize": "1.4.*",
@@ -1119,6 +1125,10 @@
                 }
             ],
             "description": "A Base ZF2 user module for the Hub & other JH ZF2 modules.",
+            "support": {
+                "source": "https://github.com/WeareJH/JhUser/tree/master",
+                "issues": "https://github.com/WeareJH/JhUser/issues"
+            },
             "time": "2014-04-25 10:23:42"
         },
         {
