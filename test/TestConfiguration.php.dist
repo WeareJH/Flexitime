@@ -4,7 +4,12 @@ return [
     'modules' => [
         'DoctrineModule',
         'DoctrineORMModule',
+        'ZfcUser',
+        'ZfcUserDoctrineORM',
+        'ScnSocialAuthDoctrineORM',
+        'JhUser',
 		'JhFlexiTime',
+		'ZfcAdmin',
     ],
     'module_listener_options' => [
         'config_glob_paths' => [
