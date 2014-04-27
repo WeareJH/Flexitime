@@ -138,11 +138,12 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     public function remainingHoursProvider()
     {
         /**
-         *  Date | Expected Remaining Days
+         *  Date | Expected Remaining Hours
          */
         return array(
-            array(new \DateTime("10 March 2014"),   112.50),
+            array(new \DateTime("10 March 2014"),   112.5),
             array(new \DateTime("01 January 2014"), 165.00),
+            array(new \DateTime("27 April 2014"),   22.5),
         );
     }
 

@@ -145,10 +145,13 @@ class PeriodService implements PeriodServiceInterface
      */
     public function getRemainingHoursInMonth(\DateTime $today)
     {
-        $lastDay = clone $today;
+        $date       = clone $today;
+        $lastDay    = clone $today;
+        $date->modify("+1 day");
         $lastDay->modify('last day of this month');
+        $lastDay->modify("+1 day"); //hack to include the last day in the period
 
-        $period = new \DatePeriod($today, new \DateInterval('P1D'), $lastDay);
+        $period = new \DatePeriod($date, new \DateInterval('P1D'), $lastDay);
         return $this->getTotalHoursInPeriod($period);
     }
 }
