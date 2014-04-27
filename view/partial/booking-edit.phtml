@@ -21,7 +21,7 @@
                     <div class="col-sm-8">
 
                         <div class='input-group date timepicker' id='start-timepicker'>
-                            <?php echo $this->formText($form->get('booking')->get('startTime')); ?>
+                            <?php echo $this->formTime($form->get('booking')->get('startTime')); ?>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                         </div>
                     </div>
@@ -33,7 +33,7 @@
                     <div class="col-sm-8">
 
                         <div class='input-group date timepicker' id='end-timepicker'>
-                            <?php echo $this->formText($form->get('booking')->get('endTime')); ?>
+                            <?php echo $this->formTime($form->get('booking')->get('endTime')); ?>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                         </div>
                     </div>

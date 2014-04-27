@@ -77,8 +77,9 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
             ),
             'attributes' => array(
                 'id'    => 'book-starttime',
-                'min'   => '07:00:00',
-                'max'   => '10:00:00',
+                //TODO: Inject From options
+                //'min'   => '07:00:00',
+                //'max'   => '10:00:00',
                 'step'  => '900',   //15 mins, 60 x 15
                 'class' => 'form-control input-sm',
                 'value' => '07:00',
@@ -96,7 +97,8 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
             ),
             'attributes' => array(
                 'id'    => 'book-endtime',
-                'min'   => '16:00:00',
+                //TODO: Inject From options
+                //'min'   => '16:00:00',
                 'max'   => '19:00:00',
                 'step'  => '900',   //15 mins, 60 x 15
                 'class' => 'form-control input-sm',
