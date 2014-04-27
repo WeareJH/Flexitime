@@ -91,7 +91,7 @@ class BalanceService implements BalanceServiceInterface
     {
         $runningBalance = $this->balanceRepository->findByUser($user);
         if (!$runningBalance) {
-            $this->setupInitialRunningBalance($user);
+            return $this->setupInitialRunningBalance($user);
         }
         return $runningBalance;
     }
