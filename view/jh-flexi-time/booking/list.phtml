@@ -43,34 +43,39 @@ $this->headTitle($title); ?>
         <div class="col-container">
             <table class="table" id="totals">
                 <tbody>
-                <tr>
-                    <td><?php echo $this->translate('Hours Worked this Month') ?></td>
-                    <td class="worked-to-date total-right"><?php echo $totals['monthTotalWorkedHours']; ?> / <?php echo $this->numberFormat($totals['monthTotalHours']); ?></td>
-                </tr>
-                <tr>
-                    <td><?php echo $this->translate('Balance') ?></td>
-                    <td class="balance-month total-right">
+                    <tr>
+                        <td><?php echo $this->translate('Hours Worked this Month') ?></td>
+                        <td class="worked-to-date total-right"><?php echo $totals['monthTotalWorkedHours']; ?> / <?php echo $this->numberFormat($totals['monthTotalHours']); ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo $this->translate('Hours Remaining this Month') ?></td>
+                        <td class="worked-to-date total-right"><?php echo (float) $totals['monthRemainingHours']; ?></td>
+                    </tr>
+
+                    <tr>
+                        <td><?php echo $this->translate('Balance') ?></td>
+                        <td class="balance-month total-right">
                             <span class="<?php echo ($totals['monthBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
                                 <b><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['monthBalance']); ?></b>
                             </span>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
             <table class="table" id="running-balance">
                 <thead>
-                <tr><th colspan="2"><?php echo $this->today->format('F j, Y'); ?></th></tr>
+                    <tr><th colspan="2"><?php echo $this->today->format('F j, Y'); ?></th></tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td><?php echo $this->translate('Running balance') ?></td>
-                    <td class="balance-running total-right">
+                    <tr>
+                        <td><?php echo $this->translate('Running balance') ?></td>
+                        <td class="balance-running total-right">
                             <span class="<?php echo ($totals['runningBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
                                 <b><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['runningBalance']); ?></b>
                             </span>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 

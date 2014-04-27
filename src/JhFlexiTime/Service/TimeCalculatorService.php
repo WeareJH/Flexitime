@@ -126,6 +126,7 @@ class TimeCalculatorService
             'monthTotalHours'       => $this->periodService->getTotalHoursInMonth($period),
             'monthBalance'          => $this->getMonthBalance($user, $period),
             'runningBalance'        => $this->getRunningBalance($user),
+            'monthRemainingHours'   => $this->periodService->getRemainingHoursInMonth($this->referenceDate),
         ];
     }
 
