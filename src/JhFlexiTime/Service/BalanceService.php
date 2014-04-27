@@ -14,7 +14,7 @@ use JhFlexiTime\Entity\RunningBalance;
  * @package JhFlexiTime\Service
  * @author Aydin Hassan <aydin@wearejh.com>
  */
-class BalanceService
+class BalanceService implements BalanceServiceInterface
 {
 
     /**
@@ -87,17 +87,18 @@ class BalanceService
      * @return RunningBalance
      * @throws \Exception
      */
-    protected function getRunningBalance(UserInterface $user)
+    public function getRunningBalance(UserInterface $user)
     {
         $runningBalance = $this->balanceRepository->findByUser($user);
         if (!$runningBalance) {
-            throw new \Exception(sprintf("Running Balance Row could not be located for User: %a", $user->getEmail()));
+            $this->setupInitialRunningBalance($user);
         }
         return $runningBalance;
     }
 
     /**
      * @param UserInterface $user
+     * @return RunningBalance
      */
     public function setupInitialRunningBalance(UserInterface $user)
     {
@@ -106,6 +107,7 @@ class BalanceService
         $runningBalance->subtractBalance($this->periodService->getTotalHoursInMonth(new \DateTime));
         $this->objectManager->persist($runningBalance);
         $this->objectManager->flush();
+        return $runningBalance;
     }
 
     /**

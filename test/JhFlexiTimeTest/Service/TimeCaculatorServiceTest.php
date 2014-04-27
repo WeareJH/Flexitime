@@ -44,9 +44,9 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     protected $bookingRepository;
 
     /**
-     * @var \JhFlexiTime\Repository\BalanceRepositoryInterface
+     * @var \JhFlexiTime\Service\BalanceServiceInterface
      */
-    protected $balanceRepository;
+    protected $balanceService;
 
     /**
      * @var \JhFlexiTime\Service\PeriodService
@@ -58,9 +58,9 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->bookingRepository     = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
-        $this->balanceRepository  = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
-        $this->periodService      = $this->getMockBuilder('JhFlexiTime\Service\PeriodService')
+        $this->bookingRepository    = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
+        $this->balanceService       = $this->getMock('JhFlexiTime\Service\BalanceServiceInterface');
+        $this->periodService        = $this->getMockBuilder('JhFlexiTime\Service\PeriodService')
                                          ->disableOriginalConstructor()
                                          ->getMock();
 
@@ -77,7 +77,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $timeCalculatorService = new TimeCalculatorService(
             $this->options,
             $this->bookingRepository,
-            $this->balanceRepository,
+            $this->balanceService,
             $this->periodService,
             $this->date
         );
@@ -100,8 +100,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $runningBalance = new RunningBalance();
         $runningBalance->setBalance($initialBalance);
 
-        $this->balanceRepository->expects($this->once())
-            ->method('findByUser')
+        $this->balanceService->expects($this->once())
+            ->method('getRunningBalance')
             ->with($mockUser)
             ->will($this->returnValue($runningBalance));
 

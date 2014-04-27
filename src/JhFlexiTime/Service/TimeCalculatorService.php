@@ -2,7 +2,7 @@
 
 namespace JhFlexiTime\Service;
 
-use JhFlexiTime\Repository\BalanceRepositoryInterface;
+use JhFlexiTime\Service\BalanceServiceInterface;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use ZfcUser\Entity\UserInterface;
 use JhFlexiTime\Repository\BookingRepository;
@@ -23,9 +23,9 @@ class TimeCalculatorService
     protected $bookingRepository;
 
     /**
-     * @var \JhFlexiTime\Repository\BalanceRepositoryInterface
+     * @var BalanceServiceInterface
      */
-    protected $balanceRepository;
+    protected $balanceService;
 
     /**
      * @var \JhFlexiTime\Service\PeriodServiceInterface
@@ -45,20 +45,20 @@ class TimeCalculatorService
     /**
      * @param ModuleOptions $options
      * @param BookingRepositoryInterface $bookingRepository
-     * @param BalanceRepositoryInterface $balanceRepository
+     * @param BalanceServiceInterface $balanceService
      * @param PeriodServiceInterface $periodService
      * @param \DateTime $date
      */
     public function __construct(
         ModuleOptions $options,
         BookingRepositoryInterface $bookingRepository,
-        BalanceRepositoryInterface $balanceRepository,
+        BalanceServiceInterface $balanceService,
         PeriodServiceInterface $periodService,
         \DateTime $date
     ) {
         $this->options              = $options;
-        $this->bookingRepository       = $bookingRepository;
-        $this->balanceRepositiory   = $balanceRepository;
+        $this->bookingRepository    = $bookingRepository;
+        $this->balanceService       = $balanceService;
         $this->periodService        = $periodService;
         $this->referenceDate        = $date;
     }
@@ -135,7 +135,7 @@ class TimeCalculatorService
      */
     public function getRunningBalance(UserInterface $user)
     {
-        $runningBalance         = $this->balanceRepositiory->findByUser($user);
+        $runningBalance         = $this->balanceService->getRunningBalance($user);
         $balance                = $runningBalance->getBalance();
         $remainingHoursInMonth  = $this->periodService->getRemainingHoursInMonth($this->referenceDate);
         $balance                += $remainingHoursInMonth;

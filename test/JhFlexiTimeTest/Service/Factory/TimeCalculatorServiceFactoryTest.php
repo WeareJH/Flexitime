@@ -15,9 +15,9 @@ class TimeCalculatorServiceFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $services         = array(
-            'FlexiOptions'                          => $this->getMock('JhFlexiTime\Options\ModuleOptions'),
-            'JhFlexiTime\Repository\BookingRepository'      => $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface'),
-            'JhFlexiTime\Repository\BalanceRepository'   => $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
+            'FlexiOptions'                               => $this->getMock('JhFlexiTime\Options\ModuleOptions'),
+            'JhFlexiTime\Repository\BookingRepository'   => $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface'),
+            'JhFlexiTime\Service\BalanceService'         => $this->getMock('JhFlexiTime\Service\BalanceServiceInterface'),
             'JhFlexiTime\Service\PeriodService'          => $this->getMock('JhFlexiTime\Service\PeriodServiceInterface'),
         );
 
