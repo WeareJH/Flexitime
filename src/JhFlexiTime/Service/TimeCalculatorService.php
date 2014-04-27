@@ -85,7 +85,7 @@ class TimeCalculatorService
             //and the current date
             $totalWorkedHours       = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
             $hoursAvailableToDate   = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
-            $balance                = ($totalWorkedHours - $hoursAvailableToDate) + $this->options->getHoursInDay();
+            $balance                = ($totalWorkedHours - $hoursAvailableToDate);
         } else {
             $balance = 0;
         }
@@ -140,10 +140,10 @@ class TimeCalculatorService
         $remainingHoursInMonth  = $this->periodService->getRemainingHoursInMonth($this->referenceDate);
         $balance                += $remainingHoursInMonth;
         //ignore today so add on 7.5 hours
-        $balance                += $this->options->getHoursInDay();
+        //$balance                += $this->options->getHoursInDay();
         $balance                -= $this->bookingRepository->getTotalBookedAfter($user, $this->referenceDate);
 
-        return rtrim(number_format($balance, 2, '.', ''), '0');
+        return floatval(number_format($balance, 2));
     }
 
     /**

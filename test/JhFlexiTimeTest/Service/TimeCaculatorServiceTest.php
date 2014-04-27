@@ -128,21 +128,21 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
          * Initial Balance | Expected Balance | Month Remaining | Booked After
          */
         return array(
-            array(0,        120,    112.50, 0),
-            array(5,        125,    112.50, 0),
-            array(45,       125,    112.50, 40),
-            array(50,       170,    112.50, 0),
-            array(-120,     0,      112.50, 0),
-            array(-100,     0,      112.50, 20),
-            array(-100,     -10,    112.50, 30),
-            array(-120,     10,     112.50, -10),
-            array(-120,     10,     112.50, -10),
-            array(-120,     -112.5, 0,      0),
-            array(-120,     -100,   0,      -12.5),
-            array(0,        7.5,    0,      -0),
-            array(0,        -7.5,   0,      15),
-            array(-307.5,   -202.5, 97.50, 0),
-            array(-119.1,   0.9,    112.5,    0),
+            array(0,        112.5,  112.50, 0),
+            array(5,        117.5,  112.50, 0),
+            array(45,       117.5,  112.50, 40),
+            array(50,       162.5,  112.50, 0),
+            array(-120,     -7.5,   112.50, 0),
+            array(-100,     -7.5,   112.50, 20),
+            array(-100,     -17.5,  112.50, 30),
+            array(-120,     2.5,    112.50, -10),
+            array(-120,     2.5,    112.50, -10),
+            array(-120,     -120.0, 0,      0),
+            array(-120,     -107.5, 0,      -12.5),
+            array(0,        0,      0,      -0),
+            array(0,        -15,    0,      15),
+            array(-307.5,   -210.0, 97.50, 0),
+            array(-119.1,   -6.6,   112.5,    0),
         );
     }
 }
