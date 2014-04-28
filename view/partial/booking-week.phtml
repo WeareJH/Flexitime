@@ -19,7 +19,14 @@
         <tr id="row-<?php echo $day['date']->format('d-m-Y');?>" class="day <?php echo $this->bookingClasses($day['date'], (isset($day['booking']))); ?>" <?php echo (isset($day['booking'])) ? 'data-id="' . $day['booking']->getId() . '"' : ''  ?>>
             <?php if(!isset($day['booking'])): ?>
                 <?php if(!$key): ?>
-                    <td style="width: 25%"><b>WEEK <?=($this->weekNum + 1)?></b> - <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?></span></td>
+                    <td style="width: 25%"><b>WEEK <?=($this->weekNum + 1)?></b> -
+                        <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?> </span>
+
+                        <?php $weekBalance = $week['workedHours'] - $week['totalHours']; ?>
+                        <span class="pull-right <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                            <b><?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?></b>
+                        </span>
+                    </td>
                 <?php else: ?>
                     <td style="width: 25%"></td>
                 <?php endif; ?>
@@ -35,7 +42,14 @@
 
             <?php else: ?>
                 <?php if(!$key): ?>
-                    <td style="width: 25%"><b>WEEK <?=($this->weekNum + 1)?></b> - <span class="text-muted"><?=$week['workedHours']?> / <?=$week['totalHours']?></span></td>
+                    <td style="width: 25%"><b>WEEK <?=($this->weekNum + 1)?></b> -
+                        <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?> </span>
+
+                        <?php $weekBalance = $week['workedHours'] - $week['totalHours']; ?>
+                        <span class="pull-right <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                            <b><?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?></b>
+                        </span>
+                    </td>
                 <?php else: ?>
                     <td style="width: 25%"></td>
                 <?php endif; ?>
