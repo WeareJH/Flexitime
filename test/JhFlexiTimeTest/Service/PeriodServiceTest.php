@@ -204,4 +204,146 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
             array(new \DateTime("08 February 2011"), 45),
         );
     }
+
+    /**
+     * @param \DateTime $date
+     * @param array $expected
+     * @dataProvider firstAndLastDayOfWeekProvider
+     */
+    public function testGetFirstAndLastDayOfWeek(\DateTime $date, array $expected)
+    {
+        $result = $this->periodService->getFirstAndLastDayOfWeek($date);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function firstAndLastDayOfWeekProvider()
+    {
+        return [
+            [new \DateTime("28 April 2014"),    ['firstDay' => new \DateTime("28th April 2014"),    'lastDay' => new \DateTime("30th April 2014")]],
+            [new \DateTime("1 May 2014"),       ['firstDay' => new \DateTime("1 May 2014"),         'lastDay' => new \DateTime("4 May 2014")]],
+            [new \DateTime("29 February 2012"), ['firstDay' => new \DateTime("27 February 2012"),   'lastDay' => new \DateTime("29 February 2012")]],
+            [new \DateTime("12 November 2014"), ['firstDay' => new \DateTime("10 November 2014"),   'lastDay' => new \DateTime("16 November 2014")]],
+            [new \DateTime("10 December 2014"), ['firstDay' => new \DateTime("8 December 2014"),    'lastDay' => new \DateTime("14 December 2014")]],
+        ];
+
+    }
+
+    /**
+     * @param \DateTime $date
+     * @param $expected
+     * @dataProvider getWeeksInMonthProvider
+     */
+    public function testGetWeeksInMonth(\DateTime $date, $expected)
+    {
+        $weeks = $this->periodService->getWeeksInMonth($date);
+        $this->assertEquals($expected, $weeks);
+    }
+
+    public function getWeeksInMonthProvider()
+    {
+
+        $April2014periods = [
+            $this->createPeriod("1 April 2014", "6 April 2014"),
+            $this->createPeriod("7 April 2014", "13 April 2014"),
+            $this->createPeriod("14 April 2014", "20 April 2014"),
+            $this->createPeriod("21 April 2014", "27 April 2014"),
+            $this->createPeriod("28 April 2014", "30 April 2014"),
+        ];
+
+        $march2011Periods = [
+            $this->createPeriod("1 March 2011", "6 March 2011"),
+            $this->createPeriod("7 March 2011", "13 March 2011"),
+            $this->createPeriod("14 March 2011", "20 March 2011"),
+            $this->createPeriod("21 March 2011", "27 March 2011"),
+            $this->createPeriod("28 March 2011", "31 March 2011"),
+        ];
+
+        $february2011Periods = [
+            $this->createPeriod("1 February 2011", "6 February 2011"),
+            $this->createPeriod("7 February 2011", "13 February 2011"),
+            $this->createPeriod("14 February 2011", "20 February 2011"),
+            $this->createPeriod("21 February 2011", "27 February 2011"),
+            $this->createPeriod("28 February 2011", "28 February 2011"),
+        ];
+
+        return [
+            [new \DateTime("April 28 2014"), $April2014periods],
+            [new \DateTime("March 28 2011"), $march2011Periods],
+            [new \DateTime("February 1 2011"), $february2011Periods],
+        ];
+    }
+
+    /**
+     * Helper function to generate a \DatePeriod object
+     *
+     * @param string $start
+     * @param string $end
+     * @return array
+     */
+    public function createPeriod($start, $end)
+    {
+        //hack to include last day in DatePeriod
+        $end = new \DateTime($end);
+        $end->modify( '+1 day' );
+        $period = new \DatePeriod(new \DateTime($start), new \DateInterval('P1D'), $end);
+
+        return iterator_to_array($period);
+    }
+
+    public function testRemoveNonWorkingDays()
+    {
+        $period = $this->createPeriod("1 April 2014", "30 April 2014");
+        $dates = $this->periodService->removeNonWorkingDays($period);
+
+        foreach($dates as $day) {
+            $this->assertLessThan(6, $day->format('N'));
+        }
+    }
+
+    /**
+     * @param \DateTime $date
+     * @param $expected
+     * @dataProvider daysInWeekProvider
+     */
+    public function testGetDaysInWeek($date, $expected)
+    {
+        $result = $this->periodService->getDaysInWeek($date);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function daysInWeekProvider()
+    {
+        return [
+            [new \DateTime("6 April 2014"), $this->createPeriod("1 April 2014", "6 April 2014")],
+            [new \DateTime("12 June 2014"), $this->createPeriod("9 June 2014", "15 June 2014")],
+        ];
+    }
+
+    public function testGetNumWorkingDaysInWeek()
+    {
+        $date = new \DateTime("6 April 2014");
+        $this->assertSame(4, $this->periodService->getNumWorkingDaysInWeek($date));
+    }
+
+    public function testGetPeriodThrowsExceptionIfInvalidTypePassedIn()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Type is invalid');
+        $this->periodService->getPeriod(new \DateTime, 'NOTAVALIDTYPE');
+    }
+
+    public function testGetDaysInWeekThrowsExceptionIfDateNotInAnyWeek()
+    {
+        $date = new \DateTime("6 April 2014");
+
+        $this->periodService = $this->getMock('JhFlexiTime\Service\PeriodService', ['getWeeksInMonth'], [$this->getOptions()]);
+        $this->periodService
+            ->expects($this->once())
+            ->method('getWeeksInMonth')
+            ->with($date)
+            ->will($this->returnValue([[new \DateTime("1 January 2014")]]));
+
+        $this->setExpectedException("Exception", "Day is not present in returned month");
+        $this->periodService->getDaysInWeek($date);
+    }
+
 }

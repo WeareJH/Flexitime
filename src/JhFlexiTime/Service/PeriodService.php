@@ -45,7 +45,7 @@ class PeriodService implements PeriodServiceInterface
      * @return \DatePeriod
      * @throws \InvalidArgumentException
      */
-    protected function getPeriod(\DateTime $date, $type)
+    public function getPeriod(\DateTime $date, $type)
     {
         switch($type) {
             case self::MONTH_TO_DATE:
@@ -153,5 +153,112 @@ class PeriodService implements PeriodServiceInterface
 
         $period = new \DatePeriod($date, new \DateInterval('P1D'), $lastDay);
         return $this->getTotalHoursInPeriod($period);
+    }
+
+    /**
+     * Get an array of all the dates of the week the given date
+     * is in
+     *
+     * @param \DateTime $date
+     * @return \DateTime[]
+     * @throws \Exception
+     */
+    public function getDaysInWeek(\DateTime $date)
+    {
+        $weeks = $this->getWeeksInMonth($date);
+
+        foreach($weeks as $week) {
+            $firstDayOfWeek = reset($week);
+            $lastDayOfWeek  = end($week);
+
+            if($date >= $firstDayOfWeek && $date <= $lastDayOfWeek) {
+                return $week;
+            }
+        }
+
+        throw new \Exception("Day is not present in returned month");
+    }
+
+    /**
+     * Get an array of the first and last day of
+     * the week the given day is in
+     *
+     * @param \DateTime $date
+     * @return array
+     * @throws \Exception
+     */
+    public function getFirstAndLastDayOfWeek(\DateTime $date)
+    {
+        $week = $this->getDaysInWeek($date);
+
+        $firstDayOfWeek = reset($week);
+        $lastDayOfWeek  = end($week);
+
+        return ['firstDay' => $firstDayOfWeek, 'lastDay' => $lastDayOfWeek];
+    }
+
+    /**
+     * Get the week which this date is in, and count the number
+     * of non-working days
+     *
+     * @param \DateTime $date
+     * @return int
+     */
+    public function getNumWorkingDaysInWeek(\DateTime $date)
+    {
+        $week = $this->getDaysInWeek($date);
+        $week = $this->removeNonWorkingDays($week);
+        return count($week);
+    }
+
+    /**
+     * Remove any non-working days
+     *
+     * @param \DateTime[] $dates
+     * @return \DateTime[]
+     */
+    public function removeNonWorkingDays(array $dates)
+    {
+        $workingDays = [];
+        foreach($dates as $day) {
+            if($day->format('N') < 6) {
+                $workingDays[] = $day;
+            }
+        }
+
+        return $workingDays;
+    }
+
+    /**
+     * Get an array of weeks, with each day of the week in it
+     *
+     * @param \DateTime $date
+     * @return array
+     */
+    public function getWeeksInMonth(\DateTime $date)
+    {
+        $period = new \DatePeriod(
+            new \DateTime(sprintf('first day of %s', $date->format('F Y'))),
+            new \DateInterval('P1D'),
+            new \DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
+        );
+
+        $weeks = [];
+        $weekCounter = 0;
+        foreach ($period as $day) {
+            $dayNum = $day->format('N');
+
+            if(!isset($weeks[$weekCounter])) {
+                $weeks[$weekCounter] = [$day];
+            } else {
+                $weeks[$weekCounter][] = $day;
+            }
+
+            if($dayNum == 7) {
+                $weekCounter++;
+            }
+        }
+
+        return $weeks;
     }
 }

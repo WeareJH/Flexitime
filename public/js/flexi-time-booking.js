@@ -256,12 +256,27 @@ $(function() {
         //add the correct class to row
         utils.addClassesToRow(date, dataRow, "remove");
 
-        updateSideTotals(data.totals);
+        updateSideTotals(data.monthTotals);
+
+        //update week totals
+        updateWeekTotals(data.weekTotals, row);
+
         dataRow.addClass("danger");
         utils.fadeout(dataRow, "danger");
 
         button.toggleClass('active');
         utils.hideEditRow(row);
+    }
+
+    var updateWeekTotals = function(totals, row)
+    {
+        var table           = row.closest("table");
+        var weekTotalsCell  = $("tbody tr:first td:first", table);
+        var weekTotal       = weekTotalsCell.find("span.week-total");
+        var weekBalance     = weekTotalsCell.find("span.week-balance");
+
+        weekTotal.html(totals.weekTotalWorkedHours + " / " + totals.weekTotalHours);
+        signTotal(totals.balance, weekBalance, true);
     }
 
     /**
@@ -384,9 +399,10 @@ $(function() {
             utils.addClassesToRow(date, row, "add");
         }
 
-        updateSideTotals(data.totals);
+        updateSideTotals(data.monthTotals);
 
-        console.log(row.closest(".week-total"));
+        //update week totals
+        updateWeekTotals(data.weekTotals, row);
 
         row.addClass("success");
         utils.fadeout(row, "success");

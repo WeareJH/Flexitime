@@ -51,4 +51,13 @@ interface BookingRepositoryInterface
      */
     public function getMonthBookedTotalByUser(UserInterface $user, \DateTime $date);
 
+    /**
+     * @param UserInterface $user
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return float
+     */
+    public function getTotalBookedBetweenByUser(UserInterface $user, \DateTime $startDate, \DateTime $endDate);
+
+
 }

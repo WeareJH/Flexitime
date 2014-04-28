@@ -2,11 +2,11 @@
 
 namespace JhFlexiTime\Service;
 
-use JhFlexiTime\Service\BalanceServiceInterface;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use ZfcUser\Entity\UserInterface;
 use JhFlexiTime\Repository\BookingRepository;
 use JhFlexiTime\Options\ModuleOptions;
+use JhFlexiTime\Entity\Booking;
 
 /**
  *
@@ -104,15 +104,32 @@ class TimeCalculatorService
         $firstDayOfMonth->modify('first day of this month');
 
         if ($period < $firstDayOfMonth) {
-
             $totalWorkedHours = $this->bookingRepository->getMonthBookedTotalByUser($user, $period);
         } else {
-
             $totalWorkedHours = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $period);
         }
 
         return $totalWorkedHours;
     }
+
+    /**
+     * @param UserInterface $user
+     * @param \DateTime $period
+     * @return array
+     */
+    public function getWeekTotals(UserInterface $user, \DateTime $period)
+    {
+        $week           = $this->periodService->getFirstAndLastDayOfWeek($period);
+        $totalWorked    = $this->bookingRepository->getTotalBookedBetweenByUser($user, $week['firstDay'], $week['lastDay']);
+        $totalHours     = $this->periodService->getNumWorkingDaysInWeek($period) * $this->options->getHoursInDay();
+
+        return [
+            'weekTotalWorkedHours'  => $totalWorked,
+            'weekTotalHours'        => $totalHours,
+            'balance'               => $totalWorked - $totalHours,
+        ];
+    }
+
 
     /**
      * @param UserInterface $user

@@ -33,4 +33,13 @@ interface PeriodServiceInterface
      * @return float
      */
     public function getRemainingHoursInMonth(\DateTime $today);
+
+    /**
+     * @param \DateTime $date
+     * @return array
+     */
+    public function getWeeksInMonth(\DateTime $date);
+
+
+
 }

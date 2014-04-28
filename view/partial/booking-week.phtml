@@ -22,9 +22,9 @@
                     <td style="width: 25%"><b>WEEK <?=($this->weekNum + 1)?></b> -
                         <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?> </span>
 
-                        <?php $weekBalance = $week['workedHours'] - $week['totalHours']; ?>
-                        <span class="pull-right <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                            <b><?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?></b>
+                        <?php $weekBalance = $week['balance']; ?>
+                        <span class="pull-right week-balance <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                            <?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?>
                         </span>
                     </td>
                 <?php else: ?>
@@ -45,9 +45,9 @@
                     <td style="width: 25%"><b>WEEK <?=($this->weekNum + 1)?></b> -
                         <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?> </span>
 
-                        <?php $weekBalance = $week['workedHours'] - $week['totalHours']; ?>
-                        <span class="pull-right <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                            <b><?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?></b>
+                        <?php $weekBalance = $week['balance']; ?>
+                        <span class="pull-right week-balance <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                            <?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?>
                         </span>
                     </td>
                 <?php else: ?>

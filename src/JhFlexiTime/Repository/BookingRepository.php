@@ -205,6 +205,39 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
     }
 
     /**
+     * @param UserInterface $user
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return float
+     */
+    public function getTotalBookedBetweenByUser(UserInterface $user, \DateTime $startDate, \DateTime $endDate)
+    {
+        $params = array(
+            'user'      => $user,
+            'firstDay'  => $startDate,
+            'lastDay'   => $endDate
+        );
+
+        $qb = $this->bookingRepository->createQueryBuilder('b');
+        $qb->select('sum(b.total)')
+            ->where('b.user = :user')
+            ->andWhere('b.date >= :firstDay')
+            ->andWhere('b.date <= :lastDay')
+            ->setParameters($params)
+            ->orderBy('b.date', 'ASC');
+
+        $totalHoursBookedThisPeriod = $qb->getQuery()->getSingleScalarResult();
+
+        if(null === $totalHoursBookedThisPeriod) {
+            $totalHoursBookedThisPeriod = 0;
+        }
+
+        return $totalHoursBookedThisPeriod;
+    }
+
+
+
+    /**
      * find(): defined by ObjectRepository.
      *
      * @see    ObjectRepository::find()

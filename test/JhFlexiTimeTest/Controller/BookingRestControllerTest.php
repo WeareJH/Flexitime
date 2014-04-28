@@ -176,6 +176,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $booking = $this->getMockBooking();
         $this->configureMockBookingService('create', array(), $booking);
         $this->configureMockTimeCalculatorService('getTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+        $this->configureMockTimeCalculatorService('getWeekTotals', array($this->user, $booking->getDate()), array('some-total', 20));
 
         $this->request->setMethod('POST');
         $this->request->getPost()->set('date', '25-03-2014');
@@ -188,11 +189,11 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
         $this->assertTrue(isset($result->success));
         $this->assertTrue(isset($result->booking));
-        $this->assertTrue(isset($result->totals));
+        $this->assertTrue(isset($result->monthTotals));
 
         $this->assertSame($booking, $result->booking);
         $this->assertTrue($result->success);
-        $this->assertEquals($result->totals, array('some-total', 20));
+        $this->assertEquals($result->monthTotals, array('some-total', 20));
     }
 
     public function testCreateCanBeAccessedButFail()
@@ -224,6 +225,8 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $data = array('date' => '25-03-2014', 'startTime' => '09:00');
         $this->configureMockBookingService('update', array($id, $data, $this->user), $booking);
         $this->configureMockTimeCalculatorService('getTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+        $this->configureMockTimeCalculatorService('getWeekTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('PUT');
@@ -236,11 +239,12 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
         $this->assertTrue(isset($result->success));
         $this->assertTrue(isset($result->booking));
-        $this->assertTrue(isset($result->totals));
+        $this->assertTrue(isset($result->monthTotals));
+        $this->assertTrue(isset($result->weekTotals));
 
         $this->assertSame($booking, $result->booking);
         $this->assertTrue($result->success);
-        $this->assertEquals($result->totals, array('some-total', 20));
+        $this->assertEquals($result->monthTotals, array('some-total', 20));
     }
 
     public function testUpdateCanBeAccessedButFail()
@@ -273,6 +277,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->configureMockBookingService('getBookingByUserAndId', array($this->user, $id), $booking);
         $this->configureMockBookingService('delete', array($booking), $booking);
         $this->configureMockTimeCalculatorService('getTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+        $this->configureMockTimeCalculatorService('getWeekTotals', array($this->user, $booking->getDate()), array('some-total', 20));
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('DELETE');
@@ -283,10 +288,11 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
         $this->assertTrue(isset($result->success));
-        $this->assertTrue(isset($result->totals));
+        $this->assertTrue(isset($result->monthTotals));
+        $this->assertTrue(isset($result->weekTotals));
 
         $this->assertTrue($result->success);
-        $this->assertEquals($result->totals, array('some-total', 20));
+        $this->assertEquals($result->monthTotals, array('some-total', 20));
     }
 
     public function testDeleteCanBeAccessedButFail()

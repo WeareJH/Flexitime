@@ -22,11 +22,22 @@ class BookingRepositoryFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('getRepository')
             ->with($this->equalTo('JhFlexiTime\Entity\Booking'))
             ->will($this->returnValue($objectRepository));
+
+        $services = [
+            'JhFlexiTime\ObjectManager' => $objectManager,
+        ];
+
         $serviceLocator
             ->expects($this->any())
             ->method('get')
-            ->with('JhFlexiTime\ObjectManager')
-            ->will($this->returnValue($objectManager));
+            ->will(
+                $this->returnCallback(
+                    function ($serviceName) use ($services) {
+                        return $services[$serviceName];
+                    }
+                )
+            );
+
 
         $factory = new BookingRepositoryFactory();
 
