@@ -32,38 +32,38 @@ class BalanceService implements BalanceServiceInterface
      */
     protected $objectManager;
 
-    /**
-     * @var \JhFlexiTime\Service\PeriodServiceInterface
-     */
-    protected $periodService;
+
 
     /**
      * @param ModuleOptions $options
      * @param BalanceRepositoryInterface $balanceRepository
      * @param ObjectManager $objectManager
-     * @param PeriodServiceInterface $periodService
      */
     public function __construct(
         ModuleOptions $options,
         BalanceRepositoryInterface $balanceRepository,
-        ObjectManager $objectManager,
-        PeriodServiceInterface $periodService
+        ObjectManager $objectManager
     ) {
         $this->options                  = $options;
         $this->balanceRepository        = $balanceRepository;
         $this->objectManager            = $objectManager;
-        $this->periodService            = $periodService;
     }
 
-    /**
-     * @param Booking $booking
-     */
-    public function update(Booking $booking)
+    public function updateFromPreviousMonth(Booking $booking)
     {
         $runningBalance = $this->getRunningBalance($booking->getUser());
 
         list($balanceDiff, $newBalance) = $this->getBalanceDiff($booking);
         $runningBalance->addBalance($balanceDiff);
+        $booking->setBalance($newBalance);
+    }
+
+    /**
+     * @param Booking $booking
+     */
+    public function updateBalance(Booking $booking)
+    {
+        list($balanceDiff, $newBalance) = $this->getBalanceDiff($booking);
         $booking->setBalance($newBalance);
     }
 
@@ -91,61 +91,14 @@ class BalanceService implements BalanceServiceInterface
     {
         $runningBalance = $this->balanceRepository->findByUser($user);
         if (!$runningBalance) {
-            return $this->setupInitialRunningBalance($user);
+            $runningBalance = new RunningBalance;
+            $runningBalance->setUser($user);
+            $this->objectManager->persist($runningBalance);
+            return $runningBalance;
         }
         return $runningBalance;
     }
 
-    /**
-     * @param UserInterface $user
-     * @return RunningBalance
-     */
-    public function setupInitialRunningBalance(UserInterface $user)
-    {
-        $runningBalance = new RunningBalance();
-        $runningBalance->setUser($user);
-        $runningBalance->subtractBalance($this->periodService->getTotalHoursInMonth(new \DateTime));
-        $this->objectManager->persist($runningBalance);
-        $this->objectManager->flush();
-        return $runningBalance;
-    }
 
-    /**
-     * @param Booking $booking
-     */
-    public function firstBookingOfTheMonth(Booking $booking)
-    {
-        $monthTotalHours = $this->periodService->getTotalHoursInMonth($booking->getDate());
-        list($balanceDiff, $newBalance) = $this->getBalanceDiff($booking);
-        $booking->setBalance($newBalance);
-        $monthBalance = (0 - $monthTotalHours) + $booking->getTotal();
 
-        $balance = $this->getRunningBalance($booking->getUser());
-        $balance->addBalance($monthBalance);
-
-        $this->objectManager->persist($balance);
-    }
-
-    /**
-     * @param Booking $booking
-     */
-    public function create(Booking $booking)
-    {
-        $runningBalance = $this->getRunningBalance($booking->getUser());
-        $runningBalance->addBalance($booking->getTotal());
-
-        list($balanceDiff, $newBalance) = $this->getBalanceDiff($booking);
-        $booking->setBalance($newBalance);
-
-        $this->objectManager->persist($runningBalance);
-    }
-
-    /**
-     * @param Booking $booking
-     */
-    public function remove(Booking $booking)
-    {
-        $runningBalance = $this->getRunningBalance($booking->getUser());
-        $runningBalance->subtractBalance($booking->getTotal());
-    }
 }

@@ -88,12 +88,12 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @param float $initialBalance
      * @param float $expectedBalance
-     * @param float $monthRemainingHours
-     * @param float $bookedAfter
+     * @param float $monthToDateTotalHours
+     * @param float $bookedToDate
      *
      * @dataProvider runningBalanceProvider
      */
-    public function testGetRunningBalance($initialBalance, $expectedBalance, $monthRemainingHours, $bookedAfter)
+    public function testGetRunningBalance($initialBalance, $expectedBalance, $monthToDateTotalHours, $bookedToDate)
     {
         $this->date     = new \DateTime;
         $mockUser       = $this->getMock('ZfcUser\Entity\UserInterface');
@@ -106,14 +106,14 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($runningBalance));
 
         $this->periodService->expects($this->once())
-            ->method('getRemainingHoursInMonth')
+            ->method('getTotalHoursToDateInMonth')
             ->with($this->date)
-            ->will($this->returnValue($monthRemainingHours));
+            ->will($this->returnValue($monthToDateTotalHours));
 
         $this->bookingRepository->expects($this->once())
-             ->method('getTotalBookedAfter')
+             ->method('getMonthBookedToDateTotalByUser')
              ->with($mockUser, $this->date)
-             ->will($this->returnValue($bookedAfter));
+             ->will($this->returnValue($bookedToDate));
 
         $balance = $this->getService()->getRunningBalance($mockUser);
         $this->assertEquals($expectedBalance, $balance);
@@ -125,24 +125,22 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function runningBalanceProvider()
     {
         /**
-         * Initial Balance | Expected Balance | Month Remaining | Booked After
+         * Initial Balance | Expected Balance | Month Hours So Far | Month Booked
          */
-        return array(
-            array(0,        112.5,  112.50, 0),
-            array(5,        117.5,  112.50, 0),
-            array(45,       117.5,  112.50, 40),
-            array(50,       162.5,  112.50, 0),
-            array(-120,     -7.5,   112.50, 0),
-            array(-100,     -7.5,   112.50, 20),
-            array(-100,     -17.5,  112.50, 30),
-            array(-120,     2.5,    112.50, -10),
-            array(-120,     2.5,    112.50, -10),
-            array(-120,     -120.0, 0,      0),
-            array(-120,     -107.5, 0,      -12.5),
-            array(0,        0,      0,      -0),
-            array(0,        -15,    0,      15),
-            array(-307.5,   -210.0, 97.50, 0),
-            array(-119.1,   -6.6,   112.5,    0),
-        );
+        return [
+            [0,     -5,     15,     10],
+            [0,     0,      15,     15],
+            [5,     0,      15,     10],
+            [5,     5,      15,     15],
+            [-5,    0,      10,     15],
+            [-5,    -5,     15,     15],
+            [-5,    -10,    15,     10],
+            [-50,   -50,    150,    150],
+            [-50,   -100,   150,    100],
+            [50,    100,    150,    200],
+            [0,     -1.75,  20,     18.25],
+            [-10.5, 0,      20,     30.5],
+
+        ];
     }
 }

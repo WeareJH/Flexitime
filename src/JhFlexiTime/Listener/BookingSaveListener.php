@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Listener;
 
+use JhFlexiTime\Service\PeriodServiceInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\AbstractListenerAggregate;
 use JhFlexiTime\Service\BalanceService;
@@ -25,13 +26,27 @@ class BookingSaveListener extends AbstractListenerAggregate
     protected $bookingRepository;
 
     /**
+     * @var \DateTime
+     */
+    protected $date;
+
+    protected $periodService;
+
+    /**
      * @param BalanceService $balanceService
      * @param BookingRepository $bookingRepository
+     * @param \DateTime $date
      */
-    public function __construct(BalanceService $balanceService, BookingRepository $bookingRepository)
-    {
-        $this->balanceService = $balanceService;
-        $this->bookingRepository = $bookingRepository;
+    public function __construct(
+        BalanceService $balanceService,
+        BookingRepository $bookingRepository,
+        \DateTime $date,
+        PeriodServiceInterface $periodService
+    ) {
+        $this->balanceService       = $balanceService;
+        $this->bookingRepository    = $bookingRepository;
+        $this->date                 = $date;
+        $this->periodService        = $periodService;
     }
 
     /**
@@ -40,41 +55,42 @@ class BookingSaveListener extends AbstractListenerAggregate
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents      = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', array($this, 'onCreateBooking'), 100);
-        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', array($this, 'onUpdateBooking'), 100);
-        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', array($this, 'onRemoveBooking'), 100);
+        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', array($this, 'updateBalance'), 100);
+        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', array($this, 'updateBalance'), 100);
+        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', array($this, 'updateBalance'), 100);
     }
 
-    public function onCreateBooking($e)
+    public function updateBalance($e)
     {
         $booking = $e->getParam('booking');
 
-
-        //if this booking is the first of the month then we need to subtract the total hours of the month
-        //from the running balance.
-        //if the booking is in the same month the user was created we skip this step
-        //because it is automatically done for the current month when the user joins
-        //instead we just call create()
-        $createdAtDate = $booking->getUser()->getCreatedAt();
-        $sameAsCreated = false;
-        if ($createdAtDate->format('m-Y') === $booking->getDate()->format('m-Y')) {
-            $sameAsCreated = true;
+        if($this->periodService->isDateAfterDay($booking, $this->date)) {
+            //if booking time in the future - do nothing
+            return true;
         }
 
-        if ($this->bookingRepository->isUsersFirstBookingForMonth($booking->getUser(), $booking->getDate()) && !$sameAsCreated) {
-            $this->balanceService->firstBookingOfTheMonth($booking);
-        } else {
-            $this->balanceService->create($booking);
+        if($this->bookingRepository->isUsersFirstBookingForMonth($booking->getUser(), $booking->getDate())) {
+            //calculate balance of previous month
+            $this->calculatePreviousMonthBalance($booking);
+            return true;
         }
+
+        if($this->periodService->isDateInPreviousMonth($booking, $this->date)) {
+            $this->balanceService->updateFromPreviousMonth($booking);
+            return true;
+        }
+
+        //else must be a booking in this month, calculate the balance
+        //for this individual record
+        $this->balanceService->updateBalance($booking);
     }
 
-    public function onUpdateBooking($e)
+    public function calculatePreviousMonthBalance(Booking $booking)
     {
-        $this->balanceService->update($e->getParam('booking'));
-    }
-
-    public function onRemoveBooking($e)
-    {
-        $this->balanceService->remove($e->getParam('booking'));
+        $runningBalance         = $this->balanceService->getRunningBalance($booking->getUser());
+        $totalHoursThisMonth    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
+        $bookedThisMonth        = $this->bookingRepository->getMonthBookedToDateTotalByUser($booking->getUser(), $this->referenceDate);
+        $monthBalance           = $bookedThisMonth - $totalHoursThisMonth;
+        $runningBalance->addBalance($monthBalance);
     }
 }

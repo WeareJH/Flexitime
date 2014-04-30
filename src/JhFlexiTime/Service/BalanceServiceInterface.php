@@ -16,13 +16,12 @@ interface BalanceServiceInterface
     /**
      * @param Booking $booking
      */
-    public function update(Booking $booking);
+    public function updateBalance(Booking $booking);
 
     /**
      * @param Booking $booking
-     * @return array
      */
-    public function getBalanceDiff(Booking $booking);
+    public function updateFromPreviousMonth(Booking $booking);
 
     /**
      * @param UserInterface $user
@@ -30,24 +29,4 @@ interface BalanceServiceInterface
      */
     public function getRunningBalance(UserInterface $user);
 
-    /**
-     * @param UserInterface $user
-     * @return \JhFlexiTime\Entity\RunningBalance
-     */
-    public function setupInitialRunningBalance(UserInterface $user);
-
-    /**
-     * @param Booking $booking
-     */
-    public function firstBookingOfTheMonth(Booking $booking);
-
-    /**
-     * @param Booking $booking
-     */
-    public function create(Booking $booking);
-
-    /**
-     * @param Booking $booking
-     */
-    public function remove(Booking $booking);
 }

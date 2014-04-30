@@ -104,35 +104,6 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
     }
 
     /**
-     * Get the total hours of booked time from given date
-     * until the end of the month of the given date
-     *
-     * @param UserInterface $user
-     * @param \DateTime $date
-     * @return int
-     */
-    public function getTotalBookedAfter(UserInterface $user, \DateTime $date)
-    {
-        $currentDay = new \DateTime($date->format('Y-m-d'));
-        $lastDay    = new \DateTime(sprintf('last day of %s', $date->format('F Y')));
-
-        $params = array(
-            'user'          => $user,
-            'currentDay'    => $currentDay,
-            'lastDay'       => $lastDay,
-        );
-
-        $qb = $this->bookingRepository->createQueryBuilder('b');
-        $qb->select('sum(b.total)')
-            ->where('b.user = :user')
-            ->andWhere('b.date > :currentDay')
-            ->andWhere('b.date <= :lastDay')
-            ->setParameters($params);
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
      * Get the sum of all all hours booked between the first day of the given month,
      * and the current day of the passed in DateTime object
      *

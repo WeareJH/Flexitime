@@ -6,6 +6,7 @@ use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Options\ModuleOptions;
 use JhFlexiTime\Service\BalanceService;
 use JhFlexiTime\Entity\Booking;
+use JhUser\Entity\User;
 
 /**
  * Class BalanceServiceTest
@@ -79,16 +80,15 @@ class BalanceServiceTest extends \PHPUnit_Framework_TestCase
 
     /**
      *
-     * @dataProvider runningBalanceUpdateProvider
+     * @dataProvider updateBookingProvider
      */
-    public function testUpdateBookingSetsRunningBalance($newTotal, $expRunningBalance)
+    public function testUpdateBookingSetsBalance($newTotal, $expRunningBalance)
     {
         $user = $this->getMock('ZfcUser\Entity\UserInterface');
         $booking = new Booking();
         $booking->setUser($user);
         $booking->setTotal($newTotal);
         $booking->setBalance(0);
-        $runningBalance = new RunningBalance();
 
         $em = $this
             ->getMockBuilder('Doctrine\ORM\EntityManager')
@@ -97,22 +97,18 @@ class BalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $balanceRepository  = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
-        $balanceRepository->expects($this->once())
-            ->method('findByUser')
-            ->with($user)
-            ->will($this->returnValue($runningBalance));
+
 
         $balanceService = new BalanceService($this->getOptions(), $balanceRepository, $em, $this->getMockPeriodService());
-        $balanceService->update($booking);
+        $balanceService->updateBalance($booking);
 
-        $this->assertEquals($expRunningBalance, $runningBalance->getBalance());
         $this->assertEquals($expRunningBalance, $booking->getBalance());
     }
 
     /**
      * @return array
      */
-    public function runningBalanceUpdateProvider()
+    public function updateBookingProvider()
     {
         /**
          *  New Total | Expected Running Balance
@@ -126,61 +122,12 @@ class BalanceServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *
-     * @dataProvider runningBalanceUpdateAdderProvider
-     */
-    public function testUpdateBookingAddsToRunningBalance($newTotal, $expRunningBalance, $expectedBalance)
-    {
-        $user = $this->getMock('ZfcUser\Entity\UserInterface');
-        $booking = new Booking();
-        $booking->setUser($user);
-        $booking->setTotal($newTotal);
-        $booking->setBalance(0);
-        $runningBalance = new RunningBalance();
-        $runningBalance->setBalance(200);
-
-        $em = $this
-            ->getMockBuilder('Doctrine\ORM\EntityManager')
-            ->setMethods(array('persist'))
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $balanceRepository  = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
-        $balanceRepository->expects($this->once())
-            ->method('findByUser')
-            ->with($user)
-            ->will($this->returnValue($runningBalance));
-
-        $balanceService = new BalanceService($this->getOptions(), $balanceRepository, $em, $this->getMockPeriodService());
-        $balanceService->update($booking);
-
-        $this->assertEquals($expRunningBalance, $runningBalance->getBalance());
-        $this->assertEquals($expectedBalance, $booking->getBalance());
-    }
-
-    /**
-     * @return array
-     */
-    public function runningBalanceUpdateAdderProvider()
-    {
-        /**
-         *  New Total | Expected Running Balance | Expected Individual balance
-         */
-        return array(
-            array(7.5,  200,    0),
-            array(0,    192.5,  -7.5),
-            array(-7.5, 185,    -15),
-            array(6,    198.5,  -1.5)
-        );
-    }
-
-    /**
      * Test get running balance function
      */
     public function testGetRunningBalance()
     {
+        $userMock = $this->getMock('ZfcUser\Entity\UserInterface');
         $runningBalance = new RunningBalance();
-        $userMock       = $this->getMock('ZfcUser\Entity\UserInterface');
 
         $em = $this
             ->getMockBuilder('Doctrine\ORM\EntityManager')
@@ -193,12 +140,38 @@ class BalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->with($userMock)
             ->will($this->returnValue($runningBalance));
 
-        $balanceServiceClass = new \ReflectionClass('\JhFlexiTime\Service\BalanceService');
-        $method = $balanceServiceClass->getMethod('getRunningBalance');
-        $method->setAccessible(true);
+        $balanceService = new BalanceService($this->getOptions(), $balanceRepository, $em, $this->getMockPeriodService());
+        $ret = $balanceService->getRunningBalance($userMock);
+        $this->assertSame($runningBalance, $ret);
+    }
+
+    /**
+     * Test get running balance creates new Running Balance if it does not exist for the current user
+     */
+    public function testGetRunningBalanceReturnsNewInstanceIfNotExist()
+    {
+        $user = new User;
+
+        $em = $this
+            ->getMockBuilder('Doctrine\ORM\EntityManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+
+        $em
+            ->expects($this->once())
+            ->method('persist');
+
+        $balanceRepository  = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
+        $balanceRepository->expects($this->once())
+            ->method('findByUser')
+            ->with($user)
+            ->will($this->returnValue(null));
 
         $balanceService = new BalanceService($this->getOptions(), $balanceRepository, $em, $this->getMockPeriodService());
-        $ret = $method->invokeArgs($balanceService, array($userMock));
-        $this->assertSame($runningBalance, $ret);
+        $ret = $balanceService->getRunningBalance($user);
+        $this->assertInstanceOf('JhFlexiTime\Entity\RunningBalance', $ret);
+        $this->assertEquals(0, $ret->getBalance());
+        $this->assertSame($user, $ret->getUser());
     }
 }

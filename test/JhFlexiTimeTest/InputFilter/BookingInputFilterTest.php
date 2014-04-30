@@ -366,6 +366,23 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testStartTimeEndTimeSameTime()
+    {
+        $mockValidator  = $this->getMockValidator(true);
+        $mockOptions    = $this->getMock('JhFlexiTime\Options\BookingOptionsInterface');
+
+
+        $filter = new BookingInputFilter($mockValidator, $mockOptions);
+        $filter->setData([
+            'date'      => '12-04-1988',
+            'startTime' => '00:00',
+            'endTime'   => '00:00',
+            'notes'     => '',
+        ]);
+
+        $this->assertTrue($filter->isValid(), 'Input must not be valid');
+    }
+
     /**
      * @return string
      */

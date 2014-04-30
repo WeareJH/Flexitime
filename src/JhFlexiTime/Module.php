@@ -23,14 +23,7 @@ class Module implements
         $eventManager   = $e->getTarget()->getEventManager();
         $eventManager->attach($sl->get('JhFlexiTime\Listener\BookingSaveListener'));
 
-        $sharedEvm = $e->getApplication()->getEventManager()->getSharedManager();
-        $sharedEvm->attach('ZfcUser\Service\User', 'register.post', function ($e) use ($balanceService) {
-            $balanceService->setupInitialRunningBalance($e->getParam('user'));
-        });
 
-        $sharedEvm->attach('ScnSocialAuth\Authentication\Adapter\HybridAuth', 'registerViaProvider.post', function ($e) use ($balanceService) {
-            $balanceService->setupInitialRunningBalance($e->getParam('user'));
-        });
     }
 
 
