@@ -273,16 +273,4 @@ class PeriodService implements PeriodServiceInterface
         $date->modify("23:59:59");
         return $dateA > $date;
     }
-
-    /**
-     * @param \DateTime $dateA
-     * @param \DateTime $dateB
-     * @return bool
-     */
-    public function isDateInPreviousMonth(\DateTime $dateA, \DateTime $dateB)
-    {
-        $date = clone $dateB;
-        $date->modify('first day of this month 00:00:00');
-        return $dateA < $date;
-    }
 }

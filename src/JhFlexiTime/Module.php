@@ -18,12 +18,9 @@ class Module implements
 
     public function onBootstrap(EventInterface $e)
     {
-        $sl             = $e->getApplication()->getServiceManager();
-        $balanceService = $sl->get('JhFlexiTime\Service\BalanceService');
+        $sl             = $e->getTarget()->getServiceManager();
         $eventManager   = $e->getTarget()->getEventManager();
         $eventManager->attach($sl->get('JhFlexiTime\Listener\BookingSaveListener'));
-
-
     }
 
 

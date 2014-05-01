@@ -2,11 +2,15 @@
 
 namespace JhFlexiTime\Listener;
 
-use JhFlexiTime\Service\PeriodServiceInterface;
+use JhFlexiTime\Entity\RunningBalance;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\AbstractListenerAggregate;
-use JhFlexiTime\Service\BalanceService;
-use JhFlexiTime\Repository\BookingRepository;
+use JhFlexiTime\Repository\BalanceRepositoryInterface;
+use JhFlexiTime\Entity\Booking;
+use JhFlexiTime\Options\ModuleOptions;
+use ZfcUser\Entity\UserInterface;
+use Doctrine\Common\Persistence\ObjectManager;
+use Zend\EventManager\Event;
 
 /**
  * Class BookingSaveListener
@@ -15,38 +19,43 @@ use JhFlexiTime\Repository\BookingRepository;
  */
 class BookingSaveListener extends AbstractListenerAggregate
 {
-    /**
-     * @var \JhFlexiTime\Service\BalanceService
-     */
-    protected $balanceService;
-
-     /**
-      * @var \JhFlexiTime\Repository\BookingRepository
-      */
-    protected $bookingRepository;
 
     /**
      * @var \DateTime
      */
     protected $date;
 
-    protected $periodService;
+    /**
+     * @var \JhFlexiTime\Options\ModuleOptions
+     */
+    protected $options;
 
     /**
-     * @param BalanceService $balanceService
-     * @param BookingRepository $bookingRepository
+     * @var \JhFlexiTime\Repository\BalanceRepository
+     */
+    protected $balanceRepository;
+
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
+    protected $objectManager;
+
+    /**
+     * @param ObjectManager $objectManager
+     * @param BalanceRepositoryInterface $balanceRepository
      * @param \DateTime $date
+     * @param ModuleOptions $options
      */
     public function __construct(
-        BalanceService $balanceService,
-        BookingRepository $bookingRepository,
+        ObjectManager $objectManager,
+        BalanceRepositoryInterface $balanceRepository,
         \DateTime $date,
-        PeriodServiceInterface $periodService
+        ModuleOptions $options
     ) {
-        $this->balanceService       = $balanceService;
-        $this->bookingRepository    = $bookingRepository;
+        $this->objectManager        = $objectManager;
+        $this->balanceRepository    = $balanceRepository;
         $this->date                 = $date;
-        $this->periodService        = $periodService;
+        $this->options              = $options;
     }
 
     /**
@@ -60,37 +69,61 @@ class BookingSaveListener extends AbstractListenerAggregate
         $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', array($this, 'updateBalance'), 100);
     }
 
-    public function updateBalance($e)
+    /**
+     * @param Event $e
+     * @return void
+     */
+    public function updateBalance(Event $e)
     {
         $booking = $e->getParam('booking');
 
-        if($this->periodService->isDateAfterDay($booking, $this->date)) {
-            //if booking time in the future - do nothing
-            return true;
+        if($this->isDateInPreviousMonth($booking->getDate(), $this->date)) {
+            $this->updateRunningBalance($booking, $this->getRunningBalance($booking->getUser()));
         }
 
-        if($this->bookingRepository->isUsersFirstBookingForMonth($booking->getUser(), $booking->getDate())) {
-            //calculate balance of previous month
-            $this->calculatePreviousMonthBalance($booking);
-            return true;
-        }
-
-        if($this->periodService->isDateInPreviousMonth($booking, $this->date)) {
-            $this->balanceService->updateFromPreviousMonth($booking);
-            return true;
-        }
-
-        //else must be a booking in this month, calculate the balance
-        //for this individual record
-        $this->balanceService->updateBalance($booking);
+        $newBalance = $booking->getTotal() - $this->options->getHoursInDay();
+        $booking->setBalance($newBalance);
     }
 
-    public function calculatePreviousMonthBalance(Booking $booking)
+    /**
+     * @param Booking $booking
+     * @param RunningBalance $runningBalance
+     */
+    public function updateRunningBalance(Booking $booking, RunningBalance $runningBalance)
     {
-        $runningBalance         = $this->balanceService->getRunningBalance($booking->getUser());
-        $totalHoursThisMonth    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
-        $bookedThisMonth        = $this->bookingRepository->getMonthBookedToDateTotalByUser($booking->getUser(), $this->referenceDate);
-        $monthBalance           = $bookedThisMonth - $totalHoursThisMonth;
-        $runningBalance->addBalance($monthBalance);
+        $oldBalance     = $booking->getBalance();
+        $newBalance     = $booking->getTotal() - $this->options->getHoursInDay();
+        $balanceDiff    = $newBalance - $oldBalance;
+
+        $runningBalance->addBalance($balanceDiff);
+    }
+
+    /**
+     * @param UserInterface $user
+     * @return RunningBalance
+     * @throws \Exception
+     */
+    public function getRunningBalance(UserInterface $user)
+    {
+        $runningBalance = $this->balanceRepository->findByUser($user);
+        if (!$runningBalance) {
+            $runningBalance = new RunningBalance;
+            $runningBalance->setUser($user);
+            $this->objectManager->persist($runningBalance);
+            return $runningBalance;
+        }
+        return $runningBalance;
+    }
+
+    /**
+     * @param \DateTime $dateA
+     * @param \DateTime $dateB
+     * @return bool
+     */
+    public function isDateInPreviousMonth(\DateTime $dateA, \DateTime $dateB)
+    {
+        $date = clone $dateB;
+        $date->modify('first day of this month 00:00:00');
+        return $dateA < $date;
     }
 }

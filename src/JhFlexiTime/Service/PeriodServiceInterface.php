@@ -46,14 +46,4 @@ interface PeriodServiceInterface
      * @return bool
      */
     public function isDateAfterDay(\DateTime $dateA, \DateTime $dateB);
-
-    /**
-     * @param \DateTime $dateA
-     * @param \DateTime $dateB
-     * @return bool
-     */
-    public function isDateInPreviousMonth(\DateTime $dateA, \DateTime $dateB);
-
-
-
 }

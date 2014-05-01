@@ -369,27 +369,6 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @param \DateTime $a
-     * @param \DateTime $b
-     * @param bool $expected
-     * @dataProvider isDateInPreviousMonthProvider
-     */
-    public function testIsDateInPreviousMonth(\DateTime $a, \DateTime $b, $expected)
-    {
-        $result = $this->periodService->isDateInPreviousMonth($a, $b);
-        $this->assertEquals($result, $expected);
-    }
 
-    public function isDateInPreviousMonthProvider()
-    {
-        return [
-            [new \DateTime("12 April 2014"),            new \DateTime("12 May 2014 23:59:59"),    true],
-            [new \DateTime("30 April 2014 23:59:59"),   new \DateTime("12 May 2014 23:59:59"),    true],
-            [new \DateTime("30 April 2014 23:59:59"),   new \DateTime("1 May 2014 00:00:00"),     true],
-            [new \DateTime("12 April 2014"),            new \DateTime("12 March 2014 23:59:59"),  false],
-            [new \DateTime("1 April 2014 00:00:00"),    new \DateTime("31 March 2014 23:59:59"),  false],
-        ];
-    }
 
 }
