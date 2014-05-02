@@ -13,7 +13,7 @@ interface BalanceRepositoryInterface
 {
     /**
      * @param UserInterface $user
-     * @return array
+     * @return \JhFlexiTime\Entity\RunningBalance
      */
     public function findByUser(UserInterface $user);
 

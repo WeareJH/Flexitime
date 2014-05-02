@@ -28,7 +28,7 @@ class BalanceRepository implements BalanceRepositoryInterface
 
     /**
      * @param UserInterface $user
-     * @return object
+     * @return \JhFlexiTime\Entity\RunningBalance
      */
     public function findByUser(UserInterface $user)
     {
@@ -39,7 +39,7 @@ class BalanceRepository implements BalanceRepositoryInterface
      * Proxy to Doctrine Repo
      *
      * @param array $criteria
-     * @return object
+     * @return \JhFlexiTime\Entity\RunningBalance
      */
     public function findOneBy(array $criteria)
     {
