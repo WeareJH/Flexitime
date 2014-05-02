@@ -24,9 +24,10 @@ return [
             'JhFlexiTime\Controller\Booking'     => 'JhFlexiTime\Controller\BookingController',
         ],
         'factories' => [
-            'JhFlexiTime\Controller\BookingRest'    => 'JhFlexiTime\Controller\Factory\BookingRestControllerFactory',
-            'JhFlexiTime\Controller\Settings'       => 'JhFlexiTime\Controller\Factory\SettingsControllerFactory',
-            'JhFlexiTime\Controller\BookingAdmin'   => 'JhFlexiTime\Controller\Factory\BookingAdminControllerFactory',
+            'JhFlexiTime\Controller\BookingRest'        => 'JhFlexiTime\Controller\Factory\BookingRestControllerFactory',
+            'JhFlexiTime\Controller\Settings'           => 'JhFlexiTime\Controller\Factory\SettingsControllerFactory',
+            'JhFlexiTime\Controller\RunningBalanceCli'  => 'JhFlexiTime\Controller\Factory\RunningBalanceCliControllerFactory',
+            'JhFlexiTime\Controller\BookingAdmin'       => 'JhFlexiTime\Controller\Factory\BookingAdminControllerFactory',
         ],
     ],
 
@@ -89,6 +90,44 @@ return [
                     ],
                 ],
             ],
+
+
+
+        ],
+    ],
+
+    //console routes
+    'console' => [
+        'router' => [
+            'routes' => [
+                'calc-prev-month-balance' => [
+                    'options'   => [
+                        'route'     => 'calc-prev-month-balance',
+                        'defaults'  => [
+                            'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
+                            'action'     => 'calc-prev-month-balance'
+                        ],
+                    ],
+                ],
+                're-calc-balance-all' => [
+                    'options'   => [
+                        'route'     => 're-calc-balance-all',
+                        'defaults'  => [
+                            'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
+                            'action'     => 're-calc-running-balance'
+                        ],
+                    ],
+                ],
+                're-calc-balance-user' => [
+                    'options'   => [
+                        'route'     => 're-calc-balance-user <userEmail>',
+                        'defaults'  => [
+                            'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
+                            'action'     => 're-calc-running-balance'
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
 
@@ -110,6 +149,7 @@ return [
             'JhFlexiTime\Listener\BookingSaveListener'       => 'JhFlexiTime\Listener\Factory\BookingSaveListenerFactory',
             'JhFlexiTime\Options\ModuleOptions'              => 'JhFlexiTime\Options\Factory\ModuleOptionsFactory',
             'JhFlexiTime\Options\BookingOptions'             => 'JhFlexiTime\Options\Factory\BookingOptionsFactory',
+            'JhFlexiTime\Service\RunningBalanceService'      => 'JhFlexiTime\Service\Factory\RunningBalanceServiceFactory',
         ],
         'aliases' => [
             'JhFlexiTime\ObjectManager'     => 'Doctrine\ORM\EntityManager',

@@ -5,6 +5,8 @@ namespace JhFlexiTime;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\EventManager\EventInterface;
+use Zend\Console\Adapter\AdapterInterface as Console;
+
 
 /**
  * JhFlexiTime Module
@@ -37,12 +39,25 @@ class Module implements
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/../../src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param Console $console
+     * @return array|null|string
+     */
+    public function getConsoleUsage(Console $console)
+    {
+        return [
+            're-calc-balance-user <userEmail>'      => "Recalculate a User's running balance",
+            're-calc-balance-all '                  => "Recalculate all User's running balance",
+            'calc-prev-month-balance'               => "Calculate the previous month balance for all users and add it on to their running balance",
+        ];
     }
 }

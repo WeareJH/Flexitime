@@ -79,4 +79,17 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         return $event;
     }
 
+    public function testConsoleUsage()
+    {
+        $mockConsole = $this->getMock('Zend\Console\Adapter\AdapterInterface');
+        $module = new Module();
+
+        $expected = [
+            're-calc-balance-user <userEmail>'      => "Recalculate a User's running balance",
+            're-calc-balance-all '                  => "Recalculate all User's running balance",
+            'calc-prev-month-balance'               => "Calculate the previous month balance for all users and add it on to their running balance",
+        ];
+        $this->assertSame($expected, $module->getConsoleUsage($mockConsole));
+    }
+
 }
