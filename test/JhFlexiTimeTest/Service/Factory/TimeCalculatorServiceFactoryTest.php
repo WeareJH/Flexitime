@@ -17,7 +17,7 @@ class TimeCalculatorServiceFactoryTest extends \PHPUnit_Framework_TestCase
         $services         = array(
             'FlexiOptions'                               => $this->getMock('JhFlexiTime\Options\ModuleOptions'),
             'JhFlexiTime\Repository\BookingRepository'   => $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface'),
-            'JhFlexiTime\Service\BalanceService'         => $this->getMock('JhFlexiTime\Service\BalanceServiceInterface'),
+            'JhFlexiTime\Repository\BalanceRepository'   => $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
             'JhFlexiTime\Service\PeriodService'          => $this->getMock('JhFlexiTime\Service\PeriodServiceInterface'),
         );
 

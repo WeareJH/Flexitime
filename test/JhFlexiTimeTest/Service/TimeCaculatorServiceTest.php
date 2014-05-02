@@ -59,7 +59,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->bookingRepository    = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
-        $this->balanceService       = $this->getMock('JhFlexiTime\Service\BalanceServiceInterface');
+        $this->balanceRepository       = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
         $this->periodService        = $this->getMockBuilder('JhFlexiTime\Service\PeriodService')
                                          ->disableOriginalConstructor()
                                          ->getMock();
@@ -77,7 +77,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $timeCalculatorService = new TimeCalculatorService(
             $this->options,
             $this->bookingRepository,
-            $this->balanceService,
+            $this->balanceRepository,
             $this->periodService,
             $this->date
         );
@@ -100,8 +100,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $runningBalance = new RunningBalance();
         $runningBalance->setBalance($initialBalance);
 
-        $this->balanceService->expects($this->once())
-            ->method('getRunningBalance')
+        $this->balanceRepository->expects($this->once())
+            ->method('findByUser')
             ->with($mockUser)
             ->will($this->returnValue($runningBalance));
 

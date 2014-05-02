@@ -23,7 +23,7 @@ class TimeCalculatorServiceFactory implements FactoryInterface
         return new TimeCalculatorService(
             $serviceLocator->get('FlexiOptions'),
             $serviceLocator->get('JhFlexiTime\Repository\BookingRepository'),
-            $serviceLocator->get('JhFlexiTime\Service\BalanceService'),
+            $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
             $serviceLocator->get('JhFlexiTime\Service\PeriodService'),
             new \DateTime('today')
         );

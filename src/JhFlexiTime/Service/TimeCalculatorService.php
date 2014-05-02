@@ -6,7 +6,7 @@ use JhFlexiTime\Repository\BookingRepositoryInterface;
 use ZfcUser\Entity\UserInterface;
 use JhFlexiTime\Repository\BookingRepository;
 use JhFlexiTime\Options\ModuleOptions;
-use JhFlexiTime\Entity\Booking;
+use JhFlexiTime\Repository\BalanceRepositoryInterface;
 
 /**
  *
@@ -23,9 +23,9 @@ class TimeCalculatorService
     protected $bookingRepository;
 
     /**
-     * @var BalanceServiceInterface
+     * @var BalanceRepositoryInterface
      */
-    protected $balanceService;
+    protected $balanceRepository;
 
     /**
      * @var \JhFlexiTime\Service\PeriodServiceInterface
@@ -45,20 +45,20 @@ class TimeCalculatorService
     /**
      * @param ModuleOptions $options
      * @param BookingRepositoryInterface $bookingRepository
-     * @param BalanceServiceInterface $balanceService
+     * @param BalanceRepositoryInterface $balanceRepository
      * @param PeriodServiceInterface $periodService
      * @param \DateTime $date
      */
     public function __construct(
         ModuleOptions $options,
         BookingRepositoryInterface $bookingRepository,
-        BalanceServiceInterface $balanceService,
+        BalanceRepositoryInterface $balanceRepository,
         PeriodServiceInterface $periodService,
         \DateTime $date
     ) {
         $this->options              = $options;
         $this->bookingRepository    = $bookingRepository;
-        $this->balanceService       = $balanceService;
+        $this->balanceRepository    = $balanceRepository;
         $this->periodService        = $periodService;
         $this->referenceDate        = $date;
     }
@@ -154,7 +154,7 @@ class TimeCalculatorService
     public function getRunningBalance(UserInterface $user)
     {
 
-        $balance                = $this->balanceService->getRunningBalance($user)->getBalance();
+        $balance                = $this->balanceRepository->findByUser($user)->getBalance();
         $totalHoursThisMonth    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
         $bookedThisMonth        = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
         $monthBalance           = $bookedThisMonth - $totalHoursThisMonth;
