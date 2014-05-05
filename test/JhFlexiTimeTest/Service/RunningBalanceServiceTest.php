@@ -4,6 +4,8 @@ namespace JhFlexiTimeTest\Service;
 
 
 use JhFlexiTime\Entity\RunningBalance;
+use JhFlexiTime\Entity\UserSettings;
+use JhFlexiTime\Repository\UserSettingsRepository;
 use JhFlexiTime\Service\RunningBalanceService;
 use JhUser\Entity\User;
 
@@ -11,6 +13,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 {
 
     protected $userRepository;
+    protected $userSettingsRepository;
     protected $runningBalanceService;
     protected $periodService;
     protected $bookingRepository;
@@ -20,15 +23,17 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->userRepository       = $this->getMock('JhUser\Repository\UserRepositoryInterface');
-        $this->balanceRepository    = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
-        $this->periodService        = $this->getMock('JhFlexiTime\Service\PeriodServiceInterface');
-        $this->bookingRepository    = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
-        $this->objectManager        = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $this->date                 = new \DateTime("2 May 2014");
+        $this->userRepository           = $this->getMock('JhUser\Repository\UserRepositoryInterface');
+        $this->userSettingsRepository   = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
+        $this->balanceRepository        = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
+        $this->periodService            = $this->getMock('JhFlexiTime\Service\PeriodServiceInterface');
+        $this->bookingRepository        = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
+        $this->objectManager            = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $this->date                     = new \DateTime("2 May 2014");
 
         $this->runningBalanceService = new RunningBalanceService(
             $this->userRepository,
+            $this->userSettingsRepository,
             $this->bookingRepository,
             $this->balanceRepository ,
             $this->periodService,
@@ -106,9 +111,8 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testRecalculateUserRunningBalance()
     {
-        $userCreatedAt  = new \DateTime("13 March 2014");
         $user           = new User;
-        $user->setCreatedAt($userCreatedAt);
+        $userStartDate  = new \DateTime("13 March 2014");
 
         $lastMonth = new \DateTime("1 April 2014");
 
@@ -122,6 +126,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['getMonthsBetweenUserStartAndLastMonth', 'calculateMonthBalance'],
             [
                 $this->userRepository,
+                $this->userSettingsRepository,
                 $this->bookingRepository,
                 $this->balanceRepository,
                 $this->periodService,
@@ -133,16 +138,11 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $service
              ->expects($this->once())
              ->method('getMonthsBetweenUserStartAndLastMonth')
-             ->with($this->equalTo($userCreatedAt), $this->equalTo($lastMonth))
+             ->with($this->equalTo($userStartDate), $this->equalTo($lastMonth))
              ->will($this->returnValue($period));
 
         $runningBalance = new RunningBalance();
 
-        $this->balanceRepository
-             ->expects($this->once())
-             ->method('findByUser')
-             ->with($user)
-             ->will($this->returnValue($runningBalance));
 
         $service
             ->expects($this->at(1))
@@ -155,7 +155,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->with($user, $runningBalance, $dates[1]);
 
         $this->objectManager->expects($this->once())->method('flush');
-        $service->recalculateUserRunningBalance($user);
+        $service->recalculateRunningBalance($user, $runningBalance, $userStartDate);
     }
 
     public function testRecalculateIsCalledForEachUser()
@@ -164,6 +164,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['calculateMonthBalance'],
             [
                 $this->userRepository,
+                $this->userSettingsRepository,
                 $this->bookingRepository,
                 $this->balanceRepository,
                 $this->periodService,
@@ -211,11 +212,34 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $service->calculatePreviousMonthBalance();
     }
 
+    public function testRecalculateSingleUserRunningBalance()
+    {
+        $user = new User;
+        $runningBalance = new RunningBalance;
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate(new \DateTime("12 March 2014"));
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findByUser')
+            ->with($user)
+            ->will($this->returnValue($runningBalance));
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->With($user)
+            ->will($this->returnValue($userSettings));
+
+        $this->runningBalanceService->recalculateUserRunningBalance($user);
+    }
+
     public function testRecalculateAllUsersRunningBalance()
     {
-        $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['recalculateUserRunningBalance'],
+        $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['recalculateRunningBalance'],
             [
                 $this->userRepository,
+                $this->userSettingsRepository,
                 $this->bookingRepository,
                 $this->balanceRepository,
                 $this->periodService,
@@ -228,6 +252,10 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $user2 = new User;
         $runningBalance1 = new RunningBalance;
         $runningBalance2 = new RunningBalance;
+        $userSettings1 = new UserSettings;
+        $userSettings2 = new UserSettings;
+        $userSettings1->setFlexStartDate(new \DateTime("12 March 2014"));
+        $userSettings2->setFlexStartDate(new \DateTime("12 March 2014"));
 
         $users = [$user1, $user2];
 
@@ -249,13 +277,25 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->with($user2)
             ->will($this->returnValue($runningBalance2));
 
+        $this->userSettingsRepository
+             ->expects($this->at(0))
+             ->method('findOneByUser')
+             ->With($user1)
+             ->will($this->returnValue($userSettings1));
+
+        $this->userSettingsRepository
+            ->expects($this->at(1))
+            ->method('findOneByUser')
+            ->With($user2)
+            ->will($this->returnValue($userSettings2));
+
         $service->expects($this->at(0))
-            ->method('recalculateUserRunningBalance')
-            ->with($user1, $runningBalance1);
+            ->method('recalculateRunningBalance')
+            ->with($user1, $runningBalance1, $userSettings1->getFlexStartDate());
 
         $service->expects($this->at(1))
-            ->method('recalculateUserRunningBalance')
-            ->with($user2, $runningBalance2);
+            ->method('recalculateRunningBalance')
+            ->with($user2, $runningBalance2, $userSettings1->getFlexStartDate());
 
         $service->recalculateAllUsersRunningBalance();
     }

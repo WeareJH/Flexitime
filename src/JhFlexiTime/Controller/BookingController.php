@@ -50,6 +50,8 @@ class BookingController extends AbstractActionController
     public function listAction()
     {
 
+        $userSettings = $this->getServiceLocator()->get('JhFlexiTime\Entity\UserSettings');
+
         $month  = (string) $this->params()->fromQuery('m');
         $year   = (string) $this->params()->fromQuery('y');
 

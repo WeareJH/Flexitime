@@ -21,6 +21,7 @@ class RunningBalanceServiceFactory implements FactoryInterface
     {
         return new RunningBalanceService(
             $serviceLocator->get('JhUser\Repository\UserRepository'),
+            $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository'),
             $serviceLocator->get('JhFlexiTime\Repository\BookingRepository'),
             $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
             $serviceLocator->get('JhFlexiTime\Service\PeriodService'),

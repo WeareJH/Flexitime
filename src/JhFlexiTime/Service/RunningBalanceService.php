@@ -3,9 +3,11 @@
 namespace JhFlexiTime\Service;
 
 use JhFlexiTime\Entity\RunningBalance;
+use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Repository\BalanceRepositoryInterface;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use JhUser\Repository\UserRepositoryInterface;
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
 use ZfcUser\Entity\UserInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -26,6 +28,11 @@ class RunningBalanceService
      * @var \JhUser\Repository\UserRepositoryInterface
      */
     protected $userRepository;
+
+    /**
+     * @var \JhFlexiTime\Repository\UserSettingRepositoryInterface
+     */
+    protected $userSettingsRepository;
 
     /**
      * @var \JhFlexiTime\Repository\BalanceRepositoryInterface
@@ -49,6 +56,7 @@ class RunningBalanceService
 
     /**
      * @param UserRepositoryInterface $userRepository
+     * @param UserSettingsRepositoryInterface $userSettingsRepository
      * @param BookingRepositoryInterface $bookingRepository
      * @param BalanceRepositoryInterface $balanceRepository
      * @param PeriodServiceInterface $periodService
@@ -57,18 +65,20 @@ class RunningBalanceService
      */
     public function __construct(
         UserRepositoryInterface $userRepository,
+        UserSettingsRepositoryInterface $userSettingsRepository,
         BookingRepositoryInterface $bookingRepository,
         BalanceRepositoryInterface $balanceRepository,
         PeriodServiceInterface $periodService,
         ObjectManager $objectManager,
         \DateTime $date
     ) {
-        $this->userRepository       = $userRepository;
-        $this->bookingRepository    = $bookingRepository;
-        $this->balanceRepository    = $balanceRepository;
-        $this->periodService        = $periodService;
-        $this->objectManager        = $objectManager;
-        $this->date                 = $date;
+        $this->userRepository           = $userRepository;
+        $this->userSettingsRepository   = $userSettingsRepository;
+        $this->bookingRepository        = $bookingRepository;
+        $this->balanceRepository        = $balanceRepository;
+        $this->periodService            = $periodService;
+        $this->objectManager            = $objectManager;
+        $this->date                     = $date;
 
         $this->lastMonth = clone $this->date;
         $this->lastMonth->modify('first day of previous month 00:00');
@@ -95,20 +105,32 @@ class RunningBalanceService
     {
         foreach($this->userRepository->findAll(true) as $user) {
             $runningBalance = $this->balanceRepository->findByUser($user);
-            $this->recalculateUserRunningBalance($user, $runningBalance);
+            $userSettings   = $this->userSettingsRepository->findOneByUser($user);
+
+            $this->recalculateRunningBalance($user, $runningBalance, $userSettings->getFlexStartDate());
         }
     }
 
     /**
-     * Recalculate the running balance of a user
-     * From when they started entering time until now - 1month
+     * Recaulculate Individual user's running balance
      *
      * @param UserInterface $user
      */
     public function recalculateUserRunningBalance(UserInterface $user)
     {
-        $period = $this->getMonthsBetweenUserStartAndLastMonth($user->getCreatedAt(), $this->lastMonth);
         $runningBalance = $this->balanceRepository->findByUser($user);
+        $userSettings   = $this->userSettingsRepository->findOneByUser($user);
+        $this->recalculateRunningBalance($user, $runningBalance, $userSettings->getFlexStartDate());
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param RunningBalance $runningBalance
+     * @param \DateTime $startDate
+     */
+    public function recalculateRunningBalance(UserInterface $user, RunningBalance $runningBalance, \DateTime $startDate)
+    {
+        $period = $this->getMonthsBetweenUserStartAndLastMonth($startDate, $this->lastMonth);
         $runningBalance->setBalance(0);
 
         foreach($period as $date) {

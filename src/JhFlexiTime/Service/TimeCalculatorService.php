@@ -154,7 +154,14 @@ class TimeCalculatorService
     public function getRunningBalance(UserInterface $user)
     {
 
-        $balance                = $this->balanceRepository->findByUser($user)->getBalance();
+        $balanceEntity = $this->balanceRepository->findByUser($user);
+
+        if($balanceEntity) {
+            $balance = $balanceEntity->getBalance();
+        } else {
+            $balance = 0;
+        }
+
         $totalHoursThisMonth    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
         $bookedThisMonth        = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
         $monthBalance           = $bookedThisMonth - $totalHoursThisMonth;

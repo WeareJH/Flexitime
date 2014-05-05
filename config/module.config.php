@@ -150,6 +150,8 @@ return [
             'JhFlexiTime\Options\ModuleOptions'              => 'JhFlexiTime\Options\Factory\ModuleOptionsFactory',
             'JhFlexiTime\Options\BookingOptions'             => 'JhFlexiTime\Options\Factory\BookingOptionsFactory',
             'JhFlexiTime\Service\RunningBalanceService'      => 'JhFlexiTime\Service\Factory\RunningBalanceServiceFactory',
+            'JhFlexiTime\Repository\UserSettingsRepository'  => 'JhFlexiTime\Repository\Factory\UserSettingsRepositoryFactory',
+            'JhFlexiTime\Entity\UserSettings'                => 'JhFlexiTime\Entity\Factory\UserSettingsFactory',
         ],
         'aliases' => [
             'JhFlexiTime\ObjectManager'     => 'Doctrine\ORM\EntityManager',

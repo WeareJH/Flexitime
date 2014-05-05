@@ -3,7 +3,9 @@
 namespace JhFlexiTimeTest;
 
 use JhFlexiTime\Module;
+use JhUser\Entity\User;
 use Zend\ServiceManager\ServiceManager;
+use JhFlexiTime\Entity\UserSettings;
 
 /**
  * Class ModuleTest
@@ -17,6 +19,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
      * @var \Zend\ServiceManager\ServiceManager
      */
     protected $serviceLocator;
+    protected $sharedEvm;
 
     /**
      * @var \Zend\EventManager\EventManagerInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -39,7 +42,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
 
     public function testListenersAreRegistered()
     {
-        $event = $this->getEvent();
+        $event = $this->getEvent(true);
         $module = new Module();
 
         $bookingSaveListener = $this->getMockBuilder('JhFlexiTime\Listener\BookingSaveListener')
@@ -52,6 +55,15 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
             ->method('attach')
             ->with($bookingSaveListener);
 
+        $this->sharedEvm
+            ->expects($this->at(0))
+            ->method('attach')
+            ->with('ScnSocialAuth\Authentication\Adapter\HybridAuth', 'registerViaProvider.post', array($module, 'onRegister'));
+
+        $this->sharedEvm
+            ->expects($this->at(1))
+            ->method('attach')
+            ->with('ZfcUser\Service\User', 'register.post', array($module, 'onRegister'));
 
         $module->onBootstrap($event);
     }
@@ -59,7 +71,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
     /**
      * @return \Zend\EventManager\EventInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function getEvent()
+    private function getEvent($addEventManager = false)
     {
         $this->serviceLocator = new ServiceManager();
         $this->eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
@@ -69,9 +81,17 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
             ->method('getServiceManager')
             ->will($this->returnValue($this->serviceLocator));
 
-        $application->expects($this->any())
-            ->method('getEventManager')
-            ->will($this->returnValue($this->eventManager));
+        if($addEventManager) {
+            $application->expects($this->any())
+                ->method('getEventManager')
+                ->will($this->returnValue($this->eventManager));
+
+            $this->sharedEvm = $this->getMock('Zend\EventManager\SharedEventManagerInterface');
+            $this->eventManager
+                ->expects($this->once())
+                ->method('getSharedManager')
+                ->will($this->returnValue($this->sharedEvm));
+        }
 
         $event = $this->getMock('Zend\EventManager\EventInterface');
         $event->expects($this->any())->method('getTarget')->will($this->returnValue($application));
@@ -92,4 +112,31 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $module->getConsoleUsage($mockConsole));
     }
 
+    public function testUserFlexSettingsRowCreatedSuccessfully()
+    {
+        $event = $this->getEvent();
+        $mockObjectManager  = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+
+        $this->serviceLocator->setService('JhFlexiTime\ObjectManager', $mockObjectManager);
+        $user = new User();
+        $event
+            ->expects($this->once())
+            ->method('getParam')
+            ->with('user')
+            ->will($this->returnValue($user));
+
+        $userSettings = new UserSettings();
+
+        $mockObjectManager
+            ->expects($this->once())
+            ->method('persist')
+            ->with($this->isInstanceOf('JhFlexiTime\Entity\UserSettings'));
+
+        $mockObjectManager
+            ->expects($this->once())
+            ->method('flush');
+
+        $module = new Module();
+        $module->onRegister($event);
+    }
 }
