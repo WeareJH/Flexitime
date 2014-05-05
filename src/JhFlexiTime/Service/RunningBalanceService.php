@@ -90,7 +90,7 @@ class RunningBalanceService
      */
     public function calculatePreviousMonthBalance()
     {
-        foreach($this->userRepository->findAll(true) as $user) {
+        foreach ($this->userRepository->findAll(true) as $user) {
             $runningBalance = $this->balanceRepository->findByUser($user);
             $this->calculateMonthBalance($user, $runningBalance, $this->lastMonth);
         }
@@ -103,7 +103,7 @@ class RunningBalanceService
      */
     public function recalculateAllUsersRunningBalance()
     {
-        foreach($this->userRepository->findAll(true) as $user) {
+        foreach ($this->userRepository->findAll(true) as $user) {
             $runningBalance = $this->balanceRepository->findByUser($user);
             $userSettings   = $this->userSettingsRepository->findOneByUser($user);
 
@@ -133,7 +133,7 @@ class RunningBalanceService
         $period = $this->getMonthsBetweenUserStartAndLastMonth($startDate, $this->lastMonth);
         $runningBalance->setBalance(0);
 
-        foreach($period as $date) {
+        foreach ($period as $date) {
             $this->calculateMonthBalance($user, $runningBalance, $date);
         }
 

@@ -112,7 +112,7 @@ class RunningBalance implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        if(!$this->user instanceof UserInterface) {
+        if (!$this->user instanceof UserInterface) {
             throw new \Exception('User Must be an instance of \ZfcUser\Entity\UserInterface');
         }
 

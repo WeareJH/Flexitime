@@ -33,8 +33,11 @@ class RunningBalanceCliController extends AbstractActionController
      * @param RunningBalanceService $runningBalanceService
      * @param AdapterInterface $console
      */
-    public function __construct(UserRepositoryInterface $userRepository, RunningBalanceService $runningBalanceService, AdapterInterface $console)
-    {
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        RunningBalanceService $runningBalanceService,
+        AdapterInterface $console
+    ) {
         $this->userRepository           = $userRepository;
         $this->runningBalanceService    = $runningBalanceService;
         $this->console                  = $console;
@@ -51,7 +54,7 @@ class RunningBalanceCliController extends AbstractActionController
         $request    = $this->getRequest();
         $email      = $request->getParam('userEmail');
 
-        if($email) {
+        if ($email) {
             $user = $this->userRepository->findOneByEmail($email);
 
             if (!$user) {
@@ -75,7 +78,10 @@ class RunningBalanceCliController extends AbstractActionController
      */
     public function calcPrevMonthBalanceAction()
     {
-        $this->console->writeLine("Calculating Running Balance for all Users for previous month", ColorInterface::GREEN);
+        $this->console->writeLine(
+            "Calculating Running Balance for all Users for previous month",
+            ColorInterface::GREEN
+        );
         $this->runningBalanceService->calculatePreviousMonthBalance();
         $this->console->writeLine("Finished! ", ColorInterface::GREEN);
     }

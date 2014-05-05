@@ -8,7 +8,6 @@ use Zend\EventManager\EventInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use JhFlexiTime\Entity\UserSettings;
 
-
 /**
  * JhFlexiTime Module
  * 
@@ -28,10 +27,14 @@ class Module implements
         $sharedEvm = $eventManager->getSharedManager();
 
         //add roles to users created via HybridAuth
-        $sharedEvm->attach('ScnSocialAuth\Authentication\Adapter\HybridAuth', 'registerViaProvider.post', array($this, 'onRegister'));
+        $sharedEvm->attach(
+            'ScnSocialAuth\Authentication\Adapter\HybridAuth',
+            'registerViaProvider.post',
+            [$this, 'onRegister']
+        );
 
         //add roles to users created via ZfcUser
-        $sharedEvm->attach('ZfcUser\Service\User', 'register.post', array($this, 'onRegister'));
+        $sharedEvm->attach('ZfcUser\Service\User', 'register.post', [$this, 'onRegister']);
     }
 
     /**
@@ -86,9 +89,12 @@ class Module implements
     public function getConsoleUsage(Console $console)
     {
         return [
-            're-calc-balance-user <userEmail>'      => "Recalculate a User's running balance",
-            're-calc-balance-all '                  => "Recalculate all User's running balance",
-            'calc-prev-month-balance'               => "Calculate the previous month balance for all users and add it on to their running balance",
+            're-calc-balance-user <userEmail>' =>
+                "Recalculate a User's running balance",
+            're-calc-balance-all ' =>
+                "Recalculate all User's running balance",
+            'calc-prev-month-balance' =>
+                "Calculate the previous month balance for all users and add it on to their running balance",
         ];
     }
 }

@@ -58,11 +58,11 @@ class UniqueUserObject extends UniqueObject
         //has a getter on the match object
         $field  = $this->fields[0];
         $method = 'get' . ucfirst($field);
-        if(!method_exists($match, $method)) {
+        if (!method_exists($match, $method)) {
             return false;
         }
 
-        if($this->user === $match->getUser() && $value == $match->$method()) {
+        if ($this->user === $match->getUser() && $value == $match->$method()) {
             return true;
         }
 

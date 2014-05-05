@@ -129,23 +129,6 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return array(
-            /*'date' => array(
-                'validators' => array(
-                    array(
-                        'name' => 'JhFlexiTime\Validator\DoctrineUniqueObject',
-                        'options' => array(
-                            'user'              => $this->getUser(),
-                            'object_repository' => $this->getEntityManager()->getRepository('JhFlexiTime\Entity\Booking'),
-                            'object_manager'    => $this->getEntityManager(),
-                            'fields' => array('date', 'user'),
-                            'messages' => array(
-                                'objectNotUnique' => 'Sorry, You have already booked time for this day, Try editing it instead'
-                            ),
-                        ),
-                    ),
-                )
-            ),*/
-
             'notes' => array(
                 'required'  => false,
                 'filters'   => array(

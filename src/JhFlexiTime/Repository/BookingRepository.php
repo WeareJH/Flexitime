@@ -132,7 +132,7 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         $totalHoursBookedThisMonth = $qb->getQuery()->getSingleScalarResult();
 
-        if(null === $totalHoursBookedThisMonth) {
+        if (null === $totalHoursBookedThisMonth) {
             $totalHoursBookedThisMonth = 0;
         }
 
@@ -168,7 +168,7 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         $totalHoursBookedThisMonth = $qb->getQuery()->getSingleScalarResult();
 
-        if(null === $totalHoursBookedThisMonth) {
+        if (null === $totalHoursBookedThisMonth) {
             $totalHoursBookedThisMonth = 0;
         }
 
@@ -199,7 +199,7 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         $totalHoursBookedThisPeriod = $qb->getQuery()->getSingleScalarResult();
 
-        if(null === $totalHoursBookedThisPeriod) {
+        if (null === $totalHoursBookedThisPeriod) {
             $totalHoursBookedThisPeriod = 0;
         }
 

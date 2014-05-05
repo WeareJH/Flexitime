@@ -15,10 +15,10 @@ class BookingInputFilter extends InputFilter
 {
 
     //TODO: Get from module config
-    protected $config = array(
+    protected $config = [
         'date-format'   => 'd-m-Y',
         'step'          => '900', //15 x 60 - 15 Min's
-    );
+    ];
 
     /**
      * @param ValidatorInterface $uniqueBookingValidator
@@ -30,145 +30,145 @@ class BookingInputFilter extends InputFilter
     ) {
 
         $this->add(
-            array(
+            [
                 'name'      => 'date',
                 'required'  => true,
-                'filters'   => array(
-                    array(
+                'filters'   => [
+                    [
                         'name' => 'JhFlexiTime\Filter\DateTimeFormatter',
-                        'options' => array(
+                        'options' => [
                             'format' => 'd-m-Y',
-                        ),
-                    ),
-                ),
-                'validators' => array(
-                    array(
+                        ],
+                    ],
+                ],
+                'validators' => [
+                    [
                         'name'      => 'Date',
-                        'options'   => array(
+                        'options'   => [
                             'format' => 'd-m-Y',
-                        ),
-                    ),
+                        ],
+                    ],
                     $uniqueBookingValidator,
-                ),
-            )
+                ],
+            ]
         );
 
-        $startTimeValidators = array(
-            array(
+        $startTimeValidators = [
+            [
                 'name'      => 'Date',
-                'options'   => array(
+                'options'   => [
                     'format' => 'H:i',
-                ),
-            ),
-            array(
+                ],
+            ],
+            [
                 'name'      => 'DateStep',
-                'options'   => array(
+                'options'   => [
                     'format'    => 'H:i',
                     'baseValue' => '00:00',
                     'step'      => new \DateInterval("PT{$this->config['step']}S"),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
-        if($bookingOptions->getMinStartTime()) {
-            $startTimeValidators[] = array(
+        if ($bookingOptions->getMinStartTime()) {
+            $startTimeValidators[] = [
                 'name'      => 'GreaterThan',
-                'options'   => array(
+                'options'   => [
                     'min'       => $bookingOptions->getMinStartTime(),
                     'inclusive' => true,
-                ),
-            );
+                ],
+            ];
         }
 
-        if($bookingOptions->getMaxStartTime()) {
-            $startTimeValidators[] = array(
+        if ($bookingOptions->getMaxStartTime()) {
+            $startTimeValidators[] = [
                 'name'      => 'LessThan',
-                'options'   => array(
+                'options'   => [
                     'max'       => $bookingOptions->getMaxStartTime(),
                     'inclusive' => true,
-                ),
-            );
+                ],
+            ];
         }
 
         $this->add(
-            array(
+            [
                 'name'      => 'startTime',
                 'required'  => true,
-                'filters'   => array(
-                    array('name' => 'StringTrim')
-                ),
+                'filters'   => [
+                    ['name' => 'StringTrim']
+                ],
                 'validators' => $startTimeValidators,
-            )
+            ]
         );
 
-        $endTimeValidators = array(
-            array(
+        $endTimeValidators = [
+            [
                 'name'      => 'Date',
-                'options'   => array(
+                'options'   => [
                     'format' => 'H:i',
-                ),
-            ),
-            array(
+                ],
+            ],
+            [
                 'name'      => 'DateStep',
-                'options'   => array(
+                'options'   => [
                     'format'    => 'H:i',
                     'baseValue' => '00:00',
                     'step'      => new \DateInterval("PT{$this->config['step']}S"),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
-        if($bookingOptions->getMinEndTime()) {
-            $endTimeValidators[] = array(
+        if ($bookingOptions->getMinEndTime()) {
+            $endTimeValidators[] = [
                 'name'      => 'GreaterThan',
-                'options'   => array(
+                'options'   => [
                     'min'       => $bookingOptions->getMinEndTime(),
                     'inclusive' => true,
-                ),
-            );
+                ],
+            ];
         }
 
-        if($bookingOptions->getMaxEndTime()) {
-            $endTimeValidators[] = array(
+        if ($bookingOptions->getMaxEndTime()) {
+            $endTimeValidators[] = [
                 'name'      => 'LessThan',
-                'options'   => array(
+                'options'   => [
                     'max'       => $bookingOptions->getMaxEndTime(),
                     'inclusive' => true,
-                ),
-            );
+                ],
+            ];
         }
 
         $this->add(
-            array(
+            [
                 'name'      => 'endTime',
                 'required'  => true,
-                'filters'   => array(
-                    array('name' => 'StringTrim')
-                ),
+                'filters'   => [
+                    ['name' => 'StringTrim']
+                ],
                 'validators' => $endTimeValidators,
-            )
+            ]
         );
 
         //notes
         $this->add(
-            array(
+            [
                 'name'      => 'notes',
                 'required'  => false,
-                'filters'   => array(
-                    array('name' => 'StripTags'),
-                    array('name' => 'StringTrim')
-                ),
-                'validators' => array(
-                    array(
+                'filters'   => [
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
+                ],
+                'validators' => [
+                    [
                         'name'    => 'StringLength',
-                        'options' => array(
+                        'options' => [
                             'encoding' => 'UTF-8',
                             'min'      => 1,
                             'max'      => 512,
-                        ),
-                    ),
-                ),
-            )
+                        ],
+                    ],
+                ],
+            ]
         );
     }
 }

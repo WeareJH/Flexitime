@@ -75,9 +75,9 @@ class BookingOptions extends AbstractOptions implements BookingOptionsInterface
     public function __set($key, $value)
     {
         $property = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
-        if(property_exists($this, $property)) {
+        if (property_exists($this, $property)) {
 
-            if($this->validateTime($value)) {
+            if ($this->validateTime($value)) {
                 $this->$property = $value;
             } else {
                 throw new \InvalidArgumentException(sprintf("%s should be a 24 hour time in the format HH:MM", $key));
@@ -95,14 +95,14 @@ class BookingOptions extends AbstractOptions implements BookingOptionsInterface
      */
     public function validateTime($time)
     {
-        if($time === false) {
+        if ($time === false) {
             return true;
         }
 
-        if(preg_match("/(2[0-3]|[01][0-9]):[0-5][0-9]/", $time)) {
+        if (preg_match("/(2[0-3]|[01][0-9]):[0-5][0-9]/", $time)) {
             return true;
         }
 
         return false;
     }
-} 
+}

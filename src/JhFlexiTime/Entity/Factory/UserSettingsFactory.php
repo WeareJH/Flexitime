@@ -22,14 +22,14 @@ class UserSettingsFactory implements FactoryInterface
     {
         $userService = $serviceLocator->get('zfcuser_auth_service');
 
-        if(!$userService->hasIdentity()) {
+        if (!$userService->hasIdentity()) {
             throw new \InvalidArgumentException("User is not authenticated");
         }
 
         $userSettingsRepository = $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository');
         $userSettings           = $userSettingsRepository->findOneByUser($userService->getIdentity());
 
-        if(!$userSettings) {
+        if (!$userSettings) {
             throw new \InvalidArgumentException("User does not have a settings row");
         }
 

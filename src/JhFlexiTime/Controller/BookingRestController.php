@@ -146,6 +146,4 @@ class BookingRestController extends AbstractRestfulController
             'weekTotals'    => $this->timeCalculatorService->getWeekTotals($user, $booking->getDate())
         ));
     }
-
-
 }

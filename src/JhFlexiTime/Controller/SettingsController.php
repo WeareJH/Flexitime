@@ -40,4 +40,4 @@ class SettingsController extends AbstractActionController
             'settings'  => $this->bookingOptions,
         ));
     }
-} 
+}

@@ -58,7 +58,4 @@ interface BookingRepositoryInterface
      * @return float
      */
     public function getMonthBookedToDateTotalByUser(UserInterface $user, \DateTime $date);
-
-
-
 }

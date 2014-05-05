@@ -121,6 +121,4 @@ class BookingAdminController extends AbstractActionController
 
         return $viewModel;
     }
-
-
 }

@@ -64,9 +64,12 @@ class BookingSaveListener extends AbstractListenerAggregate
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents      = $events->getSharedManager();
-        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', array($this, 'updateBalance'), 100);
-        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', array($this, 'updateBalance'), 100);
-        $this->listeners[] = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', array($this, 'updateBalance'), 100);
+        $this->listeners[]
+            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', [$this, 'updateBalance'], 100);
+        $this->listeners[]
+            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', [$this, 'updateBalance'], 100);
+        $this->listeners[]
+            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', [$this, 'updateBalance'], 100);
     }
 
     /**
@@ -77,7 +80,7 @@ class BookingSaveListener extends AbstractListenerAggregate
     {
         $booking = $e->getParam('booking');
 
-        if($this->isDateInPreviousMonth($booking->getDate(), $this->date)) {
+        if ($this->isDateInPreviousMonth($booking->getDate(), $this->date)) {
             $this->updateRunningBalance($booking, $this->getRunningBalance($booking->getUser()));
         }
 

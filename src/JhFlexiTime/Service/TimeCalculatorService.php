@@ -75,17 +75,17 @@ class TimeCalculatorService
 
         if ($period < $firstDayOfMonth) {
 
-            $totalWorkedHours       = $this->bookingRepository->getMonthBookedTotalByUser($user, $period);
-            $hoursAvailableToDate   = $this->periodService->getTotalHoursInMonth($period);
-            $balance                = ($totalWorkedHours - $hoursAvailableToDate);
+            $tWorkedHours   = $this->bookingRepository->getMonthBookedTotalByUser($user, $period);
+            $hoursToDate    = $this->periodService->getTotalHoursInMonth($period);
+            $balance        = ($tWorkedHours - $hoursToDate);
 
         } elseif ($period->format('m-Y') === $firstDayOfMonth->format('m-Y')) {
 
             //get the amount of hours booked between the first day of the month
             //and the current date
-            $totalWorkedHours       = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
-            $hoursAvailableToDate   = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
-            $balance                = ($totalWorkedHours - $hoursAvailableToDate);
+            $tWorkedHours   = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
+            $hoursToDate    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
+            $balance        = ($tWorkedHours - $hoursToDate);
         } else {
             $balance = 0;
         }
@@ -119,14 +119,14 @@ class TimeCalculatorService
      */
     public function getWeekTotals(UserInterface $user, \DateTime $period)
     {
-        $week           = $this->periodService->getFirstAndLastDayOfWeek($period);
-        $totalWorked    = $this->bookingRepository->getTotalBookedBetweenByUser($user, $week['firstDay'], $week['lastDay']);
-        $totalHours     = $this->periodService->getNumWorkingDaysInWeek($period) * $this->options->getHoursInDay();
+        $week    = $this->periodService->getFirstAndLastDayOfWeek($period);
+        $tWorked = $this->bookingRepository->getTotalBookedBetweenByUser($user, $week['firstDay'], $week['lastDay']);
+        $tHours  = $this->periodService->getNumWorkingDaysInWeek($period) * $this->options->getHoursInDay();
 
         return [
-            'weekTotalWorkedHours'  => $totalWorked,
-            'weekTotalHours'        => $totalHours,
-            'balance'               => $totalWorked - $totalHours,
+            'weekTotalWorkedHours'  => $tWorked,
+            'weekTotalHours'        => $tHours,
+            'balance'               => $tWorked - $tHours,
         ];
     }
 
@@ -156,16 +156,16 @@ class TimeCalculatorService
 
         $balanceEntity = $this->balanceRepository->findByUser($user);
 
-        if($balanceEntity) {
+        if ($balanceEntity) {
             $balance = $balanceEntity->getBalance();
         } else {
             $balance = 0;
         }
 
-        $totalHoursThisMonth    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
-        $bookedThisMonth        = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
-        $monthBalance           = $bookedThisMonth - $totalHoursThisMonth;
-        $balance                += $monthBalance;
+        $totalHoursThisMonth = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
+        $bookedThisMonth     = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
+        $monthBalance        = $bookedThisMonth - $totalHoursThisMonth;
+        $balance             += $monthBalance;
 
         return floatval(number_format($balance, 2));
     }

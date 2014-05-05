@@ -47,7 +47,7 @@ class PeriodService implements PeriodServiceInterface
      */
     public function getPeriod(\DateTime $date, $type)
     {
-        switch($type) {
+        switch ($type) {
             case self::MONTH_TO_DATE:
                 return new \DatePeriod(
                     new \DateTime(sprintf('first day of %s', $date->format('F Y'))),
@@ -167,11 +167,11 @@ class PeriodService implements PeriodServiceInterface
     {
         $weeks = $this->getWeeksInMonth($date);
 
-        foreach($weeks as $week) {
+        foreach ($weeks as $week) {
             $firstDayOfWeek = reset($week);
             $lastDayOfWeek  = end($week);
 
-            if($date >= $firstDayOfWeek && $date <= $lastDayOfWeek) {
+            if ($date >= $firstDayOfWeek && $date <= $lastDayOfWeek) {
                 return $week;
             }
         }
@@ -220,8 +220,8 @@ class PeriodService implements PeriodServiceInterface
     public function removeNonWorkingDays(array $dates)
     {
         $workingDays = [];
-        foreach($dates as $day) {
-            if($day->format('N') < 6) {
+        foreach ($dates as $day) {
+            if ($day->format('N') < 6) {
                 $workingDays[] = $day;
             }
         }
@@ -248,13 +248,13 @@ class PeriodService implements PeriodServiceInterface
         foreach ($period as $day) {
             $dayNum = $day->format('N');
 
-            if(!isset($weeks[$weekCounter])) {
+            if (!isset($weeks[$weekCounter])) {
                 $weeks[$weekCounter] = [$day];
             } else {
                 $weeks[$weekCounter][] = $day;
             }
 
-            if($dayNum == 7) {
+            if ($dayNum == 7) {
                 $weekCounter++;
             }
         }
