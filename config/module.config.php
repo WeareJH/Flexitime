@@ -2,6 +2,8 @@
 
 namespace JhFlexiTime;
 
+use JhFlexiTime\Install\Installer;
+
 return [
     'doctrine' => [
         'driver' => [
@@ -152,6 +154,12 @@ return [
             'JhFlexiTime\Service\RunningBalanceService'      => 'JhFlexiTime\Service\Factory\RunningBalanceServiceFactory',
             'JhFlexiTime\Repository\UserSettingsRepository'  => 'JhFlexiTime\Repository\Factory\UserSettingsRepositoryFactory',
             'JhFlexiTime\Entity\UserSettings'                => 'JhFlexiTime\Entity\Factory\UserSettingsFactory',
+            'JhFlexiTime\Install\Installer' => function($sl) {
+                $userRepository = $sl->get('Jhuser\Repository\UserRepository');
+                $userSettingsRepository = $sl->get('JhFlexiTime\Repository\UserSettingsRepository');
+                return new Installer($userRepository, $userSettingsRepository);
+            },
+
         ],
         'aliases' => [
             'JhFlexiTime\ObjectManager'     => 'Doctrine\ORM\EntityManager',
@@ -159,7 +167,6 @@ return [
             'BookingOptions'                => 'JhFlexiTime\Options\BookingOptions',
         ],
         'invokables' => [
-            'JhFlexiTime\Install\Installer' => 'JhFlexiTime\Install\Installer'
         ],
     ],
 

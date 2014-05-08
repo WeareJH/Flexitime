@@ -48,7 +48,7 @@ class UserSettings implements JsonSerializable
     /**
      *
      * @param \ZfcUser\Entity\UserInterface $user
-     * @return \JhFlexiTime\Entity\Booking
+     * @return self
      */
     public function setUser(UserInterface $user)
     {
