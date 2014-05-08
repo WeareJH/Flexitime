@@ -7,6 +7,7 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use JhFlexiTime\Entity\UserSettings;
+use JhHub\Install\HubInstallable;
 
 /**
  * JhFlexiTime Module
@@ -15,7 +16,8 @@ use JhFlexiTime\Entity\UserSettings;
  */
 class Module implements
     ConfigProviderInterface,
-    AutoloaderProviderInterface
+    AutoloaderProviderInterface,
+    HubInstallable
 {
 
     public function onBootstrap(EventInterface $e)
@@ -96,5 +98,13 @@ class Module implements
             'calc-prev-month-balance' =>
                 "Calculate the previous month balance for all users and add it on to their running balance",
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getInstallService()
+    {
+        return 'JhFlexiTime\Install\Installer';
     }
 }

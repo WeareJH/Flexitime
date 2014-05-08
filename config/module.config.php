@@ -158,6 +158,9 @@ return [
             'FlexiOptions'                  => 'JhFlexiTime\Options\ModuleOptions',
             'BookingOptions'                => 'JhFlexiTime\Options\BookingOptions',
         ],
+        'invokables' => [
+            'JhFlexiTime\Install\Installer' => 'JhFlexiTime\Install\Installer'
+        ],
     ],
 
     //template
