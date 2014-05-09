@@ -154,19 +154,12 @@ return [
             'JhFlexiTime\Service\RunningBalanceService'      => 'JhFlexiTime\Service\Factory\RunningBalanceServiceFactory',
             'JhFlexiTime\Repository\UserSettingsRepository'  => 'JhFlexiTime\Repository\Factory\UserSettingsRepositoryFactory',
             'JhFlexiTime\Entity\UserSettings'                => 'JhFlexiTime\Entity\Factory\UserSettingsFactory',
-            'JhFlexiTime\Install\Installer' => function($sl) {
-                $userRepository = $sl->get('Jhuser\Repository\UserRepository');
-                $userSettingsRepository = $sl->get('JhFlexiTime\Repository\UserSettingsRepository');
-                return new Installer($userRepository, $userSettingsRepository);
-            },
-
+            'JhFlexiTime\Install\Installer'                  => 'JhFlexiTime\Install\Factory\InstallerFactory',
         ],
         'aliases' => [
             'JhFlexiTime\ObjectManager'     => 'Doctrine\ORM\EntityManager',
             'FlexiOptions'                  => 'JhFlexiTime\Options\ModuleOptions',
             'BookingOptions'                => 'JhFlexiTime\Options\BookingOptions',
-        ],
-        'invokables' => [
         ],
     ],
 

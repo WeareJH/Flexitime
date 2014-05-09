@@ -7,7 +7,7 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use JhFlexiTime\Entity\UserSettings;
-use JhHub\Install\HubInstallable;
+use JhInstaller\Install\Installable;
 
 /**
  * JhFlexiTime Module
@@ -17,7 +17,7 @@ use JhHub\Install\HubInstallable;
 class Module implements
     ConfigProviderInterface,
     AutoloaderProviderInterface,
-    HubInstallable
+    Installable
 {
 
     public function onBootstrap(EventInterface $e)
