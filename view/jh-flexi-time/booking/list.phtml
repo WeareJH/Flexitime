@@ -18,10 +18,10 @@ $this->headTitle($title); ?>
             <?php $totals = $this->bookings['totals']; ?>
             <div id="totals-brief">
                 <p>
-                    <span class="worked-to-date"><?php echo $this->numberFormat($totals['monthTotalWorkedHours']); ?></span>&nbsp;&nbsp;/&nbsp;&nbsp;
-                    <span class="month-available"><?php echo $this->numberFormat($totals['monthTotalHours']); ?></span>&nbsp; &bull; &nbsp;
-                    <span class="balance-month"><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $this->numberFormat($totals['monthBalance'])); ?> </span> &nbsp; &bull; &nbsp;
-                    <span class="balance-running"><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $this->numberFormat($totals['runningBalance'])); ?> </span>
+                    <span class="worked-to-date"><?php echo $totals['monthTotalWorkedHours']; ?></span>&nbsp;&nbsp;/&nbsp;&nbsp;
+                    <span class="month-available"><?php echo $totals['monthTotalHours']; ?></span>&nbsp; &bull; &nbsp;
+                    <span class="balance-month"><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['monthBalance']); ?> </span> &nbsp; &bull; &nbsp;
+                    <span class="balance-running"><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['runningBalance']); ?> </span>
                 </p>
             </div>
         </div>
@@ -45,11 +45,11 @@ $this->headTitle($title); ?>
                 <tbody>
                     <tr>
                         <td><?php echo $this->translate('Hours Worked this Month') ?></td>
-                        <td class="worked-to-date total-right"><?php echo $totals['monthTotalWorkedHours']; ?> / <?php echo $this->numberFormat($totals['monthTotalHours']); ?></td>
+                        <td class="worked-to-date total-right"><?php echo $totals['monthTotalWorkedHours']; ?> / <?php echo $totals['monthTotalHours']; ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->translate('Hours Remaining this Month') ?></td>
-                        <td class="worked-to-date total-right"><?php echo (float) $totals['monthRemainingHours']; ?></td>
+                        <td class="total-right"><?php echo (float) $totals['monthRemainingHours']; ?></td>
                     </tr>
 
                     <tr>

@@ -87,7 +87,7 @@ class PeriodService implements PeriodServiceInterface
 
         $monthTotalHours = $count * $this->options->getHoursInDay();
         //round to 2 decimal places
-        return number_format($monthTotalHours, 2, '.', '');
+        return (float) number_format($monthTotalHours, 2, '.', '');
     }
 
     /**
