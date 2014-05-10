@@ -62,7 +62,10 @@ class Installer implements InstallerInterface
     {
 
         foreach ($this->userRepository->findAll() as $user) {
-            $console->writeLine("Checking if user '%s' has a user_flex_settings row..", Color::GRAY);
+            $console->writeLine(
+                sprintf("Checking if user '%s' has a user_flex_settings row..", $user->getEmail()),
+                Color::YELLOW
+            );
             //try locate user settings
 
             try {
@@ -80,13 +83,18 @@ class Installer implements InstallerInterface
                 $userSettings = new UserSettings();
                 $userSettings
                     ->setUser($user)
-                    ->setDefaultStartTime("09:00")
-                    ->setDefaultEndTime("17:00")
+                    ->setDefaultStartTime(new \DateTime("09:00"))
+                    ->setDefaultEndTime(new \DateTime("17:00"))
                     ->setFlexStartDate(new \DateTime);
+
+                $this->objectManager->persist($userSettings);
+
             } else {
                 $console->writeLine("Row exists. Skipping", Color::YELLOW);
             }
         }
+
+        $this->objectManager->flush();
     }
 
     /**
