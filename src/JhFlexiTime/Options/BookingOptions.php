@@ -12,8 +12,6 @@ use Zend\Stdlib\AbstractOptions;
 class BookingOptions extends AbstractOptions implements BookingOptionsInterface
 {
 
-    protected $__strictMode__ = false;
-
     /**
      * @var false|string
      */

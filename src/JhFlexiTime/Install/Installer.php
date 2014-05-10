@@ -56,24 +56,27 @@ class Installer implements InstallerInterface
 
     /**
      * @param AdapterInterface $console
-     * @throws \JhHub\Install\Exception
+     * @throws \JhInstaller\Install\Exception
      */
     public function install(AdapterInterface $console)
     {
 
-        foreach($this->userRepository->findAll() as $user) {
-            $console->writeLine("Checking if user '%s' has a user_flex_settings row..",  Color::GRAY);
+        foreach ($this->userRepository->findAll() as $user) {
+            $console->writeLine("Checking if user '%s' has a user_flex_settings row..", Color::GRAY);
             //try locate user settings
 
             try {
                 $userSettings = $this->userSettingsRepository->findOneByUser($user);
-            } catch(DBALException $e) {
-                $this->errors[] = sprintf("The Database table has not been created. Be sure to run the schema tool. Message: %s", $e->getMessage());
+            } catch (DBALException $e) {
+                $this->errors[] = sprintf(
+                    "The Database table has not been created. Be sure to run the schema tool. Message: %s",
+                    $e->getMessage()
+                );
                 throw new InstallException();
             }
 
-            if(!$userSettings) {
-                $console->writeLine("Row does not exist. Creating... ",  Color::YELLOW);
+            if (!$userSettings) {
+                $console->writeLine("Row does not exist. Creating... ", Color::YELLOW);
                 $userSettings = new UserSettings();
                 $userSettings
                     ->setUser($user)
@@ -81,7 +84,7 @@ class Installer implements InstallerInterface
                     ->setDefaultEndTime("17:00")
                     ->setFlexStartDate(new \DateTime);
             } else {
-                $console->writeLine("Row exists. Skipping",  Color::YELLOW);
+                $console->writeLine("Row exists. Skipping", Color::YELLOW);
             }
         }
     }
