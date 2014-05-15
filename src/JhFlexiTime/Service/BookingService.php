@@ -10,7 +10,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
 use JhFlexiTime\Options\ModuleOptions;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Zend\Stdlib\Hydrator\HydratorInterface;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
@@ -61,7 +61,7 @@ class BookingService
      * @param BookingRepositoryInterface $bookingRepository
      * @param ObjectManager $objectManager
      * @param PeriodServiceInterface $periodService
-     * @param DoctrineHydrator $doctrineHydrator
+     * @param HydratorInterface $doctrineHydrator
      * @param InputFilterInterface $bookingInputFilter
      */
     public function __construct(
@@ -69,7 +69,7 @@ class BookingService
         BookingRepositoryInterface $bookingRepository,
         ObjectManager $objectManager,
         PeriodServiceInterface $periodService,
-        DoctrineHydrator $doctrineHydrator,
+        HydratorInterface $doctrineHydrator,
         InputFilterInterface $bookingInputFilter
     ) {
         $this->options              = $options;
@@ -120,17 +120,17 @@ class BookingService
     {
         try {
             $booking = $this->getBookingByUserAndId($user, $id);
-        } catch (Exception $e) {
-            return array(
-                'messages' => array('Booking Does Not Exist')
-            );
+        } catch (\Exception $e) {
+            return [
+                'messages' => ['Booking Does Not Exist']
+            ];
         }
 
         $this->inputFilter->setData($data);
         if (!$this->inputFilter->isValid()) {
-            return array(
+            return [
                 'messages' => $this->inputFilter->getMessages(),
-            );
+            ];
         }
 
         $this->hydrator->hydrate($this->inputFilter->getValues(), $booking);
@@ -138,9 +138,9 @@ class BookingService
         $totalHours = $this->periodService->calculateHourDiff($booking->getStartTime(), $booking->getEndTime());
         $booking->setTotal($totalHours);
 
-        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, array('booking' => $booking));
+        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, ['booking' => $booking]);
         $this->objectManager->flush();
-        $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, array('booking' => $booking));
+        $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, ['booking' => $booking]);
 
         return $booking;
     }
