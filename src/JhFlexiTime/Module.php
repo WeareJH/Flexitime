@@ -95,7 +95,7 @@ class Module implements
                 "Recalculate all User's running balance",
             'calc-prev-month-balance' =>
                 "Calculate the previous month balance for all users and add it on to their running balance",
-            'set-user-starting-balance <userEmail> <balance>' =>
+            'set user init-balance <userEmail> <balance>' =>
                 "Set a user's starting balance"
         ];
     }
