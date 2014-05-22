@@ -105,9 +105,10 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $module = new Module();
 
         $expected = [
-            're-calc-balance-user <userEmail>'      => "Recalculate a User's running balance",
-            're-calc-balance-all '                  => "Recalculate all User's running balance",
-            'calc-prev-month-balance'               => "Calculate the previous month balance for all users and add it on to their running balance",
+            're-calc-balance-user <userEmail>'                  => "Recalculate a User's running balance",
+            're-calc-balance-all '                              => "Recalculate all User's running balance",
+            'calc-prev-month-balance'                           => "Calculate the previous month balance for all users and add it on to their running balance",
+            'set-user-starting-balance <userEmail> <balance>'   => "Set a user's starting balance"
         ];
         $this->assertSame($expected, $module->getConsoleUsage($mockConsole));
     }

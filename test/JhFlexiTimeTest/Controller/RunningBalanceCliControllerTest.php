@@ -179,7 +179,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->once())
-            ->method('setUserStatingBalance')
+            ->method('setUserStartingBalance')
             ->with($user, $balance);
 
         $this->runningBalanceService
@@ -193,8 +193,8 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
         $this->assertModuleName('jhflexitime');
         $this->assertControllerName('jhflexitime\controller\runningbalancecli');
         $this->assertControllerClass('runningbalanceclicontroller');
-        $this->assertActionName('set-user-stating-balance');
-        $this->assertMatchedRouteName('set-user-stating-balance');
+        $this->assertActionName('set-user-starting-balance');
+        $this->assertMatchedRouteName('set-user-starting-balance');
     }
 
     public function testSetUserStartingBalanceThrowsExceptionIfUserNotExist()
@@ -210,7 +210,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->never())
-            ->method('setUserStatingBalance');
+            ->method('setUserStartingBalance');
 
         $this->runningBalanceService
             ->expects($this->never())
@@ -222,7 +222,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
         $this->assertModuleName('jhflexitime');
         $this->assertControllerName('jhflexitime\controller\runningbalancecli');
         $this->assertControllerClass('runningbalanceclicontroller');
-        $this->assertActionName('set-user-stating-balance');
-        $this->assertMatchedRouteName('set-user-stating-balance');
+        $this->assertActionName('set-user-starting-balance');
+        $this->assertMatchedRouteName('set-user-starting-balance');
     }
 }

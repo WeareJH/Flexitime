@@ -92,7 +92,7 @@ class RunningBalanceCliController extends AbstractActionController
      *
      * @throws \RuntimeException
      */
-    public function setUserStatingBalanceAction()
+    public function setUserStartingBalanceAction()
     {
         $request    = $this->getRequest();
         $balance    = $request->getParam('balance');
@@ -104,7 +104,7 @@ class RunningBalanceCliController extends AbstractActionController
             throw new \RuntimeException(sprintf('User with email: "%s" could not be found', $email));
         }
 
-        $this->runningBalanceService->setUserStatingBalance($user, $balance);
+        $this->runningBalanceService->setUserStartingBalance($user, $balance);
         //recalculate balance
         $this->runningBalanceService->recalculateUserRunningBalance($user);
         $this->console->writeLine(

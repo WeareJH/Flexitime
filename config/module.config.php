@@ -129,12 +129,12 @@ return [
                         ],
                     ],
                 ],
-                'set-user-stating-balance' => [
+                'set-user-starting-balance' => [
                     'options'   => [
                         'route'     => 'set user init-balance <userEmail> <balance>',
                         'defaults'  => [
                             'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
-                            'action'     => 'set-user-stating-balance'
+                            'action'     => 'set-user-starting-balance'
                         ],
                         'constraints' => array(
                             //regex to match decimal and floats

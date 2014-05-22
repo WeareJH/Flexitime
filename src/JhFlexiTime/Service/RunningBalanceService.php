@@ -193,7 +193,7 @@ class RunningBalanceService
      * @param UserInterface $user
      * @param float $balance
      */
-    public function setUserStatingBalance(UserInterface $user, $balance)
+    public function setUserStartingBalance(UserInterface $user, $balance)
     {
         $settings = $this->userSettingsRepository->findOneByUser($user);
         $settings->setStartingBalance($balance);

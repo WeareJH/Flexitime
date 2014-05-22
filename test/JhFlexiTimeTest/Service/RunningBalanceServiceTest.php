@@ -312,7 +312,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($userSettings));
 
         $this->objectManager->expects($this->once())->method('flush');
-        $this->runningBalanceService->setUserStatingBalance($user, $balance);
+        $this->runningBalanceService->setUserStartingBalance($user, $balance);
         $this->assertEquals(10, $userSettings->getStartingBalance());
     }
 }
