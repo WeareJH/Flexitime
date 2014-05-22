@@ -17,7 +17,6 @@
                         <a class="m-pager" href="#" ng-click="updatePeriod(pagination.next.m, pagination.next.y, user)"><span class="glyphicon glyphicon-chevron-right"></span></a>
                     </h1>
 
-                    <?php $totals = $this->time['totals']; ?>
                     <div id="totals-brief">
                         <p>
                             <span class="worked-to-date">{{ totals.monthTotalWorkedHours }}</span>&nbsp;&nbsp;/&nbsp;&nbsp;
@@ -83,6 +82,10 @@
                             <td class="worked-to-date total-right">{{ totals.monthTotalWorkedHours }}</td>
                         </tr>
                         <tr>
+                            <td><?php echo $this->translate('Hours Remaining this Month') ?></td>
+                            <td class="total-right">{{ totals.monthRemainingHours }}</td>
+                        </tr>
+                        <tr>
                             <td><?php echo $this->translate('Balance') ?></td>
                             <td class="balance-month total-right">
                                 <span ng-class="(totals.monthBalance >= 0) ? 'balance-success' : 'balance-danger'">
@@ -100,14 +103,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td><?php echo $this->translate('Running balance') ?></td>
-                            <td class="balance-running total-right">
+                            <tr>
+                                <td><?php echo $this->translate('Running Balance') ?></td>
+                                <td class="balance-running total-right">
                                 <span ng-class="(totals.runningBalance >= 0) ? 'balance-success' : 'balance-danger'">
                                     <b>{{ totals.runningBalance | signTotal }}</b>
                                 </span>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $this->translate('Balance  Forward') ?></td>
+                                <td class="balance-running total-right">
+                                <span ng-class="(totals.balanceForward >= 0) ? 'balance-success' : 'balance-danger'">
+                                    <b>{{ totals.balanceForward | signTotal }}</b>
+                                </span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
