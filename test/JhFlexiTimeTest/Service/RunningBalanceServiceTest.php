@@ -40,11 +40,6 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testTrue()
-    {
-        $this->assertTrue(true);
-    }
-
     /**
      * @param \DateTime $start
      * @param \DateTime $end
@@ -184,7 +179,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->userRepository
              ->expects($this->once())
              ->method('findAll')
-             ->with(true)
+             ->with(false)
              ->will($this->returnValue($users));
 
         $this->balanceRepository
@@ -261,7 +256,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->userRepository
              ->expects($this->once())
              ->method('findAll')
-             ->with(true)
+             ->with(false)
              ->will($this->returnValue($users));
 
         $this->balanceRepository
