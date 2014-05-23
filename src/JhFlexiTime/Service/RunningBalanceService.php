@@ -103,7 +103,7 @@ class RunningBalanceService
      */
     public function recalculateAllUsersRunningBalance()
     {
-        foreach ($this->userRepository->findAll(true) as $user) {
+        foreach ($this->userRepository->findAll(false) as $user) {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
             $userSettings   = $this->userSettingsRepository->findOneByUser($user);
 
