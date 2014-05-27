@@ -32,4 +32,4 @@ class BookingFormTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($form->has("time"));
         $this->assertTrue($form->has("submit"));
     }
-} 
+}

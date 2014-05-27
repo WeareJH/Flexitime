@@ -56,5 +56,4 @@ class GetSetDateTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($date, $this->traitObject->getDate());
         $this->assertEquals($date, $this->traitObject->getDate("Mar", 2014));
     }
-
-} 
+}

@@ -40,6 +40,9 @@ class UserSettingsRepositoryFactoryTest extends \PHPUnit_Framework_TestCase
 
 
         $factory = new UserSettingsRepositoryFactory();
-        $this->assertInstanceOf('JhFlexiTime\Repository\UserSettingsRepository', $factory->createService($serviceLocator));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Repository\UserSettingsRepository',
+            $factory->createService($serviceLocator)
+        );
     }
 }

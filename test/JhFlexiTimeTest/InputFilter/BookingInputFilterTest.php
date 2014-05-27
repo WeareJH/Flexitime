@@ -63,8 +63,12 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
      * @param string $value
      * @dataProvider optionsProvider
      */
-    public function testInputFilterFailsIfMinMaxTimeOptionsArePresent(array $input, array $messages = null, $method, $value)
-    {
+    public function testInputFilterFailsIfMinMaxTimeOptionsArePresent(
+        array $input,
+        array $messages,
+        $method,
+        $value
+    ) {
         $mockValidator  = $this->getMockValidator(true);
         $mockOptions    = $this->getMock('JhFlexiTime\Options\BookingOptionsInterface');
         $mockOptions

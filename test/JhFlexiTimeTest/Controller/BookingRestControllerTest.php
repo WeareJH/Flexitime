@@ -175,8 +175,17 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
     {
         $booking = $this->getMockBooking();
         $this->configureMockBookingService('create', array(), $booking);
-        $this->configureMockTimeCalculatorService('getTotals', array($this->user, $booking->getDate()), array('some-total', 20));
-        $this->configureMockTimeCalculatorService('getWeekTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+        $this->configureMockTimeCalculatorService(
+            'getTotals',
+            array($this->user, $booking->getDate()),
+            array('some-total', 20)
+        );
+
+        $this->configureMockTimeCalculatorService(
+            'getWeekTotals',
+            array($this->user, $booking->getDate()),
+            array('some-total', 20)
+        );
 
         $this->request->setMethod('POST');
         $this->request->getPost()->set('date', '25-03-2014');
@@ -224,9 +233,17 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $booking = $this->getMockBooking();
         $data = array('date' => '25-03-2014', 'startTime' => '09:00');
         $this->configureMockBookingService('update', array($id, $data, $this->user), $booking);
-        $this->configureMockTimeCalculatorService('getTotals', array($this->user, $booking->getDate()), array('some-total', 20));
-        $this->configureMockTimeCalculatorService('getWeekTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+        $this->configureMockTimeCalculatorService(
+            'getTotals',
+            array($this->user, $booking->getDate()),
+            array('some-total', 20)
+        );
 
+        $this->configureMockTimeCalculatorService(
+            'getWeekTotals',
+            array($this->user, $booking->getDate()),
+            array('some-total', 20)
+        );
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('PUT');
@@ -276,8 +293,17 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $booking = $this->getMockBooking();
         $this->configureMockBookingService('getBookingByUserAndId', array($this->user, $id), $booking);
         $this->configureMockBookingService('delete', array($booking), $booking);
-        $this->configureMockTimeCalculatorService('getTotals', array($this->user, $booking->getDate()), array('some-total', 20));
-        $this->configureMockTimeCalculatorService('getWeekTotals', array($this->user, $booking->getDate()), array('some-total', 20));
+        $this->configureMockTimeCalculatorService(
+            'getTotals',
+            array($this->user, $booking->getDate()),
+            array('some-total', 20)
+        );
+
+        $this->configureMockTimeCalculatorService(
+            'getWeekTotals',
+            array($this->user, $booking->getDate()),
+            array('some-total', 20)
+        );
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('DELETE');

@@ -19,8 +19,8 @@ class BookingOptionsTest extends \PHPUnit_Framework_TestCase
         $options = new BookingOptions();
         $this->assertFalse($options->getMinStartTime(), 'min_start_time must default to false');
         $this->assertFalse($options->getMaxStartTime(), 'max_start_time must default to false');
-        $this->assertFalse($options->getMinEndTime(),   'min_end_time must default to false');
-        $this->assertFalse($options->getMaxEndTime(),   'max_end_time must default to false');
+        $this->assertFalse($options->getMinEndTime(), 'min_end_time must default to false');
+        $this->assertFalse($options->getMaxEndTime(), 'max_end_time must default to false');
     }
 
     public function testSetValues()
@@ -43,7 +43,10 @@ class BookingOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetTimeThrowsExceptionIfNotValid24HourTime($field, $value = 'not-a-date')
     {
-        $this->setExpectedException('\InvalidArgumentException', $field . ' should be a 24 hour time in the format HH:MM');
+        $this->setExpectedException(
+            '\InvalidArgumentException',
+            sprintf('%s should be a 24 hour time in the format HH:MM', $field)
+        );
         $options = new BookingOptions(array($field => $value));
     }
 
@@ -83,7 +86,10 @@ class BookingOptionsTest extends \PHPUnit_Framework_TestCase
 
     public function testSetInvalidPropertyThrowsException()
     {
-        $this->setExpectedException('BadMethodCallException', 'The option "not-a-valid-property" is not a valid property');
+        $this->setExpectedException(
+            'BadMethodCallException',
+            'The option "not-a-valid-property" is not a valid property'
+        );
         $options = new BookingOptions(array('not-a-valid-property' => 'some-value'));
     }
 }

@@ -46,6 +46,9 @@ class BookingRestControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $controllerPluginManager->setServiceLocator($serviceLocator);
 
         $factory = new BookingRestControllerFactory();
-        $this->assertInstanceOf('JhFlexiTime\Controller\BookingRestController', $factory->createService($controllerPluginManager));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Controller\BookingRestController',
+            $factory->createService($controllerPluginManager)
+        );
     }
-} 
+}

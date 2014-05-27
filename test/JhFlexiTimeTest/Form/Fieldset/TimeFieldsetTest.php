@@ -38,4 +38,4 @@ class BookingFieldsetTest extends \PHPUnit_Framework_TestCase
         $inputFilter = $inputFilterFactory->createInput($fieldset->getInputFilterSpecification());
         $this->assertInstanceOf('Zend\InputFilter\Input', $inputFilter);
     }
-} 
+}

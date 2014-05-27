@@ -27,9 +27,9 @@ class BookingAdminControllerFactoryTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $services = array(
-            'JhFlexiTime\Service\BookingService'            => $bookingService,
-            'JhFlexiTime\Service\TimeCalculatorService'     => $timeCalculatorService,
-            'JhUser\Repository\UserRepository'              => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
+            'JhFlexiTime\Service\BookingService'        => $bookingService,
+            'JhFlexiTime\Service\TimeCalculatorService' => $timeCalculatorService,
+            'JhUser\Repository\UserRepository'          => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
         );
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
@@ -48,6 +48,9 @@ class BookingAdminControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $controllerPluginManager->setServiceLocator($serviceLocator);
 
         $factory = new BookingAdminControllerFactory();
-        $this->assertInstanceOf('JhFlexiTime\Controller\BookingAdminController', $factory->createService($controllerPluginManager));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Controller\BookingAdminController',
+            $factory->createService($controllerPluginManager)
+        );
     }
-} 
+}

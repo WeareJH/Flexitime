@@ -26,6 +26,9 @@ class SettingsControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $controllerPluginManager->setServiceLocator($serviceLocator);
 
         $factory = new SettingsControllerFactory();
-        $this->assertInstanceOf('JhFlexiTime\Controller\SettingsController', $factory->createService($controllerPluginManager));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Controller\SettingsController',
+            $factory->createService($controllerPluginManager)
+        );
     }
-} 
+}

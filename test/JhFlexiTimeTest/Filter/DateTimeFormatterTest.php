@@ -52,6 +52,4 @@ class DateTimeFormatterTest extends \PHPUnit_Framework_TestCase
             "timestamp"         => array(1359739801         , new DateTime("01 February 2013 17:30:01 +00:00"))
         );
     }
-
 }
- 

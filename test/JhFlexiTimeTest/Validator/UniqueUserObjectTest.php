@@ -1,6 +1,7 @@
 <?php
 
 namespace JhFlexiTimeTest\Validator;
+
 use JhFlexiTime\Entity\Booking;
 use JhFlexiTime\Validator\UniqueUserObject;
 use Doctrine\Common\Persistence\ObjectManager;

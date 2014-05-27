@@ -105,7 +105,8 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
 
         $expectedImages = [];
         foreach ($users as $user) {
-            $expectedImages[$user->getEmail()] = 'http://www.gravatar.com/avatar/' . md5($user->getEmail()) . '/?s=40&d=mm&r=r';
+            $url = 'http://www.gravatar.com/avatar/' . md5($user->getEmail()) . '/?s=40&d=mm&r=r';
+            $expectedImages[$user->getEmail()] = $url;
         }
 
         $this->assertEquals($expectedImages, $result->images);

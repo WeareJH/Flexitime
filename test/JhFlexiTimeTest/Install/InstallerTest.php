@@ -2,16 +2,17 @@
 
 namespace JhFlexiTimeTest\Install;
 
-use JhFlexiTime\Entity\RunningBalance;
-use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Install\Installer;
+use ZfcUser\Entity\User;
+use JhFlexiTime\Entity\UserSettings;
+use JhFlexiTime\Entity\RunningBalance;
 
 /**
  * Class InstallerTest
  * @package JhFlexiTimeTest\Install\Factory
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-use JhUser\Entity\User;class InstallerTest extends \PHPUnit_Framework_TestCase
+class InstallerTest extends \PHPUnit_Framework_TestCase
 {
     protected $installer;
     protected $userRepository;

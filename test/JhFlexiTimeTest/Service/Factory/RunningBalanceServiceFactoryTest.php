@@ -15,12 +15,18 @@ class RunningBalanceServiceFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $services         = [
-            'JhUser\Repository\UserRepository'                  => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
-            'JhFlexiTime\Repository\UserSettingsRepository'     => $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface'),
-            'JhFlexiTime\Repository\BookingRepository'          => $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface'),
-            'JhFlexiTime\Repository\BalanceRepository'          => $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
-            'JhFlexiTime\Service\PeriodService'                 => $this->getMock('JhFlexiTime\Service\PeriodServiceInterface'),
-            'JhFlexiTime\ObjectManager'                         => $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
+            'JhUser\Repository\UserRepository' =>
+                $this->getMock('JhUser\Repository\UserRepositoryInterface'),
+            'JhFlexiTime\Repository\UserSettingsRepository' =>
+                $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface'),
+            'JhFlexiTime\Repository\BookingRepository' =>
+                $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface'),
+            'JhFlexiTime\Repository\BalanceRepository' =>
+                $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
+            'JhFlexiTime\Service\PeriodService' =>
+                $this->getMock('JhFlexiTime\Service\PeriodServiceInterface'),
+            'JhFlexiTime\ObjectManager' =>
+                $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
         ];
 
         $serviceLocator

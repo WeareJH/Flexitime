@@ -19,9 +19,9 @@ class RunningBalanceCliControllerFactoryTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $services = array(
-            'JhUser\Repository\UserRepository'              => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
-            'JhFlexiTime\Service\RunningBalanceService'     => $mockRunningBalanceService,
-            'Console'                                       => $this->getMock('Zend\Console\Adapter\AdapterInterface')
+            'JhUser\Repository\UserRepository'          => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
+            'JhFlexiTime\Service\RunningBalanceService' => $mockRunningBalanceService,
+            'Console'                                   => $this->getMock('Zend\Console\Adapter\AdapterInterface')
         );
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
@@ -40,6 +40,9 @@ class RunningBalanceCliControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $controllerPluginManager->setServiceLocator($serviceLocator);
 
         $factory = new RunningBalanceCliControllerFactory();
-        $this->assertInstanceOf('JhFlexiTime\Controller\RunningBalanceCliController', $factory->createService($controllerPluginManager));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Controller\RunningBalanceCliController',
+            $factory->createService($controllerPluginManager)
+        );
     }
-} 
+}

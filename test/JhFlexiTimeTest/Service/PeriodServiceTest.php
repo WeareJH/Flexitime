@@ -219,11 +219,41 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     public function firstAndLastDayOfWeekProvider()
     {
         return [
-            [new \DateTime("28 April 2014"),    ['firstDay' => new \DateTime("28th April 2014"),    'lastDay' => new \DateTime("30th April 2014")]],
-            [new \DateTime("1 May 2014"),       ['firstDay' => new \DateTime("1 May 2014"),         'lastDay' => new \DateTime("4 May 2014")]],
-            [new \DateTime("29 February 2012"), ['firstDay' => new \DateTime("27 February 2012"),   'lastDay' => new \DateTime("29 February 2012")]],
-            [new \DateTime("12 November 2014"), ['firstDay' => new \DateTime("10 November 2014"),   'lastDay' => new \DateTime("16 November 2014")]],
-            [new \DateTime("10 December 2014"), ['firstDay' => new \DateTime("8 December 2014"),    'lastDay' => new \DateTime("14 December 2014")]],
+            [
+                new \DateTime("28 April 2014"),
+                [
+                    'firstDay' => new \DateTime("28th April 2014"),
+                    'lastDay' => new \DateTime("30th April 2014"),
+                ]
+            ],
+            [
+                new \DateTime("1 May 2014"),
+                [
+                    'firstDay' => new \DateTime("1 May 2014"),
+                    'lastDay' => new \DateTime("4 May 2014"),
+                ]
+            ],
+            [
+                new \DateTime("29 February 2012"),
+                [
+                    'firstDay' => new \DateTime("27 February 2012"),
+                    'lastDay' => new \DateTime("29 February 2012"),
+                ]
+            ],
+            [
+                new \DateTime("12 November 2014"),
+                [
+                    'firstDay' => new \DateTime("10 November 2014"),
+                    'lastDay' => new \DateTime("16 November 2014"),
+                ]
+            ],
+            [
+                new \DateTime("10 December 2014"),
+                [
+                    'firstDay' => new \DateTime("8 December 2014"),
+                    'lastDay' => new \DateTime("14 December 2014"),
+                ]
+            ],
         ];
 
     }
@@ -284,7 +314,7 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     {
         //hack to include last day in DatePeriod
         $end = new \DateTime($end);
-        $end->modify( '+1 day' );
+        $end->modify('+1 day');
         $period = new \DatePeriod(new \DateTime($start), new \DateInterval('P1D'), $end);
 
         return iterator_to_array($period);
@@ -295,7 +325,7 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         $period = $this->createPeriod("1 April 2014", "30 April 2014");
         $dates = $this->periodService->removeNonWorkingDays($period);
 
-        foreach($dates as $day) {
+        foreach ($dates as $day) {
             $this->assertLessThan(6, $day->format('N'));
         }
     }
@@ -335,7 +365,12 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     {
         $date = new \DateTime("6 April 2014");
 
-        $this->periodService = $this->getMock('JhFlexiTime\Service\PeriodService', ['getWeeksInMonth'], [$this->getOptions()]);
+        $this->periodService = $this->getMock(
+            'JhFlexiTime\Service\PeriodService',
+            ['getWeeksInMonth'],
+            [$this->getOptions()]
+        );
+
         $this->periodService
             ->expects($this->once())
             ->method('getWeeksInMonth')
@@ -368,7 +403,4 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
             [new \DateTime("13 April 2014 00:00"),      new \DateTime("12 April 2014"),             true],
         ];
     }
-
-
-
 }

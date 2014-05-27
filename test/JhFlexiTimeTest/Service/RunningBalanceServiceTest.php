@@ -33,7 +33,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             $this->userRepository,
             $this->userSettingsRepository,
             $this->bookingRepository,
-            $this->balanceRepository ,
+            $this->balanceRepository,
             $this->periodService,
             $this->objectManager,
             $this->date
@@ -56,9 +56,36 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
     public function monthRangeProvider()
     {
         return [
-            [new \DateTime("12 February 2014"), new \DateTime("12 May 2014"), [ new \DateTime('Feb 2014'), new \DateTime('Mar 2014'), new \DateTime('Apr 2014'), new \DateTime('May 2014')]],
-            [new \DateTime("01 January 2014"), new \DateTime("12 May 2014"), [new \DateTime('Jan 2014'), new \DateTime('Feb 2014'), new \DateTime('Mar 2014'), new \DateTime('Apr 2014'), new \DateTime('May 2014')]],
-            [new \DateTime("01 March 2014"), new \DateTime("1 May 2014 00:00:00"), [new \DateTime('Mar 2014'), new \DateTime('Apr 2014'), new \DateTime('May 2014')]],
+            [
+                new \DateTime("12 February 2014"),
+                new \DateTime("12 May 2014"),
+                [
+                    new \DateTime('Feb 2014'),
+                    new \DateTime('Mar 2014'),
+                    new \DateTime('Apr 2014'),
+                    new \DateTime('May 2014')
+                ]
+            ],
+            [
+                new \DateTime("01 January 2014"),
+                new \DateTime("12 May 2014"),
+                [
+                    new \DateTime('Jan 2014'),
+                    new \DateTime('Feb 2014'),
+                    new \DateTime('Mar 2014'),
+                    new \DateTime('Apr 2014'),
+                    new \DateTime('May 2014')
+                ]
+            ],
+            [
+                new \DateTime("01 March 2014"),
+                new \DateTime("1 May 2014 00:00:00"),
+                [
+                    new \DateTime('Mar 2014'),
+                    new \DateTime('Apr 2014'),
+                    new \DateTime('May 2014')
+                ]
+            ],
         ];
     }
 
@@ -69,8 +96,12 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
      * @param int $expectedBalance
      * @dataProvider calculateMonthBalanceProvider
      */
-    public function testCalculateMonthBalanceCorrectlyAddsBalance($initalBalance, $hoursInMonth, $hoursWorked, $expectedBalance)
-    {
+    public function testCalculateMonthBalanceCorrectlyAddsBalance(
+        $initalBalance,
+        $hoursInMonth,
+        $hoursWorked,
+        $expectedBalance
+    ) {
         $date           = new \DateTime("2 May 2014");
         $user           = new User();
         $runningBalance = new RunningBalance();
@@ -117,7 +148,12 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $dates = iterator_to_array($period);
-        $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['getMonthsBetweenUserStartAndLastMonth', 'calculateMonthBalance'],
+        $service = $this->getMock(
+            'JhFlexiTime\Service\RunningBalanceService',
+            [
+                'getMonthsBetweenUserStartAndLastMonth',
+                'calculateMonthBalance'
+            ],
             [
                 $this->userRepository,
                 $this->userSettingsRepository,
@@ -155,7 +191,9 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
     public function testRecalculateIsCalledForEachUser()
     {
 
-        $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['calculateMonthBalance'],
+        $service = $this->getMock(
+            'JhFlexiTime\Service\RunningBalanceService',
+            ['calculateMonthBalance'],
             [
                 $this->userRepository,
                 $this->userSettingsRepository,
@@ -230,7 +268,9 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testRecalculateAllUsersRunningBalance()
     {
-        $service = $this->getMock('JhFlexiTime\Service\RunningBalanceService', ['recalculateRunningBalance'],
+        $service = $this->getMock(
+            'JhFlexiTime\Service\RunningBalanceService',
+            ['recalculateRunningBalance'],
             [
                 $this->userRepository,
                 $this->userSettingsRepository,

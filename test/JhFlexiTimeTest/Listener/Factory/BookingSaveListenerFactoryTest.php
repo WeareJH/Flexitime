@@ -17,10 +17,14 @@ class BookingSaveListenerFactoryTest extends \PHPUnit_Framework_TestCase
 
         $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $services         = [
-            'JhFlexiTime\ObjectManager'                 => $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
-            'JhFlexiTime\Repository\BalanceRepository'  => $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
-            'FlexiOptions'                              => $this->getMock('JhFlexiTime\Options\ModuleOptions'),
-            'JhFlexiTime\Repository\UserSettingsRepository' => $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface')
+            'JhFlexiTime\ObjectManager' =>
+                $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
+            'JhFlexiTime\Repository\BalanceRepository' =>
+                $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
+            'FlexiOptions' =>
+                $this->getMock('JhFlexiTime\Options\ModuleOptions'),
+            'JhFlexiTime\Repository\UserSettingsRepository' =>
+                $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface')
         ];
 
         $serviceLocator

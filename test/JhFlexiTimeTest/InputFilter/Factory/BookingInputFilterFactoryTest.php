@@ -21,10 +21,13 @@ class BookingInputFilterFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->getMock('ZfcUser\Entity\UserInterface')));
 
         $services = array(
-            'JhFlexiTime\ObjectManager'                  => $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
-            'JhFlexiTime\Repository\BookingRepository'      => $this->getMock('Doctrine\Common\Persistence\ObjectRepository'),
-            'zfcuser_auth_service'                  => $authService,
-            'BookingOptions'                        => $this->getMock('JhFlexiTime\Options\BookingOptionsInterface'),
+            'JhFlexiTime\ObjectManager' =>
+                $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
+            'JhFlexiTime\Repository\BookingRepository' =>
+                $this->getMock('Doctrine\Common\Persistence\ObjectRepository'),
+            'zfcuser_auth_service' => $authService,
+            'BookingOptions' =>
+                $this->getMock('JhFlexiTime\Options\BookingOptionsInterface'),
         );
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');

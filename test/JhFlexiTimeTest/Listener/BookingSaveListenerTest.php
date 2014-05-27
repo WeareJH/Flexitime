@@ -91,7 +91,11 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $bookingSaveListener = $this->getMock(
             'JhFlexiTime\Listener\BookingSaveListener',
-            ['isDateInPreviousMonth', 'updateRunningBalance', 'getRunningBalance', 'isDateAfterUsersStartTrackingMonth'],
+            [
+                'isDateInPreviousMonth',
+                'updateRunningBalance',
+                'getRunningBalance',
+                'isDateAfterUsersStartTrackingMonth'],
             [
                 $this->objectManager,
                 $this->balanceRepository,

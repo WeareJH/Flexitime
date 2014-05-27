@@ -15,11 +15,14 @@ class InstallerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $services         = array(
-            'Jhuser\Repository\UserRepository'                  => $this->getMock('Jhuser\Repository\UserRepositoryInterface'),
-            'JhFlexiTime\Repository\UserSettingsRepository'     => $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface'),
-            'JhFlexiTime\Repository\BalanceRepository'          => $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
-            'JhFlexiTime\ObjectManager'                         => $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
-
+            'Jhuser\Repository\UserRepository' =>
+                $this->getMock('Jhuser\Repository\UserRepositoryInterface'),
+            'JhFlexiTime\Repository\UserSettingsRepository' =>
+                $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface'),
+            'JhFlexiTime\Repository\BalanceRepository' =>
+                $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
+            'JhFlexiTime\ObjectManager' =>
+                $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
         );
 
         $serviceLocator
