@@ -2,7 +2,10 @@
 
 namespace JhFlexiTime\Controller;
 
+use JhFlexiTime\Service\BookingService;
+use JhFlexiTime\Service\TimeCalculatorService;
 use JhFlexiTime\Validator\UniqueBooking;
+use Zend\Form\FormInterface;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Validator\Date as DateValidator;
@@ -14,6 +17,7 @@ use Zend\Validator\Date as DateValidator;
  */
 class BookingController extends AbstractActionController
 {
+    use GetSetDateTrait;
 
     /**
      * @var \JhFlexiTime\Form\BookingForm
@@ -31,18 +35,19 @@ class BookingController extends AbstractActionController
     protected $timeCalculatorService;
 
     /**
-     * Accepted Types
-     *
-     * @var array
+     * @param BookingService $bookingService
+     * @param TimeCalculatorService $timeCalculatorService
+     * @param FormInterface $bookingForm
      */
-    protected $acceptCriteria = array(
-        'Zend\View\Model\JsonModel' => array(
-            'application/json',
-        ),
-        'Zend\View\Model\ViewModel' => array(
-            'text/html',
-        ),
-    );
+    public function __construct(
+        BookingService $bookingService,
+        TimeCalculatorService $timeCalculatorService,
+        FormInterface $bookingForm
+    ) {
+        $this->bookingService           = $bookingService;
+        $this->bookingForm              = $bookingForm;
+        $this->timeCalculatorService    = $timeCalculatorService;
+    }
 
     /**
      * @return ViewModel
@@ -50,24 +55,16 @@ class BookingController extends AbstractActionController
     public function listAction()
     {
 
-        $userSettings = $this->getServiceLocator()->get('JhFlexiTime\Entity\UserSettings');
-
         $month  = (string) $this->params()->fromQuery('m');
         $year   = (string) $this->params()->fromQuery('y');
-
-        $validator  = new DateValidator(array('format' => 'M Y'));
-        $period = new \DateTime();
-        if ($validator->isValid(sprintf("%s %s", $month, $year))) {
-            $period = new \DateTime(sprintf('last day of %s %s 23:59:59', $month, $year));
-        }
+        $period = $this->getDate($month, $year);
 
         $user           = $this->zfcUserAuthentication()->getIdentity();
-        $records        = $this->getBookingService()->getUserBookingsForMonth($user, $period);
-        $pagination     = $this->getBookingService()->getPagination($period);
-        $totals         = $this->getTimeCalculatorService()->getTotals($user, $period);
+        $records        = $this->bookingService->getUserBookingsForMonth($user, $period);
+        $pagination     = $this->bookingService->getPagination($period);
+        $totals         = $this->timeCalculatorService->getTotals($user, $period);
 
-        $viewModel = $this->acceptableViewModelSelector($this->acceptCriteria);
-        $viewModel->setVariables(array(
+        return new ViewModel([
             'bookings' => array(
                 'records'       => $records,
                 'totals'        => $totals,
@@ -76,48 +73,7 @@ class BookingController extends AbstractActionController
             'pagination' => $pagination,
             'date'       => $period,
             'today'      => new \DateTime("today"),
-        ));
-
-        if ($viewModel instanceof ViewModel) {
-            $viewModel->setVariable('form', $this->getBookingForm());
-        }
-
-        return $viewModel;
-    }
-
-    /**
-     * @return \JhFlexiTime\Form\BookingForm
-     */
-    protected function getBookingForm()
-    {
-        if (!$this->bookingForm) {
-            $sl = $this->getServiceLocator();
-            $this->bookingForm = $sl->get('FormElementManager')
-                ->get('JhFlexiTime\Form\BookingForm');
-
-        }
-        return $this->bookingForm;
-    }
-
-    /**
-     * @return \JhFlexiTime\Service\BookingService
-     */
-    protected function getBookingService()
-    {
-        if (!$this->bookingService) {
-            $this->bookingService = $this->getServiceLocator()->get('JhFlexiTime\Service\BookingService');
-        }
-        return $this->bookingService;
-    }
-
-    /**
-     * @return \JhFlexiTime\Service\TimeCalculatorService
-     */
-    protected function getTimeCalculatorService()
-    {
-        if (!$this->timeCalculatorService) {
-            $this->timeCalculatorService = $this->getServiceLocator()->get('JhFlexiTime\Service\TimeCalculatorService');
-        }
-        return $this->timeCalculatorService;
+            'form'       => $this->bookingForm,
+        ]);
     }
 }

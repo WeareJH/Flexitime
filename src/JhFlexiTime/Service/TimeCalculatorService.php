@@ -171,20 +171,4 @@ class TimeCalculatorService
         $balanceEntity = $this->balanceRepository->findOneByUser($user);
         return ($balanceEntity) ? $balanceEntity->getBalance() : 0;
     }
-
-    /**
-     * @param BookingRepository $bookingRepository
-     */
-    public function setBookingRepository(BookingRepository $bookingRepository)
-    {
-        $this->bookingRepository = $bookingRepository;
-    }
-
-    /**
-     * @return BookingRepository
-     */
-    public function getBookingRepository()
-    {
-        return $this->bookingRepository;
-    }
 }
