@@ -27,7 +27,6 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
     protected $inputFilter;
     protected $bookingService;
 
-
     /**
      * Create Service
      */
@@ -329,6 +328,204 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
         $refProperty->setAccessible(true);
         $this->assertSame($eventManager, $refProperty->getValue($this->bookingService));
     }
+
+    public function testGetUserBookingsForMonth()
+    {
+        $user = new User();
+        $date = new \DateTime("14 May 2014");
+
+        $bookings = $this->getBookingCollection($date);
+
+        $this->bookingRepository
+             ->expects($this->once())
+             ->method('findByUserAndMonth')
+             ->with($user, $date)
+             ->will($this->returnValue($bookings));
+
+        $ret = $this->bookingService->getUserBookingsForMonth($user, $date);
+
+
+
+
+        $expected = [
+            'weeks' => [
+                [
+                    'dates' => [
+                        [
+                            'date'      => new \DateTime('1-05-2014'),
+                            'day_num'   => 4,
+                            'booking'   => $bookings[6]
+                        ],
+                        [
+                            'date'      => new \DateTime('2-05-2014'),
+                            'day_num'   => 5,
+                        ],
+
+                    ],
+                    'totalHours'    => 15,
+                    'balance'       => -7.5,
+                    'workedHours'   => 7.5
+                ],
+                [
+                    'dates' => [
+                        [
+                            'date'      => new \DateTime('5-05-2014'),
+                            'day_num'   => 1,
+                        ],
+                        [
+                            'date'      => new \DateTime('6-05-2014'),
+                            'day_num'   => 2,
+                        ],
+                        [
+                            'date'      => new \DateTime('7-05-2014'),
+                            'day_num'   => 3,
+                        ],
+                        [
+                            'date'      => new \DateTime('8-05-2014'),
+                            'day_num'   => 4,
+                        ],
+                        [
+                            'date'      => new \DateTime('9-05-2014'),
+                            'day_num'   => 5,
+                        ],
+
+                    ],
+                    'totalHours'    => 37.5,
+                    'balance'       => -37.5,
+                    'workedHours'   => 0
+                ],
+                [
+                    'dates' => [
+                        [
+                            'date'      => new \DateTime('12-05-2014'),
+                            'day_num'   => 1,
+                        ],
+                        [
+                            'date'      => new \DateTime('13-05-2014'),
+                            'day_num'   => 2,
+                        ],
+                        [
+                            'date'      => new \DateTime('14-05-2014'),
+                            'day_num'   => 3,
+                            'booking'   => $bookings[0]
+                        ],
+                        [
+                            'date'      => new \DateTime('15-05-2014'),
+                            'day_num'   => 4,
+                            'booking'   => $bookings[1]
+                        ],
+                        [
+                            'date'      => new \DateTime('16-05-2014'),
+                            'day_num'   => 5,
+                            'booking'   => $bookings[2]
+                        ],
+
+                    ],
+                    'totalHours'    => 37.5,
+                    'balance'       => -15,
+                    'workedHours'   => 22.5
+                ],
+                [
+                    'dates' => [
+                        [
+                            'date'      => new \DateTime('19-05-2014'),
+                            'day_num'   => 1,
+                            'booking'   => $bookings[5]
+                        ],
+                        [
+                            'date'      => new \DateTime('20-05-2014'),
+                            'day_num'   => 2,
+                        ],
+                        [
+                            'date'      => new \DateTime('21-05-2014'),
+                            'day_num'   => 3,
+                        ],
+                        [
+                            'date'      => new \DateTime('22-05-2014'),
+                            'day_num'   => 4,
+                        ],
+                        [
+                            'date'      => new \DateTime('23-05-2014'),
+                            'day_num'   => 5,
+                        ],
+
+                    ],
+                    'totalHours'    => 37.5,
+                    'balance'       => -30,
+                    'workedHours'   => 7.5
+                ],
+                [
+                    'dates' => [
+                        [
+                            'date'      => new \DateTime('26-05-2014'),
+                            'day_num'   => 1,
+                        ],
+                        [
+                            'date'      => new \DateTime('27-05-2014'),
+                            'day_num'   => 2,
+                        ],
+                        [
+                            'date'      => new \DateTime('28-05-2014'),
+                            'day_num'   => 3,
+                        ],
+                        [
+                            'date'      => new \DateTime('29-05-2014'),
+                            'day_num'   => 4,
+                        ],
+                        [
+                            'date'      => new \DateTime('30-05-2014'),
+                            'day_num'   => 5,
+                            'booking'   => $bookings[7]
+                        ],
+
+                    ],
+                    'totalHours'    => 37.5,
+                    'balance'       => -30,
+                    'workedHours'   => 7.5
+                ],
+            ],
+            'workedMonth'       => array(
+                'availableHours'    => 165,
+                'monthBalance'      => -120,
+                'hoursWorked'       => 45
+            ),
+        ];
+
+        $this->assertEquals($expected, $ret);
+
+    }
+
+    protected function getBookingCollection(\DateTime $date, $addFalsePositives = true)
+    {
+        $bookings = [
+            $this->getBooking(new \DateTime("14 May 2014")),
+            $this->getBooking(new \DateTime("15 May 2014")),
+            $this->getBooking(new \DateTime("16 May 2014")),
+            $this->getBooking(new \DateTime("17 May 2014")),
+            $this->getBooking(new \DateTime("18 May 2014")),
+            $this->getBooking(new \DateTime("19 May 2014")),
+            $this->getBooking(new \DateTime("1 May 2014")),
+            $this->getBooking(new \DateTime("30 May 2014")),
+            $this->getBooking(new \DateTime("31 May 2014")),
+        ];
+
+        if ($addFalsePositives) {
+            $bookings[] = $this->getBooking(new \DateTime("5 June 2014"));
+            $bookings[] = $this->getBooking(new \DateTime("3 April 2014"));
+        }
+
+        return $bookings;
+    }
+
+    protected function getBooking(\DateTime $date)
+    {
+        $booking = new Booking();
+        $booking->setDate($date);
+        $booking->setTotal(7.5);
+        return $booking;
+    }
+
+
 
     /**
      * @return ModuleOptions

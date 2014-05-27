@@ -5,7 +5,6 @@ namespace JhFlexiTimeTest;
 use JhFlexiTime\Module;
 use JhUser\Entity\User;
 use Zend\ServiceManager\ServiceManager;
-use JhFlexiTime\Entity\UserSettings;
 
 /**
  * Class ModuleTest
@@ -73,7 +72,8 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \Zend\EventManager\EventInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @param bool $addEventManager
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
     private function getEvent($addEventManager = false)
     {
@@ -117,6 +117,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
                 "Calculate the previous month balance for all users and add it on to their running balance",
             'set user init-balance <userEmail> <balance>' =>
                 "Set a user's starting balance"
+
         ];
         $this->assertSame($expected, $module->getConsoleUsage($mockConsole));
     }

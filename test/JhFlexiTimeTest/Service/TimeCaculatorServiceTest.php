@@ -5,11 +5,12 @@ namespace JhFlexiTimeTest\Service;
 use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Options\ModuleOptions;
 use JhFlexiTime\Service\TimeCalculatorService;
+use ZfcUser\Entity\User;
 
 /**
  * Class TimeCalculatorServiceTest
  * @package JhFlexiTimeTest\Service
- * @author Aydin Hassan <aydin@wearejh.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,6 +49,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $balanceService;
 
+    protected $balanceRepository;
+
     /**
      * @var \JhFlexiTime\Service\PeriodService
      */
@@ -58,8 +61,9 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->date                 = new \DateTime;
         $this->bookingRepository    = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
-        $this->balanceRepository       = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
+        $this->balanceRepository    = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
         $this->periodService        = $this->getMockBuilder('JhFlexiTime\Service\PeriodService')
                                          ->disableOriginalConstructor()
                                          ->getMock();
@@ -95,7 +99,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRunningBalance($initialBalance, $expectedBalance, $monthToDateTotalHours, $bookedToDate)
     {
-        $this->date     = new \DateTime;
+
         $mockUser       = $this->getMock('ZfcUser\Entity\UserInterface');
         $runningBalance = new RunningBalance();
         $runningBalance->setBalance($initialBalance);
@@ -142,5 +146,219 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             [-10.5, 0,      20,     30.5],
 
         ];
+    }
+
+    public function testGetBalanceForwardReturnsZeroIfNoRowPresent()
+    {
+        $user = new User;
+
+        $this->balanceRepository
+             ->expects($this->once())
+             ->method('findOneByUser')
+             ->with($user)
+             ->will($this->returnValue(null));
+
+        $this->assertEquals(0, $this->getService()->getBalanceForward($user));
+    }
+
+    public function testGetBalanceForwardReturnsRunningBalance()
+    {
+        $balance    = 25;
+        $user       = new User;
+        $runningBalance = new RunningBalance();
+        $runningBalance->setBalance($balance);
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->returnValue($runningBalance));
+
+        $this->assertEquals($balance, $this->getService()->getBalanceForward($user));
+    }
+
+    public function testGetMonthBalanceWithPreviousMonthReturnsFullMonthBalance()
+    {
+        $user = new User;
+        $this->date = new \DateTime("15 May 2014");
+        $date = new \DateTime("4 April 2014");
+
+        $this->bookingRepository
+             ->expects($this->once())
+             ->method('getMonthBookedTotalByUser')
+             ->with($user, $date)
+             ->will($this->returnValue(40));
+
+        $this->periodService
+             ->expects($this->once())
+             ->method('getTotalHoursInMonth')
+             ->with($date)
+             ->will($this->returnValue(50));
+
+        $this->assertEquals(-10, $this->getService()->getMonthBalance($user, $date));
+    }
+
+    public function testGetMonthBalanceWithSameMonthReturnsToDateBalance()
+    {
+        $user = new User;
+        $this->date = new \DateTime("15 May 2014");
+        $date = new \DateTime("4 May 2014");
+
+        $this->bookingRepository
+            ->expects($this->once())
+            ->method('getMonthBookedToDateTotalByUser')
+            ->with($user, $this->date)
+            ->will($this->returnValue(40));
+
+        $this->periodService
+            ->expects($this->once())
+            ->method('getTotalHoursToDateInMonth')
+            ->with($this->date)
+            ->will($this->returnValue(50));
+
+        $this->assertEquals(-10, $this->getService()->getMonthBalance($user, $date));
+    }
+
+    public function testGetMonthBalanceWithFutureMonthDateReturnsZero()
+    {
+        $user = new User;
+        $this->date = new \DateTime("15 May 2014");
+        $date = new \DateTime("16 June 2014");
+        $this->assertEquals(0, $this->getService()->getMonthBalance($user, $date));
+    }
+
+    public function testGetMonthTotalWorkedHoursForPreviousMonth()
+    {
+        $user = new User;
+        $this->date = new \DateTime("15 May 2014");
+        $date = new \DateTime("4 April 2014");
+
+        $this->bookingRepository
+            ->expects($this->once())
+            ->method('getMonthBookedTotalByUser')
+            ->with($user, $date)
+            ->will($this->returnValue(40));
+
+        $this->assertEquals(40, $this->getService()->getMonthTotalWorked($user, $date));
+    }
+
+    public function testGetMonthTotalWorkedHoursForCurrentMonth()
+    {
+        $user = new User;
+        $this->date = new \DateTime("15 May 2014");
+        $date = new \DateTime("15 May 2014");
+
+        $this->bookingRepository
+            ->expects($this->once())
+            ->method('getMonthBookedToDateTotalByUser')
+            ->with($user, $date)
+            ->will($this->returnValue(40));
+
+        $this->assertEquals(40, $this->getService()->getMonthTotalWorked($user, $date));
+    }
+
+    public function testGetWeekTotals()
+    {
+        $user = new User;
+        $date = new \DateTime("15 May 2014");
+
+        $week = ['firstDay' => new \DateTime("10 May 2014"), 'lastDay' => new \DateTime("17 May 2014")];
+        $this->periodService
+             ->expects($this->once())
+             ->method('getFirstAndLastDayOfWeek')
+             ->with($date)
+             ->will($this->returnValue($week));
+
+        $this->bookingRepository
+             ->expects($this->once())
+             ->method('getTotalBookedBetweenByUser')
+             ->with($user, $week['firstDay'], $week['lastDay'])
+             ->will($this->returnValue(10));
+
+        $this->periodService
+             ->expects($this->once())
+             ->method('getNumWorkingDaysInWeek')
+             ->with($date)
+             ->will($this->returnValue(2));
+
+        $ret = $this->getService()->getWeekTotals($user, $date);
+
+        $expected = [
+            'weekTotalWorkedHours'  => 10,
+            'weekTotalHours'        => 2 * 7.5,
+            'balance'               => -5
+        ];
+        $this->assertEquals($expected, $ret);
+    }
+
+    public function testGetMonthTotals()
+    {
+        $user = new User;
+        $date = new \DateTime("15 May 2014");
+        $this->date = new \DateTime("16 May 2014");
+
+        $service = $this->getMock(
+            'JhFlexiTime\Service\TimeCalculatorService',
+            [
+                'getMonthTotalWorked',
+                'getMonthBalance',
+                'getRunningBalance',
+                'getBalanceForward',
+            ],
+            [
+                $this->options,
+                $this->bookingRepository,
+                $this->balanceRepository,
+                $this->periodService,
+                $this->date
+            ]
+        );
+
+        $service
+            ->expects($this->once())
+            ->method('getMonthTotalWorked')
+            ->with($user, $date)
+            ->will($this->returnValue(10));
+
+        $this->periodService
+            ->expects($this->once())
+            ->method('getTotalHoursInMonth')
+            ->with($date)
+            ->will($this->returnValue(50));
+
+        $service
+            ->expects($this->once())
+            ->method('getMonthBalance')
+            ->with($user, $date)
+            ->will($this->returnValue(10));
+
+        $service
+            ->expects($this->once())
+            ->method('getRunningBalance')
+            ->with($user)
+            ->will($this->returnValue(5));
+
+        $this->periodService
+            ->expects($this->once())
+            ->method('getRemainingHoursInMonth')
+            ->with($this->date)
+            ->will($this->returnValue(100));
+
+        $service
+            ->expects($this->once())
+            ->method('getBalanceForward')
+            ->with($user)
+            ->will($this->returnValue(2.5));
+
+        $expected = [
+            'monthTotalWorkedHours' => 10,
+            'monthTotalHours'       => 50,
+            'monthBalance'          => 10,
+            'runningBalance'        => 5,
+            'monthRemainingHours'   => 100,
+            'balanceForward'        => 2.5,
+        ];
+
+        $this->assertEquals($expected, $service->getTotals($user, $date));
     }
 }
