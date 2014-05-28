@@ -12,7 +12,6 @@ install:
 
 before_script:
   - mkdir -p build/logs
-  - mysql -e "create database IF NOT EXISTS flex_test;" -uroot
 
 script:
   - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml

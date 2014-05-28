@@ -55,8 +55,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
         
         $params = array(
             'user'      => $user,
-            'firstDay'  => $firstDay,
-            'lastDay'   => $lastDay
+            'firstDay'  => $firstDay->format('Y-m-d'),
+            'lastDay'   => $lastDay->format('Y-m-d')
         );
         
         $qb = $this->bookingRepository->createQueryBuilder('b');
@@ -85,8 +85,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         $params = array(
             'user'          => $user,
-            'firstDay'      => $firstDay,
-            'lastDay'       => $lastDay
+            'firstDay'      => $firstDay->format('Y-m-d'),
+            'lastDay'       => $lastDay->format('Y-m-d')
         );
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
@@ -118,8 +118,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         $params = array(
             'user'          => $user,
-            'firstDay'      => $firstDay,
-            'currentDay'    => $currentDay
+            'firstDay'      => $firstDay->format('Y-m-d'),
+            'currentDay'    => $currentDay->format('Y-m-d')
         );
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
@@ -154,8 +154,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         $params = array(
             'user'      => $user,
-            'firstDay'  => $firstDay,
-            'lastDay'   => $lastDay
+            'firstDay'  => $firstDay->format('Y-m-d'),
+            'lastDay'   => $lastDay->format('Y-m-d')
         );
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
@@ -185,8 +185,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
     {
         $params = array(
             'user'      => $user,
-            'firstDay'  => $startDate,
-            'lastDay'   => $endDate
+            'firstDay'  => $startDate->format('Y-m-d'),
+            'lastDay'   => $endDate->format('Y-m-d')
         );
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
@@ -205,8 +205,6 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
         return $totalHoursBookedThisPeriod;
     }
-
-
 
     /**
      * find(): defined by ObjectRepository.

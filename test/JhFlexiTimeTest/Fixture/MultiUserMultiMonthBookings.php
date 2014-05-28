@@ -51,9 +51,7 @@ class MultiUserMultiMonthBookings extends AbstractFixture
         ];
 
         foreach ($this->dates as $date) {
-            if ($date->format('m') === $month->format('m') &&
-                $date->format('y') === $month->format('y')
-            ) {
+            if ($date->format('m-y') === $month->format('m-y')) {
                 throw new \InvalidArgumentException("Month must be unique");
             }
         }
@@ -109,7 +107,7 @@ class MultiUserMultiMonthBookings extends AbstractFixture
     public function getTotalBookingsForDate()
     {
         return array_reduce($this->bookingsForUser, function ($total, Booking $booking) {
-            if ($booking->getDate() === $this->expectedDate) {
+            if ($booking->getDate()->format('m-y') == $this->expectedDate->format('m-y')) {
                 ++$total;
             }
             return $total;

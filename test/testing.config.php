@@ -6,14 +6,16 @@ return [
     'doctrine' => [
         'connection' => [
             'orm_default' => [
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-                'params'      => [
-                    'host'     => '127.0.0.1',
-                    'port'     => '3306',
-                    'user'     => 'root',
-                    'password' => '',
-                    'dbname'   => 'flex_test'
-                ]
+                'params' => [
+                    'host'          => null,
+                    'port'          => null,
+                    'user'          => null,
+                    'password'      => null,
+                    'dbname'        => null,
+                    'driver'        => 'pdo_sqlite',
+                    'driverClass'   => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+                    'memory'        => true,
+                ],
             ],
         ],
     ],
