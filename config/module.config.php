@@ -22,10 +22,8 @@ return [
 
     //controllers
     'controllers' => [
-        'invokables' => [
-            'JhFlexiTime\Controller\Booking'     => 'JhFlexiTime\Controller\BookingController',
-        ],
         'factories' => [
+            'JhFlexiTime\Controller\Booking'            => 'JhFlexiTime\Controller\Factory\BookingControllerFactory',
             'JhFlexiTime\Controller\BookingRest'        => 'JhFlexiTime\Controller\Factory\BookingRestControllerFactory',
             'JhFlexiTime\Controller\Settings'           => 'JhFlexiTime\Controller\Factory\SettingsControllerFactory',
             'JhFlexiTime\Controller\RunningBalanceCli'  => 'JhFlexiTime\Controller\Factory\RunningBalanceCliControllerFactory',
