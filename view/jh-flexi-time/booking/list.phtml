@@ -1,4 +1,5 @@
-<?php $this->HeadScript()->appendFile('/assets/vendor/angular/angular.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular/angular.min.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular-resource/angular-resource.min.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/assets/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/js/flexi-time-booking-angular.js','text/javascript'); ?>
 <?php $this->headLink()->appendStylesheet('/css/flexi-time.css'); ?>
@@ -47,7 +48,7 @@ $this->headTitle($title); ?>
                     </thead>
                     <tbody ng-repeat="(dayNum, day) in week.dates" ng-controller="BookingCtrl">
                         <!-- repeat -->
-                        <tr ng-click="toggleEditRow()" class="day {{ day | bookingClasses }}">
+                        <tr ng-click="toggleEditRow()" class="day {{ booking | bookingClasses }}">
                             <!-- if first day of week -->
                             <td style="width: 30%" ng-if="!dayNum"><b>WEEK {{ weekNum + 1 }}</b> -
                                 <span class="text-muted">{{ week.workedHours }} / {{ week.totalHours}}</span>
@@ -55,12 +56,12 @@ $this->headTitle($title); ?>
                             </td>
                             <!-- Every other day -->
                             <td style="width: 30%" ng-if="dayNum"></td>
-                            <td style="width: 20%" class="col-date">{{ day.date.date | isoDate | date: 'EEEE, d' }}</td>
-                            <td style="width: 20%" ng-if="day.booking"  class="col-time">{{ day.booking.startTime }} - {{ day.booking.endTime }}</td>
-                            <td style="width: 20%" ng-if="!day.booking" ></td>
-                            <td style="width: 10%" class="col-total">{{ day.booking.total }}</td>
+                            <td style="width: 20%">{{ day.date.date | isoDate | date: 'EEEE, d' }}</td>
+                            <td style="width: 20%" ng-if="booking.id">{{ booking.startTime }} - {{ booking.endTime }}</td>
+                            <td style="width: 20%" ng-if="!booking.id"></td>
+                            <td style="width: 10%">{{ booking.total }}</td>
                             <td style="width: 10%" class="col-notes">
-                                <span ng-if="day.booking.notes" class="fx-tooltip fx-tooltip-note" tooltip="{{day.booking.notes}}">
+                                <span ng-if="booking.notes" class="fx-tooltip fx-tooltip-note" tooltip="{{ booking.notes }}">
                                     <span class="glyphicon glyphicon-comment"></span>
                                 </span>
                             </td>
@@ -127,25 +128,28 @@ $this->headTitle($title); ?>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
-                                            <div class="form-group ">
+                                            <div class="form-group">
                                                 <label class="col-sm-4 control-label" for="book-notes">Notes</label>
                                                 <div class="col-sm-8">
-                                                    <textarea name="notes" ng-model="booking.notes" id="book-notes" class="form-control input-sm"></textarea>
+                                                    <textarea name="notes" ng-model="booking.notes"class="form-control input-sm"></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-sm-offset-3 btn-group pull-right">
-                                                <button ng-disabled="bookingForm.$invalid" ng-click="save()" name="submit" id="submitbutton" class="btn btn-sm btn-default has-spinner save-booking" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span><span class="glyphicon glyphicon-ok"></span></button>
-                                                <button ng-click="toggleEditRow()" name="cancel" class="btn btn-sm btn-default cancel-edit"><span class="glyphicon glyphicon-remove"></span></button>
-                                                <button name="clear" class="btn btn-sm btn-default has-spinner remove-booking" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span><span class="glyphicon glyphicon-trash"></span></button>
+                                                <button ng-disabled="bookingForm.$invalid || (bookingForm.$pristine && booking.id)" ng-click="save()" class="btn btn-sm btn-default" value="Submit">
+                                                    <span ng-show="saving" class="glyphicon glyphicon-refresh spin"></span>
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </button>
+                                                <button ng-click="toggleEditRow()" class="btn btn-sm btn-default">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                                <button ng-disabled="!booking.id" ng-click="delete()" class="btn btn-sm btn-default">
+                                                    <span ng-show="deleting" class="glyphicon glyphicon-refresh spin"></span>
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <span>Booking: {{booking}}</span>
                                 </form>
-
-                                <div class="alert alert-danger">
-                                    Form Valid: {{ bookingForm.$valid }}
-                                </div>
 
                                 <div ng-show="bookingForm.$invalid" class="alert alert-danger time-book-errors">
                                     <ul class="form-errors">

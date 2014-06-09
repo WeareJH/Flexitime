@@ -1,9 +1,13 @@
-var app = angular.module("JhHub", ['ui.bootstrap']);
+var app = angular.module("JhHub", ['ui.bootstrap', 'ngResource']);
 var today = new Date();
 var timeStep = 15;
 
 var timeSettings = {
     startTime: {
+        min: '07:00',
+        max: '10:00'
+    },
+    endTime: {
         min: '16:00',
         max: '19:00'
     }
@@ -58,9 +62,22 @@ app.controller("FlexiTimeCtrl", function ($scope, $http) {
 
 });
 
-app.controller("BookingCtrl", function($scope, $http, $filter, timeStep, timeSettings) {
+app.factory('Booking', ['$resource',
+    function($resource){
+        return $resource('/flexi-time-rest/:id', { 'id': '@id'}, {
+            'update' : {'method' : 'PUT'}
+        });
+    }]
+);
+
+app.controller("BookingCtrl", function($scope, Booking, $filter, timeStep, timeSettings) {
 
     $scope.showEditRow = false;
+
+    $scope.saving = false;
+
+    $scope.deleting = false;
+
 
     $scope.toggleEditRow = function() {
         $scope.showEditRow = !$scope.showEditRow;
@@ -71,23 +88,59 @@ app.controller("BookingCtrl", function($scope, $http, $filter, timeStep, timeSet
         startTime: timeSettings.startTime
     }
 
-    if($scope.day.booking) {
-        $scope.booking = $scope.day.booking;
-    } else {
+    $scope.newBooking = function() {
         //filter date
         var date = $filter('isoDate')($scope.day.date.date);
         var date = $filter('date')(date, 'yyyy-MM-dd');
 
-        $scope.booking = {
-            date        : date,
-            startTime   : '07:00',
-            endTime     : '16:00'
-        };
+        $scope.booking = new Booking({
+            date: date,
+            startTime: '07:00',
+            endTime: '16:00'
+        });
+    };
+
+    if($scope.day.booking) {
+        $scope.booking = new Booking({
+            id:  $scope.day.booking.id,
+            date: $scope.day.booking.date,
+            startTime: $scope.day.booking.startTime,
+            endTime: $scope.day.booking.endTime,
+            total: $scope.day.booking.total,
+            notes: $scope.day.booking.notes
+        });
+    } else {
+        $scope.newBooking();
     }
 
     $scope.save = function() {
+        $scope.saving = true;
+
+        if($scope.booking.id) {
+            $scope.booking.$update().then(function(result) {
+                $scope.saving = false;
+                $scope.booking = new Booking(result.booking);
+                $scope.bookingForm.$setPristine();
+                $scope.toggleEditRow();
+            });
+        } else {
+            $scope.booking.$save().then(function(result) {
+                $scope.saving = false;
+                $scope.booking = new Booking(result.booking);
+                $scope.toggleEditRow();
+            });
+        }
 
     };
+
+    $scope.delete = function() {
+        $scope.deleting = true;
+        $scope.booking.$delete().then(function(result) {
+            $scope.newBooking();
+            $scope.deleting = false;
+            $scope.toggleEditRow();
+        });
+    }
 });
 
 app.config(function($provide) {
@@ -134,8 +187,8 @@ app.filter('signTotal', function() {
 });
 
 app.filter('bookingClasses', function(today) {
-    return function(day) {
-        var date = new Date(day.date.date);
+    return function(booking) {
+        var date = new Date(booking.date);
         var classes = [];
 
         if(
@@ -146,7 +199,7 @@ app.filter('bookingClasses', function(today) {
             classes.push('today');
         }
 
-        if(!day.booking) {
+        if(!booking.id) {
             classes.push('no-booking');
 
             if(date > today) {

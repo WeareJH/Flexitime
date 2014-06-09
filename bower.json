@@ -1,14 +1,15 @@
 {
-  "name": "wearejh/flexi-time",
-  "version": "0.0.1",
-  "ignore": [
-    "**/.*"
-  ],
-  "dependencies": {
-    "angular": "~1.*",
-    "angular-bootstrap": "~0.10.0"
-  },
-  "devDependencies": {
-    "jasmine": "~2.0.0"
-  }
+    "name": "wearejh/flexi-time",
+    "version": "0.0.1",
+    "ignore": [
+        "**/.*"
+    ],
+    "dependencies": {
+        "angular": "~1.*",
+        "angular-resource": "~1.2.x",
+        "angular-bootstrap": "~0.10.0"
+    },
+    "devDependencies": {
+        "jasmine": "~2.0.0"
+    }
 }
