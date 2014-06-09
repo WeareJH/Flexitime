@@ -62,6 +62,7 @@ class BookingRestController extends AbstractRestfulController
             ),
             'pagination' => $pagination,
             'date'       => $period,
+            'today'      => new \DateTime("today"),
         ));
     }
 

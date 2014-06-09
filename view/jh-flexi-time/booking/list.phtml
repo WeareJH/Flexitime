@@ -1,9 +1,227 @@
-<?php $this->HeadScript()->appendFile('/js/flexi-time-booking.js','text/javascript'); ?>
-<?php $this->HeadScript()->appendFile('/js/time-utils.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular/angular.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/js/flexi-time-booking-angular.js','text/javascript'); ?>
 <?php $this->headLink()->appendStylesheet('/css/flexi-time.css'); ?>
 
 <?php $title = $this->translate('Viewing your records');
 $this->headTitle($title); ?>
+
+<div ng-controller="FlexiTimeCtrl">
+    <div class="row" >
+        <div class="col-sm-12">
+            <div class="text-center">
+                <h1>
+                    <a class="m-pager" href="#" ng-click="updatePeriod(pagination.prev.m, pagination.prev.y, user)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                    {{ date | date: 'MMMM yyyy' | uppercase }}
+                    <a class="m-pager" href="#" ng-click="updatePeriod(pagination.next.m, pagination.next.y, user)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </h1>
+
+                <div id="totals-brief">
+                    <p>
+                        <span class="worked-to-date">{{ totals.monthTotalWorkedHours }}</span>&nbsp;&nbsp;/&nbsp;&nbsp;
+                        <span class="month-available">{{ totals.monthTotalHours }}</span>&nbsp; &bull; &nbsp;
+                        <span class="balance-month"> {{  totals.monthBalance | signTotal }} </span>
+                        &nbsp; &bull; &nbsp;
+                        <span class="balance-running"> {{ totals.runningBalance | signTotal}} </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-offset-1 col-sm-7 ">
+
+            <div class="col-container">
+                <table class="table table-hover booking-table booking-table-user" ng-repeat="(weekNum, week) in records.records.weeks">
+                    <thead ng-if="weekNum == 0">
+                        <tr>
+                            <th style="width: 30%"></th>
+                            <th style="width: 20%"><?php echo $this->translate('Date') ?></th>
+                            <th style="width: 20%"><?php echo $this->translate('Time') ?></th>
+                            <th style="width: 10%"><?php echo $this->translate('Total') ?></th>
+                            <th style="width: 10%"><?php echo $this->translate('Notes') ?></th>
+                            <th style="width: 10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="(dayNum, day) in week.dates" ng-controller="BookingCtrl">
+                        <!-- repeat -->
+                        <tr ng-click="toggleEditRow()" class="day {{ day | bookingClasses }}">
+                            <!-- if first day of week -->
+                            <td style="width: 30%" ng-if="!dayNum"><b>WEEK {{ weekNum + 1 }}</b> -
+                                <span class="text-muted">{{ week.workedHours }} / {{ week.totalHours}}</span>
+                                <span class="pull-right week-balance" ng-class="(week.balance >= 0) ? 'balance-success' : 'balance-danger'">{{ week.balance | signTotal }}</span>
+                            </td>
+                            <!-- Every other day -->
+                            <td style="width: 30%" ng-if="dayNum"></td>
+                            <td style="width: 20%" class="col-date">{{ day.date.date | isoDate | date: 'EEEE, d' }}</td>
+                            <td style="width: 20%" ng-if="day.booking"  class="col-time">{{ day.booking.startTime }} - {{ day.booking.endTime }}</td>
+                            <td style="width: 20%" ng-if="!day.booking" ></td>
+                            <td style="width: 10%" class="col-total">{{ day.booking.total }}</td>
+                            <td style="width: 10%" class="col-notes">
+                                <span ng-if="day.booking.notes" class="fx-tooltip fx-tooltip-note" tooltip="{{day.booking.notes}}">
+                                    <span class="glyphicon glyphicon-comment"></span>
+                                </span>
+                            </td>
+                            <td style="width: 10%">
+                                <div class="btn-group pull-right">
+                                    <button ng-if="day.booking" class="btn btn-xs btn-default">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                    <button ng-if="!day.booking" class="btn btn-xs btn-success">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-show="showEditRow" class="edit-booking">
+                            <td></td>
+                            <td colspan="5">
+                                <form name="bookingForm" class="form-horizontal" novalidate>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <input type="hidden" ng-model="booking.id" name="id">
+                                            <input type="hidden" ng-model="booking.date" name="date" id="book-date" required="required" class="form-control input-sm" required>
+
+                                            <div class="form-group ">
+                                                <label class="col-sm-4 control-label" for="book-starttime">Start Time</label>
+                                                <div class="col-sm-8">
+                                                    <div class="input-group">
+                                                        <input type="time"
+                                                               ng-model="booking.startTime"
+                                                               name="startTime"
+                                                               step="{{ timeSettings.timeStep * 60 }}"
+                                                               class="form-control input-sm"
+                                                               required
+                                                               time-format
+                                                               pad-hours
+                                                               time-step
+                                                               time-range
+                                                               range-min="{{ timeSettings.startTime.min }}"
+                                                               range-max="{{ timeSettings.startTime.max }}">
+                                                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group ">
+                                                <label class="col-sm-4 control-label" for="book-endtime">End Time</label>
+                                                <div class="col-sm-8">
+                                                    <div class="input-group">
+                                                        <input type="time"
+                                                               ng-model="booking.endTime"
+                                                               name="endTime"
+                                                               step="{{ timeSettings.timeStep * 60 }}"
+                                                               class="form-control input-sm"
+                                                               required
+                                                               time-format
+                                                               pad-hours
+                                                               time-step
+                                                               time-range
+                                                               range-min="{{ timeSettings.endTime.min }}"
+                                                               range-max="{{ timeSettings.endTime.max }}">
+                                                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group ">
+                                                <label class="col-sm-4 control-label" for="book-notes">Notes</label>
+                                                <div class="col-sm-8">
+                                                    <textarea name="notes" ng-model="booking.notes" id="book-notes" class="form-control input-sm"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-offset-3 btn-group pull-right">
+                                                <button ng-disabled="bookingForm.$invalid" ng-click="save()" name="submit" id="submitbutton" class="btn btn-sm btn-default has-spinner save-booking" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span><span class="glyphicon glyphicon-ok"></span></button>
+                                                <button ng-click="toggleEditRow()" name="cancel" class="btn btn-sm btn-default cancel-edit"><span class="glyphicon glyphicon-remove"></span></button>
+                                                <button name="clear" class="btn btn-sm btn-default has-spinner remove-booking" value="Submit" ><span class="spinner glyphicon glyphicon-refresh spin"></span><span class="glyphicon glyphicon-trash"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span>Booking: {{booking}}</span>
+                                </form>
+
+                                <div class="alert alert-danger">
+                                    Form Valid: {{ bookingForm.$valid }}
+                                </div>
+
+                                <div ng-show="bookingForm.$invalid" class="alert alert-danger time-book-errors">
+                                    <ul class="form-errors">
+                                        <li ng-show="bookingForm.startTime.$error.required">Start Time: Required</li>
+                                        <li ng-show="bookingForm.startTime.$error.timeFormat">Start Time: Format should be hh:mm or h:mm</li>
+                                        <li ng-show="bookingForm.startTime.$error.timeStep">Start Time: Should be booked in {{ timeSettings.timeStep }} minute increments</li>
+                                        <li ng-show="bookingForm.startTime.$error.timeRange">Start Time: Should be between {{ timeSettings.startTime.min }} and {{ timeSettings.startTime.max }}</li>
+                                        <li ng-show="bookingForm.endTime.$error.required">End Time: Required</li>
+                                        <li ng-show="bookingForm.endTime.$error.timeFormat">End Time: Format should be hh:mm or h:mm</li>
+                                        <li ng-show="bookingForm.endTime.$error.timeStep">End Time: Should be booked in {{ timeSettings.timeStep }} minute increments</li>
+                                        <li ng-show="bookingForm.endTime.$error.timeRange">End Time: Should be between {{ timeSettings.endTime.min }} and {{ timeSettings.endTime.max }}</li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="col-container">
+                <table class="table" id="totals">
+                    <tbody>
+                        <tr>
+                            <td><?php echo $this->translate('Hours Worked this Month') ?></td>
+                            <td class="worked-to-date total-right">{{ totals.monthTotalWorkedHours }}</td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Hours Remaining this Month') ?></td>
+                            <td class="total-right">{{ totals.monthRemainingHours }}</td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Balance') ?></td>
+                            <td class="balance-month total-right">
+                                <span ng-class="(totals.monthBalance >= 0) ? 'balance-success' : 'balance-danger'">
+                                    <b>{{ totals.monthBalance | signTotal }}</b>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table" id="running-balance">
+                    <thead>
+                        <tr>
+                            <th colspan="2">{{ today | date: 'MMMM d, yyyy' }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><?php echo $this->translate('Running Balance') ?></td>
+                            <td class="balance-running total-right">
+                                <span ng-class="(totals.runningBalance >= 0) ? 'balance-success' : 'balance-danger'">
+                                    <b>{{ totals.runningBalance | signTotal }}</b>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $this->translate('Balance  Forward') ?></td>
+                            <td class="balance-running total-right">
+                                <span ng-class="(totals.balanceForward >= 0) ? 'balance-success' : 'balance-danger'">
+                                    <b>{{ totals.balanceForward | signTotal }}</b>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 <div class="row">
     <div class="col-sm-12">

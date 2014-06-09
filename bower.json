@@ -5,7 +5,7 @@
     "**/.*"
   ],
   "dependencies": {
-    "angular": "~1.2.12",
+    "angular": "~1.*",
     "angular-bootstrap": "~0.10.0"
   },
   "devDependencies": {
