@@ -11,9 +11,12 @@ install:
   - composer install --dev --prefer-source
 
 before_script:
+  - npm install -g bower
+  - npm install -g gulp
   - mkdir -p build/logs
 
 script:
+  - npm test
   - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/phpcs --standard=PSR2 ./src/
   - ./vendor/bin/phpcs --standard=PSR2 ./test/
