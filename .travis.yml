@@ -9,10 +9,11 @@ php:
 install:
   - composer self-update
   - composer install --dev --prefer-source
-
-before_script:
   - npm install -g bower
   - npm install -g gulp
+  - npm install
+
+before_script:
   - mkdir -p build/logs
 
 script:
