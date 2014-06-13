@@ -1,15 +1,24 @@
-(function(angular){
+(function() { 'use strict';
 
-    var app = angular.module("JhHub", ['ui.bootstrap', 'ngResource']);
+    var app = angular.module("JhHub");
 
-    app.controller("FlexiTimeCtrl", function ($scope, $http) {
+    app.controller("FlexiTimeCtrl", function ($scope, $http, BookingService) {
 
-        $scope.currentDate = new Date();
+        $scope.weeks = [];
+
+        BookingService.getBookings().then(function(weeks) {
+            $scope.weeks = weeks;
+        });
+
         $scope.currentEditRow = false;
 
         $scope.setCurrentEditRow = function(editRowDate) {
             $scope.currentEditRow = editRowDate;
         };
+
+
+        /*$scope.currentDate = new Date();
+
 
         $scope.updatePeriod = function(month, year, user) {
 
@@ -53,8 +62,8 @@
                 $scope.today    = new Date(data.today.date.split(" ")[0]);
             });
         };
-        $scope.loadUserRecords();
+        $scope.loadUserRecords();*/
 
     });
 
-})(angular);
+})();

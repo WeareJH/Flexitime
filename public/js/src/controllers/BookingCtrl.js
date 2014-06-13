@@ -1,14 +1,16 @@
-(function(angular) {
+(function(angular) { 'use strict';
 
-    var app = angular.module("JhHub", ['ui.bootstrap', 'ngResource']);
+    var app = angular.module("JhHub");
 
-    app.controller("BookingCtrl", ["$scope", "Booking", "$filter", "timeStep", "timeSettings", function ($scope, Booking, $filter, timeStep, timeSettings) {
+    app.controller("BookingCtrl", ["$scope", "BookingService", "timeSettings", function ($scope, BookingService, timeSettings) {
 
         $scope.showEditRow = false;
 
         $scope.saving = false;
 
         $scope.deleting = false;
+
+        $scope.bookingService = BookingService;
 
         $scope.toggleEditRow = function () {
             if ($scope.$parent.currentEditRow == $scope.booking.date) {
@@ -18,63 +20,22 @@
             }
         };
 
-        $scope.timeSettings = {
-            timeStep: timeStep,
-            startTime: timeSettings.startTime
-        };
-
-        $scope.newBooking = function () {
-            //filter date
-            var date = $filter('isoDate')($scope.day.date.date);
-            date     = $filter('date')(date, 'yyyy-MM-dd');
-
-            $scope.booking = new Booking({
-                date: date,
-                startTime: '07:00',
-                endTime: '16:00'
-            });
-        };
-
-        if ($scope.day.booking) {
-            $scope.booking = new Booking({
-                id: $scope.day.booking.id,
-                date: $scope.day.booking.date,
-                startTime: $scope.day.booking.startTime,
-                endTime: $scope.day.booking.endTime,
-                total: $scope.day.booking.total,
-                notes: $scope.day.booking.notes
-            });
-        } else {
-            $scope.newBooking();
-        }
-
-        $scope.save = function () {
+        $scope.save = function() {
             $scope.saving = true;
-
-            if ($scope.booking.id) {
-                $scope.booking.$update().then(function (result) {
+            $scope.bookingService.saveBooking($scope.booking)
+                .then(function() {
                     $scope.saving = false;
-                    $scope.booking = new Booking(result.booking);
                     $scope.bookingForm.$setPristine();
                     $scope.toggleEditRow();
                 });
-            } else {
-                $scope.booking.$save().then(function (result) {
-                    $scope.saving = false;
-                    $scope.booking = new Booking(result.booking);
-                    $scope.toggleEditRow();
-                });
-            }
-
         };
 
         $scope.delete = function () {
             $scope.deleting = true;
-            $scope.booking.$delete().then(function (result) {
-                $scope.newBooking();
-                $scope.deleting = false;
-                $scope.toggleEditRow();
-            });
+            $scope.bookingService.deleteBooking($scope.booking)
+                .then(function() {
+                    $scope.deleting = false;
+                });
         };
     }]);
 

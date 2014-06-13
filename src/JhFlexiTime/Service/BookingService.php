@@ -187,6 +187,9 @@ class BookingService
 
         $bookedDays = $this->bookingRepository->findByUserAndMonth($user, $date);
 
+        $bookingsToReturn =  $this->parseDatesIntoWeeks($bookedDays, $date);
+
+
         $dates = array();
         foreach ($period as $day) {
             $dayNum = $day->format('N');
@@ -206,7 +209,6 @@ class BookingService
             if (isset($dates[$booking->getDate()->format('d-m-y')])) {
                 $dates[$booking->getDate()->format('d-m-y')]['booking'] = $booking;
             }
-
         }
 
         $weeks = array();
@@ -247,13 +249,60 @@ class BookingService
         }
 
         return array(
-            'weeks'             => $weeks,
+            'dates'             => $bookingsToReturn,
             'workedMonth'       => array(
                 'availableHours'    => $monthAvailable,
                 'monthBalance'      => $monthBalance,
                 'hoursWorked'       => $monthWorked
             ),
         );
+    }
+
+    /**
+     * @param Booking[] $bookings
+     * @param \DateTime $date
+     * @return Booking[]
+     */
+    public function parseDatesIntoWeeks(array $bookings, \DateTime $date = null)
+    {
+
+        $period = new \DatePeriod(
+            new \DateTime(sprintf('first day of %s', $date->format('F Y'))),
+            new \DateInterval('P1D'),
+            new \DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
+        );
+
+        $returnBookings = [];
+        foreach($period as $date) {
+            $dayNum = $date->format('N');
+
+            //should be config
+            if ($dayNum > 5) continue;
+
+            if (!$booking = $this->bookingExistsForDate($bookings, $date)) {
+                $booking = new Booking();
+                $booking->setDate($date);
+            }
+
+            $returnBookings[$date->getTimestamp()] = $booking;
+        }
+
+        return $returnBookings;
+    }
+
+    /**
+     * @param Booking[] $bookings
+     * @param \DateTime $date
+     * @return bool
+     */
+    public function bookingExistsForDate(array $bookings, \DateTime $date) {
+        foreach ($bookings as $booking) {
+            if ($booking->getDate()->format('d-m-Y') == $date->format('d-m-Y')) {
+                return $booking;
+            }
+        }
+
+        return false;
     }
 
     /**
