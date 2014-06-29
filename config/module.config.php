@@ -75,24 +75,43 @@ return [
             'zfcadmin' => [
                 'child_routes' => [
                     'flexi-time' => [
-                        'type' => 'segment',
+                        'type' => 'literal',
                         'options' => [
-                            'route' => '/flexi-time[/][:action][/:id]',
-                            'constraints' => [
-                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'id'     => '[0-9]+',
-                            ],
+                            'route' => '/flexi-time',
                             'defaults' => [
                                 'controller' => 'JhFlexiTime\Controller\BookingAdmin',
-                                'action'     => 'view',
+                                'action'     => 'list',
                             ],
                         ],
+                        'may_terminate' => true,
+                        'child_routes'  => [
+                            'list' => [
+                                'type'      => 'segment',
+                                'options'   => [
+                                    'route' => '/list[/:id]',
+                                    'defaults' => [
+                                        'action' => 'list',
+                                    ],
+                                    'constraints' => [
+                                        'id' => '\d+',
+                                    ],
+                                ],
+
+                            ],
+                            'users' => [
+                                'type'      => 'literal',
+                                'options'   => [
+                                    'route'     => '/users',
+                                    'defaults'  => [
+                                        'controller' => 'JhFlexiTime\Controller\BookingAdmin',
+                                        'action'     => 'users',
+                                    ],
+                                ],
+                            ],
+                        ] ,
                     ],
                 ],
             ],
-
-
-
         ],
     ],
 
@@ -202,21 +221,27 @@ return [
     ],
 
     //Add Flexitime Link to Hub navigation
-    'navigation' => [
-        'default' => [
-            [
-                'name'      => 'Flexitime',
-                'label'     => 'Flexitime',
-                'route'     => 'flexi-time',
-                'resource'  => 'user-nav',
-                'privilege' => 'view',
+    'spiffy_navigation' => [
+        'containers' => [
+            'default' => [
+                [
+                    'options' => [
+                        'name'          => 'Flexitime',
+                        'label'         => 'Flexitime',
+                        'route'         => 'flexi-time/list',
+                        'role'          => 'user',
+                        'permission'    => 'user-nav.view'
+                    ],
+                ],
             ],
-        ],
-
-        'admin' => [
-            'flexitime' => [
-                'label' => 'Flexitime',
-                'route' => 'zfcadmin/flexi-time',
+            'admin' => [
+                [
+                    'options' => [
+                        'name'          => 'Flexitime Admin',
+                        'label'         => 'Flexitime',
+                        'route'         => 'zfcadmin/flexi-time/list',
+                    ],
+                ]
             ],
         ],
     ],

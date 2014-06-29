@@ -83,7 +83,7 @@ class BookingAdminController extends AbstractActionController
      * Just renders template for Angular when text/html
      * Returns records and user if json request
      */
-    public function viewAction()
+    public function listAction()
     {
         $viewModel = $this->acceptableViewModelSelector($this->acceptCriteria);
 

@@ -26,7 +26,7 @@ app.controller("AdminTimeCtrl", function ($scope, $http) {
     $scope.updatePeriod = function(month, year, user) {
 
         $http({
-            url: '/admin/flexi-time/view/' + user.id,
+            url: '/admin/flexi-time/list/' + user.id,
             method: 'GET',
             params: {
                 y: year,
@@ -50,7 +50,7 @@ app.controller("AdminTimeCtrl", function ($scope, $http) {
     };
 
     $scope.loadUserRecords = function(userId) {
-        $http.get('/admin/flexi-time/view/' + userId).success(function(data) {
+        $http.get('/admin/flexi-time/list/' + userId).success(function(data) {
             $scope.records      = data.bookings;
             $scope.totals       = data.bookings.totals;
             $scope.pagination   = data.pagination;
