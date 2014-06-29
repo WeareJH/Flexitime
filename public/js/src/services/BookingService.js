@@ -6,9 +6,14 @@
 
         this.bookingResource = BookingResource;
 
+        this.timeSettings = {
+            defaultStartTime: "09:00",
+            defaultEndTime: "17:30"
+        };
+
         this.processBookingsInToWeeks = function(result) {
 
-            var bookings = result.bookings.records.dates;
+            var bookings = result.bookings;
             var weeks       = [];
             var weekCounter = 0;
             var lastDayNum  = 0;
@@ -38,11 +43,18 @@
                 }
             }
 
-            return weeks;
+            var data = {
+                weeks       : weeks,
+                date        : new Date(result.date * 1000),
+                pagination  : result.pagination,
+                totals      : result.totals
+            };
+
+            return data;
         };
 
-        this.getBookings = function() {
-            return this.bookingResource.get()
+        this.getBookings = function(data) {
+            return this.bookingResource.get(data.params)
                 .$promise
                 .then(this.processBookingsInToWeeks);
         };
@@ -50,23 +62,46 @@
         this.saveBooking = function(booking) {
             if (booking.id) {
                 //update
-                return booking.update()
+                return booking.$update()
                     .then(this.updateSuccess);
             } else {
-                return booking.save().then(this.createSuccess);
+                return booking.$save().then(this.createSuccess);
             }
         };
 
         this.updateSuccess = function(result) {
-            return new BookingResource(result.booking);
+            return {
+                booking : new BookingResource(result.booking),
+                totals  : result.totals
+            };
         };
 
         this.createSuccess = function(result) {
-            return new BookingResource(result.booking);
+            return {
+                booking : new BookingResource(result.booking),
+                totals  : result.totals
+            };
+        };
+
+        this.newBooking = function(date) {
+            return new BookingResource({
+                date        : date,
+                startTime   : this.timeSettings.defaultStartTime,
+                endTime     : this.timeSettings.defaultEndTime
+            });
         };
 
         this.deleteBooking = function(booking) {
-            return booking.$delete();
+            var date = booking.date;
+            var newBooking = this.newBooking(date);
+
+            return booking.$delete()
+                .then(function(result) {
+                    return {
+                        booking : newBooking,
+                        totals  : result.totals
+                    };
+                });
         };
     });
 

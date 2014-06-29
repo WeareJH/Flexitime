@@ -72,7 +72,6 @@ class BookingController extends AbstractActionController
             ),
             'pagination' => $pagination,
             'date'       => $period,
-            'today'      => new \DateTime("today"),
             'form'       => $this->bookingForm,
         ]);
     }

@@ -1,11 +1,11 @@
-(function() { 'use strict';
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
     app.filter('bookingClasses', function(today) {
         return function(booking) {
 
-            var date = new Date(booking.date * 1000);
+            var date = booking.getDate();
 
             var classes = [];
 
@@ -30,4 +30,4 @@
         };
     });
 
-})();
+})(angular);

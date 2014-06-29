@@ -55,14 +55,11 @@ class BookingRestController extends AbstractRestfulController
         $totals         = $this->timeCalculatorService->getTotals($user, $period);
 
         return new JsonModel(array(
-            'bookings' => array(
-                'records'   => $records,
-                'totals'    => $totals,
-                'user'      => $user,
-            ),
+            'bookings'   => $records,
             'pagination' => $pagination,
-            'date'       => $period,
-            'today'      => new \DateTime("today"),
+            'date'       => $period->getTimestamp(),
+            'user'       => $user,
+            'totals'     => $totals,
         ));
     }
 
@@ -142,9 +139,8 @@ class BookingRestController extends AbstractRestfulController
         $this->bookingService->delete($booking);
 
         return new JsonModel(array(
-            'success'       => true,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($user, $booking->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($user, $booking->getDate())
+            'success'   => true,
+            'totals'    => $this->timeCalculatorService->getTotals($user, $booking->getDate()),
         ));
     }
 }

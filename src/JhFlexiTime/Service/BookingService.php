@@ -248,14 +248,7 @@ class BookingService
             $monthBalance += ($weeks[$key]['workedHours'] - $totalHours);
         }
 
-        return array(
-            'dates'             => $bookingsToReturn,
-            'workedMonth'       => array(
-                'availableHours'    => $monthAvailable,
-                'monthBalance'      => $monthBalance,
-                'hoursWorked'       => $monthWorked
-            ),
-        );
+        return $bookingsToReturn;
     }
 
     /**

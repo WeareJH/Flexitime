@@ -224,9 +224,9 @@ class Booking implements JsonSerializable
     {
         return array(
             'id'        => $this->id,
-            'date'      => $this->date->getTimestamp(),
-            'startTime' => $this->startTime->getTimestamp(),
-            'endTime'   => $this->endTime->getTimestamp(),
+            'date'      => $this->date->format('d-m-Y'),
+            'startTime' => $this->startTime->format('H:i'),
+            'endTime'   => $this->endTime->format('H:i'),
             'total'     => $this->total,
             'balance'   => $this->balance,
             'notes'     => $this->notes,

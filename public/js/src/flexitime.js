@@ -1,8 +1,9 @@
-(function() {
+(function(angular) {
     'use strict';
 
     angular.module("JhHub", [
         'ui.bootstrap',
-        'ngResource']
-    );
-})();
+        'ngResource',
+        'ngAnimate'
+    ]);
+})(angular);

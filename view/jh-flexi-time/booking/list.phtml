@@ -1,5 +1,6 @@
 <?php $this->HeadScript()->appendFile('/assets/vendor/angular/angular.min.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/assets/vendor/angular-resource/angular-resource.min.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular-animate/angular-animate.min.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/assets/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/js/dist/flexitime.min.js','text/javascript'); ?>
 <?php $this->headLink()->appendStylesheet('/css/flexi-time.css'); ?>
@@ -13,19 +14,10 @@ $this->headTitle($title); ?>
             <div class="text-center">
                 <h1>
                     <a class="m-pager" href="#" ng-click="updatePeriod(pagination.prev.m, pagination.prev.y, user)"><span class="glyphicon glyphicon-chevron-left"></span></a>
-                    {{ date | date: 'MMMM yyyy' | uppercase }}
+                    <span>{{ date | date: 'MMMM yyyy' | uppercase }}</span>
+                    <span ng-show="loadingRecords" class="glyphicon glyphicon-refresh spin large-load"></span>
                     <a class="m-pager" href="#" ng-click="updatePeriod(pagination.next.m, pagination.next.y, user)"><span class="glyphicon glyphicon-chevron-right"></span></a>
                 </h1>
-
-                <div id="totals-brief">
-                    <p>
-                        <span class="worked-to-date">{{ totals.monthTotalWorkedHours }}</span>&nbsp;&nbsp;/&nbsp;&nbsp;
-                        <span class="month-available">{{ totals.monthTotalHours }}</span>&nbsp; &bull; &nbsp;
-                        <span class="balance-month"> {{  totals.monthBalance | signTotal }} </span>
-                        &nbsp; &bull; &nbsp;
-                        <span class="balance-running"> {{ totals.runningBalance | signTotal}} </span>
-                    </p>
-                </div>
             </div>
         </div>
     </div>
@@ -34,7 +26,7 @@ $this->headTitle($title); ?>
         <div class="col-sm-offset-1 col-sm-7 ">
 
             <div class="col-container">
-                <table class="table table-hover booking-table booking-table-user" ng-repeat="(weekNum, week) in weeks">
+                <table class="table table-hover booking-table booking-table-user" ng-repeat="(weekNum, week) in weeks" ng-controller="WeekCtrl">
                     <thead ng-if="weekNum == 0">
                         <tr>
                             <th style="width: 30%"></th>
@@ -45,32 +37,32 @@ $this->headTitle($title); ?>
                             <th style="width: 10%"></th>
                         </tr>
                     </thead>
-                    <tbody ng-repeat="(bookingIndex, booking) in week" ng-controller="BookingCtrl">
+                    <tbody ng-repeat="(bookingIndex, booking) in week" ng-controller="BookingCtrl" class="repeated-item">
                         <!-- repeat -->
                         <tr ng-click="toggleEditRow()" class="day {{ booking | bookingClasses }}">
                             <!-- if first day of week -->
-                            <td style="width: 30%" ng-if="!bookingIndex"><b>WEEK {{ weekNum + 1 }}</b> -
-                                <span class="text-muted">{{ week.workedHours }} / {{ week.totalHours}}</span>
-                                <span class="pull-right week-balance" ng-class="(week.balance >= 0) ? 'balance-success' : 'balance-danger'">{{ week.balance | signTotal }}</span>
+                            <td animate="updated" style="width: 30%" ng-if="!bookingIndex"><b>WEEK {{ weekNum + 1 }}</b> -
+                                <span class="text-muted">{{ bookedHours() }} / {{ totalHours }}</span>
+                                <span class="pull-right week-balance" ng-class="(balance() >= 0) ? 'balance-success' : 'balance-danger'">{{ balance() | signTotal }}</span>
                             </td>
                             <!-- Every other day -->
-                            <td style="width: 30%" ng-if="bookingIndex"></td>
-                            <td style="width: 20%">{{ booking.date * 1000 | date: 'EEEE, d' }}</td>
-                            <td style="width: 20%" ng-show="booking.id">{{ booking.startTime * 1000 | date: 'hh:mm'}} - {{ booking.endTime * 1000 | date: 'hh:m' }}</td>
-                            <td style="width: 20%" ng-hide="booking.id"></td>
-                            <td style="width: 10%" ng-show="booking-id">{{ booking.total | number}}</td>
-                            <td style="width: 10%" ng-hide="booking-id"></td>
-                            <td style="width: 10%" class="col-notes">
-                                <span ng-if="booking.notes" class="fx-tooltip fx-tooltip-note" tooltip="{{ booking.notes }}">
+                            <td animate="updated" style="width: 30%" ng-if="bookingIndex"></td>
+                            <td animate="updated" style="width: 20%">{{ booking.getIsoDate() | date: 'EEEE, d' }}</td>
+                            <td animate="updated" style="width: 20%" ng-show="booking.id">{{ booking.startTime }} - {{ booking.endTime }}</td>
+                            <td animate="updated" style="width: 20%" ng-hide="booking.id"></td>
+                            <td animate="updated" style="width: 10%" ng-show="booking.id">{{ booking.total | number}}</td>
+                            <td animate="updated" style="width: 10%" ng-hide="booking.id"></td>
+                            <td animate="updated" style="width: 10%" class="col-notes">
+                                <span ng-hide="!booking.notes" tooltip="{{ booking.notes }}">
                                     <span class="glyphicon glyphicon-comment"></span>
                                 </span>
                             </td>
-                            <td style="width: 10%">
-                                <div class="btn-group pull-right">
-                                    <button ng-if="day.booking" class="btn btn-xs btn-default">
+                            <td animate="updated" style="width: 10%">
+                                <div class="pull-right">
+                                    <button ng-show="booking.id" class="btn btn-xs btn-default">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </button>
-                                    <button ng-if="!day.booking" class="btn btn-xs btn-success">
+                                    <button ng-hide="booking.id" class="btn btn-xs btn-success">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
@@ -89,7 +81,7 @@ $this->headTitle($title); ?>
                                                 <label class="col-sm-4 control-label" for="book-starttime">Start Time</label>
                                                 <div class="col-sm-8">
                                                     <div class="input-group">
-                                                        <input type="text"
+                                                        <input type="time"
                                                                ng-model="booking.startTime"
                                                                name="startTime"
                                                                step="{{ timeSettings.timeStep * 60 }}"

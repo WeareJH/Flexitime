@@ -1,4 +1,4 @@
-(function() { 'use strict';
+(function(angular) { 'use strict';
     var app = angular.module("JhHub");
 
     app.directive('padHours', function() {
@@ -23,4 +23,4 @@
         };
     });
 
-})();
+})(angular);

@@ -48,16 +48,6 @@ body {
     }
 }
 
-tr.success.fadeout td {
-    background-color: white;
-    transition: all 1s;
-}
-
-tr.danger.fadeout td {
-    background-color: white;
-    transition: all 1s;
-}
-
 .table {
     font-size: 12px;
 }
@@ -159,7 +149,7 @@ li.list-group-item {
     border-bottom: none;
 }
 
-.balance-success {
+.balance-error {
     color: #4cae4c;
 }
 
@@ -323,4 +313,43 @@ li.list-group-item {
 
 .booking-table > tbody > tr > td:first-of-type {
     border-top: none;
+}
+
+.large-load {
+    font-size: 24px;
+}
+
+.success-add, .success-remove {
+    background-color: white;
+    transition: all 1s;
+    -webkit-transition: all 1s ease-in-out;
+}
+
+.success-add-active {
+    background-color: #dff0d8;
+}
+
+.success-remove {
+    background-color: #dff0d8;
+
+}
+
+.success-remove-active {
+    background-color: white;
+}
+
+.danger-add,.danger-remove {
+    background-color: white;
+    transition: all 1s;
+    -webkit-transition: all 1s ease-in-out;
+}
+.danger-add-active {
+    background-color: #f2dede;
+}
+.danger-remove {
+    background-color: #f2dede;
+
+}
+.danger-remove-active {
+    background-color: white;
 }

@@ -1,4 +1,4 @@
-(function() { 'use strict';
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
@@ -18,9 +18,36 @@
 
     app.factory('BookingResource', ['$resource',
         function($resource){
-            return $resource('/flexi-time-rest/:id', { 'id': '@id'}, {
+
+            var bookingResource = $resource('/flexi-time-rest/:id', { 'id': '@id'}, {
                 'update' : {'method' : 'PUT'}
             });
+
+            bookingResource.prototype.getIsoDate = function() {
+                var dateStr     = this.date;
+                var dateParts   = dateStr.split("-");
+                var date        = new Date(
+                    dateParts[2],
+                    dateParts[1] - 1,
+                    dateParts[0]
+                );
+
+                return date.toISOString();
+            };
+
+            bookingResource.prototype.getDate = function() {
+                var dateStr     = this.date;
+                var dateParts   = dateStr.split("-");
+                var date        = new Date(
+                    dateParts[2],
+                    dateParts[1] - 1,
+                    dateParts[0]
+                );
+
+                return date;
+            };
+
+            return bookingResource;
         }]
     );
 
@@ -48,4 +75,4 @@
         });
     });
 
-})();
+})(angular);

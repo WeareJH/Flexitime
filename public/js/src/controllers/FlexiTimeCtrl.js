@@ -1,14 +1,34 @@
-(function() { 'use strict';
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
-    app.controller("FlexiTimeCtrl", function ($scope, $http, BookingService) {
+    app.controller("FlexiTimeCtrl", function ($scope, BookingService, TotalsService) {
+
+        $scope.loadingRecords = true;
+        $scope.totals = TotalsService.totals;
+
+        $scope.$watch( function() { return TotalsService.totals; }, function(data) {
+            $scope.totals = TotalsService.totals;
+        }, true);
+
+
+        $scope.updatePeriod = function(month, year) {
+            $scope.loadingRecords = true;
+            BookingService.getBookings({
+                params: {
+                    y: year,
+                    m: month
+                }
+            }).then(function (data) {
+                $scope.weeks            = data.weeks;
+                $scope.date             = data.date;
+                $scope.pagination       = data.pagination;
+                TotalsService.totals    = data.totals
+                $scope.loadingRecords   = false;
+            });
+        };
 
         $scope.weeks = [];
-
-        BookingService.getBookings().then(function(weeks) {
-            $scope.weeks = weeks;
-        });
 
         $scope.currentEditRow = false;
 
@@ -16,54 +36,12 @@
             $scope.currentEditRow = editRowDate;
         };
 
+        $scope.currentDate = new Date();
 
-        /*$scope.currentDate = new Date();
-
-
-        $scope.updatePeriod = function(month, year, user) {
-
-            $http({
-                url: '/flexi-time-rest',
-                method: 'GET',
-                params: {
-                    y: year,
-                    m: month
-                }
-            }).success(function(data) {
-                $scope.records      = data.bookings;
-                $scope.totals       = data.bookings.totals;
-                $scope.pagination   = data.pagination;
-                var user = {
-                    fName   : data.bookings.user.name.split(' ')[0],
-                    email   : data.bookings.user.email,
-                    name    : data.bookings.user.name,
-                    id      : data.bookings.user.id
-                };
-                $scope.user     = user;
-                $scope.date     = new Date(data.date.date.split(" ")[0]);
-                $scope.today    = new Date(data.today.date.split(" ")[0]);
-            });
-
-        };
-
-        $scope.loadUserRecords = function() {
-            $http.get('/flexi-time-rest').success(function(data) {
-                $scope.records      = data.bookings;
-                $scope.totals       = data.bookings.totals;
-                $scope.pagination   = data.pagination;
-                var user = {
-                    fName   : data.bookings.user.name.split(' ')[0],
-                    email   : data.bookings.user.email,
-                    name    : data.bookings.user.name,
-                    id      : data.bookings.user.id
-                };
-                $scope.user     = user;
-                $scope.date     = new Date(data.date.date.split(" ")[0]);
-                $scope.today    = new Date(data.today.date.split(" ")[0]);
-            });
-        };
-        $scope.loadUserRecords();*/
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var currentMonth = months[$scope.currentDate.getMonth()];
+        $scope.updatePeriod(currentMonth, $scope.currentDate.getFullYear());
 
     });
 
-})();
+})(angular);

@@ -1,22 +1,27 @@
-(function() {
+(function(angular) {
     'use strict';
 
     angular.module("JhHub", [
         'ui.bootstrap',
-        'ngResource']
-    );
-})();
+        'ngResource',
+        'ngAnimate'
+    ]);
+})(angular);
 (function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
-    app.controller("BookingCtrl", ["$scope", "BookingService", "timeSettings", function ($scope, BookingService, timeSettings) {
+    app.controller("BookingCtrl", ["$scope", "BookingService", "timeSettings", function ($scope, BookingService, TotalsService, timeSettings, $animate) {
 
         $scope.showEditRow = false;
 
         $scope.saving = false;
 
+        $scope.updated = false;
+
         $scope.deleting = false;
+
+        $scope.successVisisble = false;
 
         $scope.bookingService = BookingService;
 
@@ -31,34 +36,60 @@
         $scope.save = function() {
             $scope.saving = true;
             $scope.bookingService.saveBooking($scope.booking)
-                .then(function() {
-                    $scope.saving = false;
+                .then(function(data) {
+                    $scope.booking          = data.booking;
+                    TotalsService.totals    = data.totals;
+                    $scope.saving           = false;
                     $scope.bookingForm.$setPristine();
                     $scope.toggleEditRow();
+                    $scope.updated = 'updated';
                 });
         };
 
         $scope.delete = function () {
             $scope.deleting = true;
             $scope.bookingService.deleteBooking($scope.booking)
-                .then(function() {
-                    $scope.deleting = false;
+                .then(function(data) {
+                    $scope.booking          = data.booking;
+                    TotalsService.totals    = data.totals;
+                    $scope.deleting         = false;
+                    $scope.toggleEditRow();
+                    $scope.updated = 'removed';
                 });
         };
     }]);
-
 })(angular);
-(function() { 'use strict';
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
-    app.controller("FlexiTimeCtrl", ['$scope', '$http', 'BookingService', function ($scope, $http, BookingService) {
+    app.controller("FlexiTimeCtrl", function ($scope, BookingService, TotalsService) {
+
+        $scope.loadingRecords = true;
+        $scope.totals = TotalsService.totals;
+
+        $scope.$watch( function() { return TotalsService.totals; }, function(data) {
+            $scope.totals = TotalsService.totals;
+        }, true);
+
+
+        $scope.updatePeriod = function(month, year) {
+            $scope.loadingRecords = true;
+            BookingService.getBookings({
+                params: {
+                    y: year,
+                    m: month
+                }
+            }).then(function (data) {
+                $scope.weeks            = data.weeks;
+                $scope.date             = data.date;
+                $scope.pagination       = data.pagination;
+                TotalsService.totals    = data.totals
+                $scope.loadingRecords   = false;
+            });
+        };
 
         $scope.weeks = [];
-
-        BookingService.getBookings().then(function(weeks) {
-            $scope.weeks = weeks;
-        });
 
         $scope.currentEditRow = false;
 
@@ -66,65 +97,50 @@
             $scope.currentEditRow = editRowDate;
         };
 
+        $scope.currentDate = new Date();
 
-        /*$scope.currentDate = new Date();
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var currentMonth = months[$scope.currentDate.getMonth()];
+        $scope.updatePeriod(currentMonth, $scope.currentDate.getFullYear());
 
+    });
 
-        $scope.updatePeriod = function(month, year, user) {
+})(angular);
+(function(angular) { 'use strict';
 
-            $http({
-                url: '/flexi-time-rest',
-                method: 'GET',
-                params: {
-                    y: year,
-                    m: month
+    var app = angular.module("JhHub");
+
+    app.controller("WeekCtrl", ["$scope", function ($scope) {
+
+        $scope.bookedHours = 0;
+
+        $scope.totalHours = $scope.week.length * 7.5;
+
+        $scope.bookedHours = function() {
+            return $scope.week.reduce(function(current, booking) {
+
+                if (booking.id) {
+                    return current + parseFloat(booking.total);
                 }
-            }).success(function(data) {
-                $scope.records      = data.bookings;
-                $scope.totals       = data.bookings.totals;
-                $scope.pagination   = data.pagination;
-                var user = {
-                    fName   : data.bookings.user.name.split(' ')[0],
-                    email   : data.bookings.user.email,
-                    name    : data.bookings.user.name,
-                    id      : data.bookings.user.id
-                };
-                $scope.user     = user;
-                $scope.date     = new Date(data.date.date.split(" ")[0]);
-                $scope.today    = new Date(data.today.date.split(" ")[0]);
-            });
-
+                return current;
+            }, 0);
         };
 
-        $scope.loadUserRecords = function() {
-            $http.get('/flexi-time-rest').success(function(data) {
-                $scope.records      = data.bookings;
-                $scope.totals       = data.bookings.totals;
-                $scope.pagination   = data.pagination;
-                var user = {
-                    fName   : data.bookings.user.name.split(' ')[0],
-                    email   : data.bookings.user.email,
-                    name    : data.bookings.user.name,
-                    id      : data.bookings.user.id
-                };
-                $scope.user     = user;
-                $scope.date     = new Date(data.date.date.split(" ")[0]);
-                $scope.today    = new Date(data.today.date.split(" ")[0]);
-            });
+        $scope.balance = function() {
+            return $scope.bookedHours() - $scope.totalHours;
         };
-        $scope.loadUserRecords();*/
 
     }]);
 
-})();
-(function() { 'use strict';
+})(angular);
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
     app.filter('bookingClasses', function(today) {
         return function(booking) {
 
-            var date = new Date(booking.date * 1000);
+            var date = booking.getDate();
 
             var classes = [];
 
@@ -149,20 +165,21 @@
         };
     });
 
-})();
-(function() { 'use strict';
+})(angular);
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
     app.filter('isoDate', function() {
         return function(input) {
+
             input = new Date(input).toISOString();
             return input;
         };
     });
 
-})();
-(function() { 'use strict';
+})(angular);
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
@@ -177,8 +194,39 @@
         };
     });
 
-})();
-(function() { 'use strict';
+})(angular);
+(function(angular) { 'use strict';
+    var app = angular.module("JhHub");
+
+    app.directive('animate', function($animate) {
+        return function(scope, elem, attr) {
+            scope.$watch(attr.animate, function(nv, ov) {
+
+                if (nv) {
+
+                    var stateClasses = {
+                        updated: 'success',
+                        removed: 'danger'
+                    }
+
+                    var c = '';
+                    if (stateClasses.hasOwnProperty(nv)) {
+                        c = stateClasses[nv];
+                    }
+
+                    $animate.addClass(elem, c, function() {
+                        $animate.removeClass(elem, c, function() {
+                            scope.$apply(function() {
+                                scope.updated = false;
+                            });
+                        });
+                    });
+                }
+            })
+        }
+    });
+})(angular);
+(function(angular) { 'use strict';
     var app = angular.module("JhHub");
 
     app.directive('padHours', function() {
@@ -203,8 +251,8 @@
         };
     });
 
-})();
-(function() { 'use strict';
+})(angular);
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
@@ -228,8 +276,42 @@
         };
     });
 
-})();
-(function() { 'use strict';
+})(angular);
+(function(angular) { 'use strict';
+
+    var app = angular.module("JhHub");
+
+    app.directive('timeStep', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, elm, attrs, ctrl) {
+                ctrl.$parsers.unshift(function(viewValue) {
+
+                    if(viewValue === undefined) {
+                        ctrl.$setValidity('timeStep', false);
+                        return undefined;
+                    }
+
+                    var parts   = viewValue.split(":");
+                    var minutes = parts[1];
+
+                    //Check the time is a valid minutes step
+                    if (minutes % 15 === 0) {
+                        // it is valid
+                        ctrl.$setValidity('timeStep', true);
+                        return viewValue;
+                    } else {
+                        // it is invalid, return undefined (no model update)
+                        ctrl.$setValidity('timeStep', false);
+                        return undefined;
+                    }
+                });
+            }
+        };
+    });
+
+})(angular);
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
@@ -271,41 +353,7 @@
         };
     });
 
-})();
-(function() { 'use strict';
-
-    var app = angular.module("JhHub");
-
-    app.directive('timeStep', function() {
-        return {
-            require: 'ngModel',
-            link: function(scope, elm, attrs, ctrl) {
-                ctrl.$parsers.unshift(function(viewValue) {
-
-                    if(viewValue === undefined) {
-                        ctrl.$setValidity('timeStep', false);
-                        return undefined;
-                    }
-
-                    var parts   = viewValue.split(":");
-                    var minutes = parts[1];
-
-                    //Check the time is a valid minutes step
-                    if (minutes % 15 === 0) {
-                        // it is valid
-                        ctrl.$setValidity('timeStep', true);
-                        return viewValue;
-                    } else {
-                        // it is invalid, return undefined (no model update)
-                        ctrl.$setValidity('timeStep', false);
-                        return undefined;
-                    }
-                });
-            }
-        };
-    });
-
-})();
+})(angular);
 (function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
@@ -314,9 +362,14 @@
 
         this.bookingResource = BookingResource;
 
+        this.timeSettings = {
+            defaultStartTime: "09:00",
+            defaultEndTime: "17:30"
+        };
+
         this.processBookingsInToWeeks = function(result) {
 
-            var bookings = result.bookings.records.dates;
+            var bookings = result.bookings;
             var weeks       = [];
             var weekCounter = 0;
             var lastDayNum  = 0;
@@ -346,11 +399,18 @@
                 }
             }
 
-            return weeks;
+            var data = {
+                weeks       : weeks,
+                date        : new Date(result.date * 1000),
+                pagination  : result.pagination,
+                totals      : result.totals
+            };
+
+            return data;
         };
 
-        this.getBookings = function() {
-            return this.bookingResource.get()
+        this.getBookings = function(data) {
+            return this.bookingResource.get(data.params)
                 .$promise
                 .then(this.processBookingsInToWeeks);
         };
@@ -358,28 +418,72 @@
         this.saveBooking = function(booking) {
             if (booking.id) {
                 //update
-                return booking.update()
+                return booking.$update()
                     .then(this.updateSuccess);
             } else {
-                return booking.save().then(this.createSuccess);
+                return booking.$save().then(this.createSuccess);
             }
         };
 
         this.updateSuccess = function(result) {
-            return new BookingResource(result.booking);
+            return {
+                booking : new BookingResource(result.booking),
+                totals  : result.totals
+            };
         };
 
         this.createSuccess = function(result) {
-            return new BookingResource(result.booking);
+            return {
+                booking : new BookingResource(result.booking),
+                totals  : result.totals
+            };
+        };
+
+        this.newBooking = function(date) {
+            return new BookingResource({
+                date        : date,
+                startTime   : this.timeSettings.defaultStartTime,
+                endTime     : this.timeSettings.defaultEndTime
+            });
         };
 
         this.deleteBooking = function(booking) {
-            return booking.$delete();
+            var date = booking.date;
+            var newBooking = this.newBooking(date);
+
+            return booking.$delete()
+                .then(function(result) {
+                    return {
+                        booking : newBooking,
+                        totals  : result.totals
+                    };
+                });
         };
     });
 
 })(angular);
-(function() { 'use strict';
+(function(angular) { 'use strict';
+
+    var app = angular.module("JhHub");
+
+    app.service('TotalsService', function() {
+
+        this.totals = {
+            balanceForward          : 0,
+            monthBalance            : 0,
+            monthRemainingHours     : 0,
+            monthTotalHours         : 0,
+            monthTotalWorkedHours   : 0,
+            runningBalance          : 0
+        };
+
+        this.setTotals = function(totals) {
+            this.totals = totals;
+        }
+    });
+
+})(angular);
+(function(angular) { 'use strict';
 
     var app = angular.module("JhHub");
 
@@ -399,9 +503,36 @@
 
     app.factory('BookingResource', ['$resource',
         function($resource){
-            return $resource('/flexi-time-rest/:id', { 'id': '@id'}, {
+
+            var bookingResource = $resource('/flexi-time-rest/:id', { 'id': '@id'}, {
                 'update' : {'method' : 'PUT'}
             });
+
+            bookingResource.prototype.getIsoDate = function() {
+                var dateStr     = this.date;
+                var dateParts   = dateStr.split("-");
+                var date        = new Date(
+                    dateParts[2],
+                    dateParts[1] - 1,
+                    dateParts[0]
+                );
+
+                return date.toISOString();
+            };
+
+            bookingResource.prototype.getDate = function() {
+                var dateStr     = this.date;
+                var dateParts   = dateStr.split("-");
+                var date        = new Date(
+                    dateParts[2],
+                    dateParts[1] - 1,
+                    dateParts[0]
+                );
+
+                return date;
+            };
+
+            return bookingResource;
         }]
     );
 
@@ -429,4 +560,4 @@
         });
     });
 
-})();
+})(angular);
