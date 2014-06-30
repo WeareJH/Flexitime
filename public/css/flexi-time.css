@@ -8,14 +8,6 @@ body {
     width: 0;
 }
 
-.has-spinner.active {
-}
-
-.has-spinner.active .spinner {
-    opacity: 1;
-    width: auto; /* This doesn't work, just fix for unkown width elements */
-}
-
 .has-spinner.btn-sm.active .spinner {
     width: 14px;
 }
@@ -56,28 +48,12 @@ body {
     }
 }
 
-tr.success.fadeout td {
-    background-color: white;
-    transition: all 1s;
-}
-
-tr.danger.fadeout td {
-    background-color: white;
-    transition: all 1s;
-}
-
 .table {
     font-size: 12px;
-
 }
 
 .table td {
     padding: 5px;
-}
-
-.chart {
-    height: 800px;
-    width: 800px;
 }
 
 .dropdown-menu  {
@@ -103,55 +79,6 @@ tr.danger.fadeout td {
     margin-top: 15%;
 }
 
-.list-group-item-success {
-    color: #3c763d;
-    background-color: #dff0d8;
-}
-a.list-group-item-success {
-    color: #3c763d;
-}
-a.list-group-item-success .list-group-item-heading {
-    color: inherit;
-}
-a.list-group-item-success:hover,
-a.list-group-item-success:focus {
-    color: #3c763d;
-    background-color: #d0e9c6;
-}
-a.list-group-item-success.active,
-a.list-group-item-success.active:hover,
-a.list-group-item-success.active:focus {
-    color: #fff;
-    background-color: #3c763d;
-    border-color: #3c763d;
-}
-
-.list-group-item-danger {
-    color: #a94442;
-    background-color: #f2dede;
-}
-a.list-group-item-danger {
-    color: #a94442;
-}
-a.list-group-item-danger .list-group-item-heading {
-    color: inherit;
-}
-a.list-group-item-danger:hover,
-a.list-group-item-danger:focus {
-    color: #a94442;
-    background-color: #ebcccc;
-}
-a.list-group-item-danger.active,
-a.list-group-item-danger.active:hover,
-a.list-group-item-danger.active:focus {
-    color: #fff;
-    background-color: #a94442;
-    border-color: #a94442;
-}
-
-#admin-users #users {
-}
-
 #admin-users #users a {
     padding: 5px 5px;
     width: 100%;
@@ -168,7 +95,6 @@ a.list-group-item-danger.active:focus {
     font-weight: bold;
 }
 
-
 #admin-users {
     position: relative;
     overflow: hidden;
@@ -179,10 +105,8 @@ a.list-group-item-danger.active:focus {
     max-height: 800px;
 }
 
-
 .col-container {
     border-radius: 6px;
-    #background: #1d1f21;
     padding: 4px;
 }
 
@@ -194,7 +118,7 @@ a.list-group-item-danger.active:focus {
 
 }
 
-.table-cont h3{
+.table-cont h3 {
     #color: white;
 }
 
@@ -206,10 +130,6 @@ a.list-group-item-danger.active:focus {
     border: none;
 }
 
-.table-cont {
-    #color: #888888;
-}
-
 li.list-group-item {
     color: black;
 }
@@ -217,46 +137,6 @@ li.list-group-item {
 .note {
     cursor: pointer;
 }
-
-.booking-table .no-booking-past td:first-child {
-    border-right: 6px solid #FC0D1B;
-}
-
-.table-hover > tbody > tr.no-booking-past:hover > td,
-.table-hover > tbody > tr.no-booking-past:hover > th {
-    background-color: #F2DED8;
-}
-
-.no-booking-future {
-    background: #f5f5f5;
-}
-
-.no-booking-future td:first-child {
-    background: white;
-}
-
-.table-hover > tbody > tr.no-booking-future:hover > td,
-.table-hover > tbody > tr.no-booking-future:hover > th {
-    background-color: #f5f5f5;
-}
-
-.no-booking-future td.col-date {
-    font-weight: bold;
-}
-
-.today {
-    background: #ffc;
-}
-
-.today td:first-child {
-    background: white;
-}
-
-.table-hover > tbody > tr.today:hover > td ,
-.table-hover > tbody > tr.today:hover > th {
-    background-color: #ffc;
-}
-
 .week-totals {
     background-color: #f5f5f5;
 }
@@ -265,16 +145,11 @@ li.list-group-item {
     margin: 0px;
 }
 
-.booking-table tr:nth-last-child(2),
-.booking-table tr:last-child {
-    border-bottom: 4px solid #ddd
-}
-
 .booking-table-admin tr:nth-last-child(2) {
     border-bottom: none;
 }
 
-.balance-success {
+.balance-error {
     color: #4cae4c;
 }
 
@@ -366,31 +241,115 @@ li.list-group-item {
     border-right: 6px solid #5cb85c;
 }
 
-.booking-table-user tr.editing {
-    border-bottom: none !important;
+.booking-table > tbody:first-of-type > tr:first-child {
+    border-top: 4px solid #ddd;
 }
+
+
+.booking-table > tbody+tbody {
+    border-top: none;
+}
+
+
+.booking-table .no-booking-past td:first-child {
+    border-right: 6px solid #FC0D1B;
+}
+
+.booking-table > tbody > tr.no-booking-past:hover > td,
+.booking-table > tbody > tr.no-booking-past:hover > th {
+    background-color: #F2DED8;
+}
+
+.no-booking-future {
+    background: #f5f5f5;
+}
+
+.no-booking-future td:first-child {
+    background: white;
+}
+
+.booking-table > tbody > tr.no-booking-future:hover > td,
+.booking-table > tbody > tr.no-booking-future:hover > th {
+    background-color: #f5f5f5;
+}
+
+.no-booking-future td.col-date {
+    font-weight: bold;
+}
+
+.today {
+    background: #ffc;
+}
+
+.today td:first-child {
+    background: white;
+}
+
+.booking-table > tbody > tr.today:hover > td ,
+.booking-table > tbody > tr.today:hover > th {
+    background-color: #ffc;
+}
+
+
 
 .booking-table-user .day td:first-child {
     border-top: none;
     background-color: white;
 }
 
+
 .booking-table-user .day td:first-child:hover {
     background-color: white;
 }
 
-.booking-table-user > tbody > tr.no-booking-past:hover > td:first-child {
+
+.booking-table-user > tbody > tr.no-booking-past:hover > td:first-of-type {
     background-color: white;
 }
 
-.booking-table > tbody > tr:hover > td:first-child {
+.booking-table > tbody > tr:hover > td:first-of-type {
     background-color: white;
 }
 
-.booking-table > tbody > tr > td:first-child {
+.booking-table > tbody > tr > td:first-of-type {
     border-top: none;
 }
 
-.booking-table tr:first-child td {
-    border-top: none;
+.large-load {
+    font-size: 24px;
+}
+
+.success-add, .success-remove {
+    background-color: white;
+    transition: all 1s;
+    -webkit-transition: all 1s ease-in-out;
+}
+
+.success-add-active {
+    background-color: #dff0d8;
+}
+
+.success-remove {
+    background-color: #dff0d8;
+
+}
+
+.success-remove-active {
+    background-color: white;
+}
+
+.danger-add,.danger-remove {
+    background-color: white;
+    transition: all 1s;
+    -webkit-transition: all 1s ease-in-out;
+}
+.danger-add-active {
+    background-color: #f2dede;
+}
+.danger-remove {
+    background-color: #f2dede;
+
+}
+.danger-remove-active {
+    background-color: white;
 }

@@ -9,11 +9,15 @@ php:
 install:
   - composer self-update
   - composer install --dev --prefer-source
+  - npm install -g bower
+  - npm install -g gulp
+  - npm install
 
 before_script:
   - mkdir -p build/logs
 
 script:
+  - npm test
   - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
   - ./vendor/bin/phpcs --standard=PSR2 ./src/
   - ./vendor/bin/phpcs --standard=PSR2 ./test/

@@ -35,16 +35,25 @@ return [
     'router' => [
         'routes' => [
             'flexi-time' => [
-                'type'    => 'segment',
+                'type'    => 'literal',
                 'options' => [
-                    'route'    => '/flexi-time[/][:action][/:id]',
-                    'constraints' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'     => '[0-9]+',
-                    ],
+                    'route'    => '/flexi-time',
                     'defaults' => [
                         'controller' => 'JhFlexiTime\Controller\Booking',
                         'action'     => 'list',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes'  => [
+                    'list' => [
+                        'type'      => 'literal',
+                        'options'   => [
+                            'route' => '/list',
+                            'defaults' => [
+                                'controller' => 'JhFlexiTime\Controller\Booking',
+                                'action'     => 'list',
+                            ],
+                        ],
                     ],
                 ],
             ],
