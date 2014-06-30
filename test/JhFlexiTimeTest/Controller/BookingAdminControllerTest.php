@@ -113,9 +113,9 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $this->assertEquals($users, $result->users);
     }
 
-    public function testViewActionReturnsEmptyResponseWhenNotXmlHttp()
+    public function testListActionReturnsEmptyResponseWhenNotXmlHttp()
     {
-        $this->routeMatch->setParam('action', 'view');
+        $this->routeMatch->setParam('action', 'list');
         $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
 
@@ -124,11 +124,11 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $this->assertEmpty($result->getVariables()->getArrayCopy());
     }
 
-    public function testViewActionReturnsJsonModelWhenAcceptIsJsonAndReturnsErrorIfUserIdNotPresent()
+    public function testListActionReturnsJsonModelWhenAcceptIsJsonAndReturnsErrorIfUserIdNotPresent()
     {
         $headers = $this->request->getHeaders();
         $headers->addHeaderLine('Accept', 'application/json');
-        $this->routeMatch->setParam('action', 'view');
+        $this->routeMatch->setParam('action', 'list');
 
         $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
@@ -141,11 +141,11 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         );
     }
 
-    public function testViewActionReturnsUsersRecordsWhenAcceptIsJson()
+    public function testListActionReturnsUsersRecordsWhenAcceptIsJson()
     {
         $headers = $this->request->getHeaders();
         $headers->addHeaderLine('Accept', 'application/json');
-        $this->routeMatch->setParam('action', 'view');
+        $this->routeMatch->setParam('action', 'list');
         $this->routeMatch->setParam('id', 2);
         $date = new \DateTime("25 March 2014");
         $booking = $this->getMockBooking();
