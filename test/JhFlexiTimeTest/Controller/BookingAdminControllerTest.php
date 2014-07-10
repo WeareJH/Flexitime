@@ -120,7 +120,7 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertInstanceOf('Zend\View\Model\ViewModel', $result);
-        $this->assertEmpty($result->getVariables());
+        $this->assertEmpty($result->getVariables()->getArrayCopy());
     }
 
     public function testViewActionReturnsJsonModelWhenAcceptIsJsonAndReturnsErrorIfUserIdNotPresent()
@@ -136,7 +136,7 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
         $this->assertSame(
             ['success' => false, 'message' => 'User does not exist'],
-            (array) $result->getVariables()
+            $result->getVariables()->getArrayCopy()
         );
     }
 

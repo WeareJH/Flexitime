@@ -46,7 +46,7 @@ class BalanceRepository implements BalanceRepositoryInterface
     {
         $runningBalance = $this->balanceRepository->findOneBy(array('user' => $user));
 
-        if(!$runningBalance) {
+        if (!$runningBalance) {
             $runningBalance = $this->createRunningBalance($user);
         }
 
