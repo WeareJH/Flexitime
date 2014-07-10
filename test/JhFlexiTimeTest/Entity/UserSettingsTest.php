@@ -65,6 +65,13 @@ class UserSettingsTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testGetSetStartingBalance()
+    {
+        $this->assertEquals(0, $this->userSettings->getStartingBalance());
+        $this->userSettings->setStartingBalance(5.5);
+        $this->assertEquals(5.5, $this->userSettings->getStartingBalance());
+    }
+
     public function testJsonSerialize()
     {
         $this->assertEquals([], $this->userSettings->jsonSerialize());

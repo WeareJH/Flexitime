@@ -10,7 +10,7 @@ use JsonSerializable;
 /**
  * Class UserSettings
  * @package JhFlexiTime\Entity
- * @author Ben Lill <ben@wearejh.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  *
  * @ORM\Entity
  * @ORM\Table(name="user_flexi_settings")
@@ -44,6 +44,13 @@ class UserSettings implements JsonSerializable
      * @ORM\Column(type="time", name="default_end_time", nullable=false)
      */
     protected $defaultEndTime = null;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(type="float", name="start_balance", nullable=false)
+     */
+    protected $startingBalance = 0;
 
     /**
      *
@@ -116,6 +123,24 @@ class UserSettings implements JsonSerializable
     public function getFlexStartDate()
     {
         return $this->flexStartDate;
+    }
+
+    /**
+     * @param float $startingBalance
+     * @return self
+     */
+    public function setStartingBalance($startingBalance)
+    {
+        $this->startingBalance = $startingBalance;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getStartingBalance()
+    {
+        return $this->startingBalance;
     }
 
     /**
