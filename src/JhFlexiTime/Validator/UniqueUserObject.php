@@ -26,7 +26,7 @@ class UniqueUserObject extends UniqueObject
         parent::__construct($options);
 
         if (!isset($options['user']) || !$options['user'] instanceof UserInterface) {
-            throw new \InvalidArgumentException("user must be provided and be an instance of UserInterface");
+            throw new \InvalidArgumentException('user must be provided and be an instance of \ZfcUser\Entity\UserInterface');
         }
 
         $this->user = $options['user'];

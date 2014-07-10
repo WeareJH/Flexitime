@@ -37,7 +37,7 @@ class Installer implements InstallerInterface
     /**
      * @var array
      */
-    protected $errors;
+    protected $errors = [];
 
     /**
      * @param UserRepositoryInterface $userRepository
@@ -95,6 +95,7 @@ class Installer implements InstallerInterface
         }
 
         $this->objectManager->flush();
+
     }
 
     /**

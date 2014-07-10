@@ -21,11 +21,11 @@ class BookingInputFilterFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $parentLocator  = $serviceLocator->getServiceLocator();
-        $objectManager  = $parentLocator->get('JhFlexiTime\ObjectManager');
-        $bookingRepository = $parentLocator->get('JhFlexiTime\Repository\BookingRepository');
-        $user           = $parentLocator->get('zfcuser_auth_service')->getIdentity();
-        $bookingOptions = $parentLocator->get('BookingOptions');
+        $parentLocator      = $serviceLocator->getServiceLocator();
+        $objectManager      = $parentLocator->get('JhFlexiTime\ObjectManager');
+        $bookingRepository  = $parentLocator->get('JhFlexiTime\Repository\BookingRepository');
+        $user               = $parentLocator->get('zfcuser_auth_service')->getIdentity();
+        $bookingOptions     = $parentLocator->get('BookingOptions');
 
         $uniqueValidator = new UniqueUserObject(array(
             'object_manager'    => $objectManager,

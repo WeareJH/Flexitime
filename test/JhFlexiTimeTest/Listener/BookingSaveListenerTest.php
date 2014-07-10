@@ -2,11 +2,14 @@
 
 namespace JhFlexiTimeTest\Listener;
 
+use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Listener\BookingSaveListener;
 use JhFlexiTime\Options\ModuleOptions;
 use JhFlexiTime\Entity\RunningBalance;
+use ZfcUser\Entity\UserInterface;
 use Zend\EventManager\Event;
 use JhFlexiTime\Entity\Booking;
+use Zend\I18n\Validator\DateTime;
 
 /**
  * Class BookingSaveListenerTest
@@ -88,7 +91,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $bookingSaveListener = $this->getMock(
             'JhFlexiTime\Listener\BookingSaveListener',
-            ['isDateInPreviousMonth', 'updateRunningBalance', 'getRunningBalance', 'isDateAfterUsersStartTrackingDate'],
+            ['isDateInPreviousMonth', 'updateRunningBalance', 'getRunningBalance', 'isDateAfterUsersStartTrackingMonth'],
             [
                 $this->objectManager,
                 $this->balanceRepository,
@@ -100,7 +103,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $bookingSaveListener
             ->expects($this->once())
-            ->method('isDateAfterUsersStartTrackingDate')
+            ->method('isDateAfterUsersStartTrackingMonth')
             ->with($booking)
             ->will($this->returnValue(true));
 
@@ -218,5 +221,39 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValueMap($return));
 
         $this->bookingSaveListener->attach($eventManager);
+    }
+
+    /**
+     * @dataProvider startTrackingDateProvider
+     */
+    public function testIsDateAfterStartTrackingDate($startTrackingDate, $expected)
+    {
+        $user = $this->getMock('ZfcUser\Entity\UserInterface');
+
+        $booking = new Booking();
+        $booking->setUser($user);
+        $booking->setDate(new \DateTime("30 March 2014"));
+
+        $settings = new UserSettings();
+        $settings->setFlexStartDate($startTrackingDate);
+
+        $this->userSettingsRepository
+             ->expects($this->once())
+             ->method('findOneByUser')
+             ->with($user)
+             ->will($this->returnValue($settings));
+
+        $this->assertEquals($expected, $this->bookingSaveListener->isDateAfterUsersStartTrackingMonth($booking));
+    }
+
+    public function startTrackingDateProvider()
+    {
+        return [
+            [new \DateTime("1 April 2014"), false],
+            [new \DateTime("10 June 2014"), false],
+            [new \DateTime("31 March 2014"), true],
+            [new \DateTime("1 March 2014"), true],
+            [new \DateTime("1 February 2014"), true],
+        ];
     }
 }

@@ -93,7 +93,7 @@ class BookingSaveListener extends AbstractListenerAggregate
         //but not before the user's start date
         //then update the running balance
         if ($this->isDateInPreviousMonth($booking->getDate(), $this->date) &&
-            $this->isDateAfterUsersStartTrackingDate($booking)
+            $this->isDateAfterUsersStartTrackingMonth($booking)
         ) {
             $this->updateRunningBalance($booking, $this->getRunningBalance($booking->getUser()));
         }
@@ -146,7 +146,7 @@ class BookingSaveListener extends AbstractListenerAggregate
      * @param Booking $booking
      * @return bool
      */
-    public function isDateAfterUsersStartTrackingDate(Booking $booking)
+    public function isDateAfterUsersStartTrackingMonth(Booking $booking)
     {
         $user           = $booking->getUser();
         $userSettings   = $this->userSettingsRepository->findOneByUser($user);
