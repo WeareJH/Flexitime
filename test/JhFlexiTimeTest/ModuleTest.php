@@ -139,4 +139,10 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $module = new Module();
         $module->onRegister($event);
     }
+
+    public function testGetInstallService()
+    {
+        $module = new Module();
+        $this->assertSame('JhFlexiTime\Install\Installer', $module->getInstallService());
+    }
 }

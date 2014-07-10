@@ -20,6 +20,7 @@ class BookingSaveListenerFactoryTest extends \PHPUnit_Framework_TestCase
             'JhFlexiTime\ObjectManager'                 => $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
             'JhFlexiTime\Repository\BalanceRepository'  => $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
             'FlexiOptions'                              => $this->getMock('JhFlexiTime\Options\ModuleOptions'),
+            'JhFlexiTime\Repository\UserSettingsRepository' => $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface')
         ];
 
         $serviceLocator

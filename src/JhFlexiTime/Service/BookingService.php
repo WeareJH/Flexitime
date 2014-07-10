@@ -72,12 +72,12 @@ class BookingService
         DoctrineHydrator $doctrineHydrator,
         InputFilterInterface $bookingInputFilter
     ) {
-        $this->options          = $options;
-        $this->bookingRepository   = $bookingRepository;
-        $this->objectManager    = $objectManager;
-        $this->periodService    = $periodService;
-        $this->hydrator         = $doctrineHydrator;
-        $this->inputFilter      = $bookingInputFilter;
+        $this->options              = $options;
+        $this->bookingRepository    = $bookingRepository;
+        $this->objectManager        = $objectManager;
+        $this->periodService        = $periodService;
+        $this->hydrator             = $doctrineHydrator;
+        $this->inputFilter          = $bookingInputFilter;
     }
 
     /**
@@ -95,6 +95,7 @@ class BookingService
         }
 
         $booking = new Booking;
+        $booking->setBalance(0 - $this->options->getHoursInDay());
         $this->hydrator->hydrate($this->inputFilter->getValues(), $booking);
         $booking->setUser($user);
 

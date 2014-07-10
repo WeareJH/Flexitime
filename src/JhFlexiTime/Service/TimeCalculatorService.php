@@ -130,7 +130,6 @@ class TimeCalculatorService
         ];
     }
 
-
     /**
      * @param UserInterface $user
      * @param \DateTime $period
@@ -144,6 +143,7 @@ class TimeCalculatorService
             'monthBalance'          => $this->getMonthBalance($user, $period),
             'runningBalance'        => $this->getRunningBalance($user),
             'monthRemainingHours'   => $this->periodService->getRemainingHoursInMonth($this->referenceDate),
+            'balanceForward'        => $this->getBalanceForward($user),
         ];
     }
 
@@ -153,21 +153,23 @@ class TimeCalculatorService
      */
     public function getRunningBalance(UserInterface $user)
     {
-
-        $balanceEntity = $this->balanceRepository->findByUser($user);
-
-        if ($balanceEntity) {
-            $balance = $balanceEntity->getBalance();
-        } else {
-            $balance = 0;
-        }
-
+        $balance             = $this->getBalanceForward($user);
         $totalHoursThisMonth = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
         $bookedThisMonth     = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
         $monthBalance        = $bookedThisMonth - $totalHoursThisMonth;
         $balance             += $monthBalance;
 
         return floatval(number_format($balance, 2));
+    }
+
+    /**
+     * @param UserInterface $user
+     * @return float
+     */
+    public function getBalanceForward(UserInterface $user)
+    {
+        $balanceEntity = $this->balanceRepository->findByUser($user);
+        return ($balanceEntity->getBalance()) ? $balanceEntity->getBalance() : 0;
     }
 
     /**

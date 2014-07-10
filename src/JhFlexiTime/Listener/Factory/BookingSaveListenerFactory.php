@@ -23,7 +23,8 @@ class BookingSaveListenerFactory implements FactoryInterface
             $serviceLocator->get('JhFlexiTime\ObjectManager'),
             $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
             new \DateTime,
-            $serviceLocator->get('FlexiOptions')
+            $serviceLocator->get('FlexiOptions'),
+            $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository')
         );
     }
 }

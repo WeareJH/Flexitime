@@ -53,7 +53,7 @@ $this->headTitle($title); ?>
                     </tr>
 
                     <tr>
-                        <td><?php echo $this->translate('Balance') ?></td>
+                        <td><?php echo $this->translate('Month Balance') ?></td>
                         <td class="balance-month total-right">
                             <span class="<?php echo ($totals['monthBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
                                 <b><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['monthBalance']); ?></b>
@@ -69,10 +69,18 @@ $this->headTitle($title); ?>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><?php echo $this->translate('Running balance') ?></td>
+                        <td><?php echo $this->translate('Running Balance') ?></td>
                         <td class="balance-running total-right">
                             <span class="<?php echo ($totals['runningBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
                                 <b><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['runningBalance']); ?></b>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><?php echo $this->translate('Balance Forward') ?></td>
+                        <td class="balance-forward total-right">
+                            <span class="<?php echo ($totals['balanceForward'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                                <b><?php echo ($totals['balanceForward'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['balanceForward']); ?></b>
                             </span>
                         </td>
                     </tr>

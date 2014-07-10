@@ -8,7 +8,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Class BalanceRepositoryFactory
  * @package JhFlexiTime\Repository\Factory
- * @author Aydin Hassan <aydin@wearejh.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class BalanceRepositoryFactory implements FactoryInterface
 {
@@ -19,7 +19,8 @@ class BalanceRepositoryFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         return new BalanceRepository(
-            $serviceLocator->get('JhFlexiTime\ObjectManager')->getRepository('JhFlexiTime\Entity\RunningBalance')
+            $serviceLocator->get('JhFlexiTime\ObjectManager')->getRepository('JhFlexiTime\Entity\RunningBalance'),
+            $serviceLocator->get('JhFlexiTime\ObjectManager')
         );
     }
 }

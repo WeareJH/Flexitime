@@ -3,6 +3,7 @@
 namespace JhFlexiTime\Listener;
 
 use JhFlexiTime\Entity\RunningBalance;
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\AbstractListenerAggregate;
 use JhFlexiTime\Repository\BalanceRepositoryInterface;
@@ -26,36 +27,44 @@ class BookingSaveListener extends AbstractListenerAggregate
     protected $date;
 
     /**
-     * @var \JhFlexiTime\Options\ModuleOptions
+     * @var ModuleOptions
      */
     protected $options;
 
     /**
-     * @var \JhFlexiTime\Repository\BalanceRepository
+     * @var BalanceRepository
      */
     protected $balanceRepository;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
+
+    /**
+     * @var UserSettingsRepositoryInterface
+     */
+    protected $userSettingsRepository;
 
     /**
      * @param ObjectManager $objectManager
      * @param BalanceRepositoryInterface $balanceRepository
      * @param \DateTime $date
      * @param ModuleOptions $options
+     * @param UserSettingsRepositoryInterface $userSettingsRepository
      */
     public function __construct(
         ObjectManager $objectManager,
         BalanceRepositoryInterface $balanceRepository,
         \DateTime $date,
-        ModuleOptions $options
+        ModuleOptions $options,
+        UserSettingsRepositoryInterface $userSettingsRepository
     ) {
-        $this->objectManager        = $objectManager;
-        $this->balanceRepository    = $balanceRepository;
-        $this->date                 = $date;
-        $this->options              = $options;
+        $this->objectManager            = $objectManager;
+        $this->balanceRepository        = $balanceRepository;
+        $this->date                     = $date;
+        $this->options                  = $options;
+        $this->userSettingsRepository   = $userSettingsRepository;
     }
 
     /**
@@ -63,7 +72,7 @@ class BookingSaveListener extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events)
     {
-        $sharedEvents      = $events->getSharedManager();
+        $sharedEvents = $events->getSharedManager();
         $this->listeners[]
             = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', [$this, 'updateBalance'], 100);
         $this->listeners[]
@@ -80,7 +89,13 @@ class BookingSaveListener extends AbstractListenerAggregate
     {
         $booking = $e->getParam('booking');
 
-        if ($this->isDateInPreviousMonth($booking->getDate(), $this->date)) {
+        //if this booking date is in a previous month
+        //but not before the user's start date
+        //then update the running balance
+        if (
+            $this->isDateInPreviousMonth($booking->getDate(), $this->date) &&
+            $this->isDateAfterUsersStartTrackingDate($booking)
+        ) {
             $this->updateRunningBalance($booking, $this->getRunningBalance($booking->getUser()));
         }
 
@@ -109,12 +124,6 @@ class BookingSaveListener extends AbstractListenerAggregate
     public function getRunningBalance(UserInterface $user)
     {
         $runningBalance = $this->balanceRepository->findByUser($user);
-        if (!$runningBalance) {
-            $runningBalance = new RunningBalance;
-            $runningBalance->setUser($user);
-            $this->objectManager->persist($runningBalance);
-            return $runningBalance;
-        }
         return $runningBalance;
     }
 
@@ -128,5 +137,24 @@ class BookingSaveListener extends AbstractListenerAggregate
         $date = clone $dateB;
         $date->modify('first day of this month 00:00:00');
         return $dateA < $date;
+    }
+
+    /**
+     * Check whether the date being booked is after the user's start
+     * tracking time date. We rewind this start tracking date to the beginning of the month,
+     * and count the whole month.
+     *
+     * @param Booking $booking
+     * @return bool
+     */
+    public function isDateAfterUsersStartTrackingDate(Booking $booking)
+    {
+        $user           = $booking->getUser();
+        $userSettings   = $this->userSettingsRepository->findOneByUser($user);
+
+        $startDate = clone $userSettings->getFlexStartDate();
+        $startDate->modify('first day of this month 00:00:00');
+
+        return $booking->getDate() >= $startDate;
     }
 }

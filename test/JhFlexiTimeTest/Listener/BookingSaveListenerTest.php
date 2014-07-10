@@ -16,22 +16,23 @@ use JhFlexiTime\Entity\Booking;
 class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 {
     protected $bookingSaveListener;
-
     protected $balanceRepository;
-
     protected $objectManager;
+    protected $userSettingsRepository;
 
     public function setUp()
     {
 
-        $this->balanceRepository    = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
-        $this->objectManager        = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $this->balanceRepository        = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
+        $this->objectManager            = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $this->userSettingsRepository   = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
 
         $this->bookingSaveListener  = new BookingSaveListener(
             $this->objectManager,
             $this->balanceRepository,
             new \DateTime("12 April 2014"),
-            new ModuleOptions()
+            new ModuleOptions(),
+            $this->userSettingsRepository
         );
     }
 
@@ -85,12 +86,23 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $date = new \DateTime("12 April 2014");
 
-        $bookingSaveListener = $this->getMock('JhFlexiTime\Listener\BookingSaveListener', ['isDateInPreviousMonth', 'updateRunningBalance', 'getRunningBalance'], [
-            $this->objectManager,
-            $this->balanceRepository,
-            $date,
-            new ModuleOptions()
-        ]);
+        $bookingSaveListener = $this->getMock(
+            'JhFlexiTime\Listener\BookingSaveListener',
+            ['isDateInPreviousMonth', 'updateRunningBalance', 'getRunningBalance', 'isDateAfterUsersStartTrackingDate'],
+            [
+                $this->objectManager,
+                $this->balanceRepository,
+                $date,
+                new ModuleOptions(),
+                $this->userSettingsRepository
+            ]
+        );
+
+        $bookingSaveListener
+            ->expects($this->once())
+            ->method('isDateAfterUsersStartTrackingDate')
+            ->with($booking)
+            ->will($this->returnValue(true));
 
         $bookingSaveListener
             ->expects($this->once())
@@ -182,28 +194,6 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $ret = $this->bookingSaveListener->getRunningBalance($userMock);
         $this->assertSame($runningBalance, $ret);
-    }
-
-    /**
-     * Test get running balance creates new Running Balance if it does not exist for the current user
-     */
-    public function testGetRunningBalanceReturnsNewInstanceIfNotExist()
-    {
-        $userMock = $this->getMock('ZfcUser\Entity\UserInterface');
-
-        $this->objectManager
-            ->expects($this->once())
-            ->method('persist');
-
-        $this->balanceRepository->expects($this->once())
-            ->method('findByUser')
-            ->with($userMock)
-            ->will($this->returnValue(null));
-
-        $ret = $this->bookingSaveListener->getRunningBalance($userMock);
-        $this->assertInstanceOf('JhFlexiTime\Entity\RunningBalance', $ret);
-        $this->assertEquals(0, $ret->getBalance());
-        $this->assertSame($userMock, $ret->getUser());
     }
 
     public function testAttach()
