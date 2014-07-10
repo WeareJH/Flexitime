@@ -42,15 +42,9 @@ class BalanceRepository implements BalanceRepositoryInterface
      * @param UserInterface $user
      * @return \JhFlexiTime\Entity\RunningBalance
      */
-    public function findByUser(UserInterface $user)
+    public function findOneByUser(UserInterface $user)
     {
-        $runningBalance = $this->balanceRepository->findOneBy(array('user' => $user));
-
-        if (!$runningBalance) {
-            $runningBalance = $this->createRunningBalance($user);
-        }
-
-        return $runningBalance;
+        return $this->balanceRepository->findOneBy(array('user' => $user));
     }
 
     /**
@@ -62,18 +56,5 @@ class BalanceRepository implements BalanceRepositoryInterface
     public function findOneBy(array $criteria)
     {
         return $this->balanceRepository->findOneBy($criteria);
-    }
-
-    /**
-     * @param UserInterface $user
-     * @return RunningBalance
-     */
-    public function createRunningBalance(UserInterface $user)
-    {
-        $runningBalance = new RunningBalance;
-        $runningBalance->setUser($user);
-        $this->objectManager->persist($runningBalance);
-        $this->objectManager->flush();
-        return $runningBalance;
     }
 }

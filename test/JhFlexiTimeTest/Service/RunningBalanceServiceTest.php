@@ -190,13 +190,13 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->balanceRepository
               ->expects($this->at(0))
-              ->method('findByUser')
+              ->method('findOneByUser')
               ->with($user1)
               ->will($this->returnValue($runningBalance1));
 
         $this->balanceRepository
             ->expects($this->at(1))
-            ->method('findByUser')
+            ->method('findOneByUser')
             ->with($user2)
             ->will($this->returnValue($runningBalance2));
 
@@ -221,7 +221,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->balanceRepository
             ->expects($this->once())
-            ->method('findByUser')
+            ->method('findOneByUser')
             ->with($user)
             ->will($this->returnValue($runningBalance));
 
@@ -267,13 +267,13 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->balanceRepository
             ->expects($this->at(0))
-            ->method('findByUser')
+            ->method('findOneByUser')
             ->with($user1)
             ->will($this->returnValue($runningBalance1));
 
         $this->balanceRepository
             ->expects($this->at(1))
-            ->method('findByUser')
+            ->method('findOneByUser')
             ->with($user2)
             ->will($this->returnValue($runningBalance2));
 
@@ -299,5 +299,4 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $service->recalculateAllUsersRunningBalance();
     }
-
-} 
+}

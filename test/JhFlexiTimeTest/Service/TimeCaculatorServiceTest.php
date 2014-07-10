@@ -101,7 +101,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $runningBalance->setBalance($initialBalance);
 
         $this->balanceRepository->expects($this->once())
-            ->method('findByUser')
+            ->method('findOneByUser')
             ->with($mockUser)
             ->will($this->returnValue($runningBalance));
 

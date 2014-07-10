@@ -22,6 +22,7 @@ class InstallerFactory implements FactoryInterface
         return new Installer(
             $serviceLocator->get('Jhuser\Repository\UserRepository'),
             $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository'),
+            $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
             $objectManager = $serviceLocator->get('JhFlexiTime\ObjectManager')
         );
     }

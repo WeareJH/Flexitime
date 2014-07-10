@@ -191,7 +191,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
         $runningBalance = new RunningBalance();
 
         $this->balanceRepository->expects($this->once())
-            ->method('findByUser')
+            ->method('findOneByUser')
             ->with($userMock)
             ->will($this->returnValue($runningBalance));
 

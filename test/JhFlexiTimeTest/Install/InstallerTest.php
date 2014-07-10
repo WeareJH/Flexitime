@@ -2,6 +2,7 @@
 
 namespace JhFlexiTimeTest\Install;
 
+use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Install\Installer;
 
@@ -15,6 +16,7 @@ use JhUser\Entity\User;class InstallerTest extends \PHPUnit_Framework_TestCase
     protected $installer;
     protected $userRepository;
     protected $userSettingsRepository;
+    protected $balanceRepository;
     protected $objectManager;
     protected $console;
 
@@ -23,58 +25,70 @@ use JhUser\Entity\User;class InstallerTest extends \PHPUnit_Framework_TestCase
     {
         $this->userRepository = $this->getMock('Jhuser\Repository\UserRepositoryInterface');
         $this->userSettingsRepository = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
+        $this->balanceRepository = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
         $this->objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $this->console = $this->getMock('Zend\Console\Adapter\AdapterInterface');
 
         $this->installer = new Installer(
             $this->userRepository,
             $this->userSettingsRepository,
+            $this->balanceRepository,
             $this->objectManager
         );
     }
 
-    public function testExceptionIsThrownIfUserFlexSettingsTableDoesNotExist()
+    public function testInstallerCallsAllCreateFunctionsForEachUser()
     {
-        $users = $this->getUsers();
+        $installer = $this->getMock(
+            'JhFlexiTime\Install\Installer',
+            ['createSettingsRow', 'createRunningBalanceRow'],
+            [
+                $this->userRepository,
+                $this->userSettingsRepository,
+                $this->balanceRepository,
+                $this->objectManager
+            ]
+        );
 
-        $this->userRepository
-             ->expects($this->once())
-             ->method('findAll')
-             ->with(false)
-             ->will($this->returnValue($users));
-
-        $e = new \Doctrine\DBAL\DBALException("Some Message");
-
-        $this->console
-             ->expects($this->at(0))
-             ->method('writeLine')
-             ->with("Checking if user 'test1@test.com' has a user_flex_settings row..", 4);
-
-        $this->userSettingsRepository
-             ->expects($this->once())
-             ->method('findOneByUser')
-             ->with($users[0])
-             ->will($this->throwException($e));
-
-        $this->setExpectedException('JhInstaller\Install\Exception');
-        $this->installer->install($this->console);
-
-        $errors = [
-            "The Database table has not been created. Be sure to run the schema tool. Message: Some Message"
-        ];
-
-        $this->assertEquals($errors, $this->installer->getErrors());
-    }
-
-    public function testUserSettingsRowCreationIsSkippedIfRowExists()
-    {
         $users = $this->getUsers();
 
         $this->userRepository
             ->expects($this->once())
             ->method('findAll')
-            ->with(false)
             ->will($this->returnValue($users));
+
+        $installer
+            ->expects($this->at(0))
+            ->method('createSettingsRow')
+            ->with($users[0], $this->console);
+
+        $installer
+            ->expects($this->at(1))
+            ->method('createRunningBalanceRow')
+            ->with($users[0], $this->console);
+
+        $installer
+            ->expects($this->at(2))
+            ->method('createSettingsRow')
+            ->with($users[1], $this->console);
+
+        $installer
+            ->expects($this->at(3))
+            ->method('createRunningBalanceRow')
+            ->with($users[1], $this->console);
+
+        $this->objectManager
+            ->expects($this->once())
+            ->method('flush');
+
+        $installer->install($this->console);
+
+    }
+
+    public function testUserSettingsRowCreationIsSkippedIfRowExists()
+    {
+        $user = new User();
+        $user->setEmail("test1@test.com");
 
         $userSettings = new UserSettings();
 
@@ -83,46 +97,24 @@ use JhUser\Entity\User;class InstallerTest extends \PHPUnit_Framework_TestCase
             ->method('writeLine')
             ->with("Checking if user 'test1@test.com' has a user_flex_settings row..", 4);
 
-        $this->console
-            ->expects($this->at(2))
-            ->method('writeLine')
-            ->with("Checking if user 'test2@test.com' has a user_flex_settings row..", 4);
-
         $this->userSettingsRepository
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method('findOneByUser')
-            ->with($users[0])
-            ->will($this->returnValue($userSettings));
-
-        $this->userSettingsRepository
-            ->expects($this->at(1))
-            ->method('findOneByUser')
-            ->with($users[1])
+            ->with($user)
             ->will($this->returnValue($userSettings));
 
         $this->console
              ->expects($this->at(1))
              ->method('writeLine')
-             ->with('Row exists. Skipping', 4);
+             ->with('Settings row exists. Skipping', 4);
 
-        $this->console
-            ->expects($this->at(3))
-            ->method('writeLine')
-            ->with('Row exists. Skipping', 4);
-
-        $this->installer->install($this->console);
+        $this->installer->createSettingsRow($user, $this->console);
     }
 
     public function testUserSettingsRowIsCreatedIfNotExist()
     {
         $user = new User();
         $user->setEmail("test1@test.com");
-
-        $this->userRepository
-            ->expects($this->once())
-            ->method('findAll')
-            ->with(false)
-            ->will($this->returnValue([$user]));
 
         $this->console
             ->expects($this->at(0))
@@ -138,18 +130,125 @@ use JhUser\Entity\User;class InstallerTest extends \PHPUnit_Framework_TestCase
         $this->console
             ->expects($this->at(1))
             ->method('writeLine')
-            ->with("Row does not exist. Creating... ", 4);
+            ->with("Settings row does not exist. Creating... ", 4);
 
         $this->objectManager
              ->expects($this->once())
              ->method('persist')
              ->with($this->isInstanceOf('JhFlexiTime\Entity\UserSettings'));
 
+        $this->installer->createSettingsRow($user, $this->console);
+    }
+
+    public function testExceptionIsThrownIfUserFlexSettingsTableDoesNotExist()
+    {
+        $user = new User();
+        $user->setEmail("test1@test.com");
+
+        $e = new \Doctrine\DBAL\DBALException("Some Message");
+
+        $this->console
+            ->expects($this->at(0))
+            ->method('writeLine')
+            ->with("Checking if user 'test1@test.com' has a user_flex_settings row..", 4);
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->throwException($e));
+
+        $this->setExpectedException('JhInstaller\Install\Exception');
+        $this->installer->createSettingsRow($user, $this->console);
+
+        $errors = [
+            "The Database table has not been created. Be sure to run the schema tool. Message: Some Message"
+        ];
+
+        $this->assertEquals($errors, $this->installer->getErrors());
+    }
+
+    public function testRunningBalanceRowCreationIsSkippedIfRowExists()
+    {
+        $user = new User();
+        $user->setEmail("test1@test.com");
+
+        $balance = new RunningBalance();
+
+        $this->console
+            ->expects($this->at(0))
+            ->method('writeLine')
+            ->with("Checking if user 'test1@test.com' has a running_balance row..", 4);
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->returnValue($balance));
+
+        $this->console
+            ->expects($this->at(1))
+            ->method('writeLine')
+            ->with('Running Balance row exists. Skipping', 4);
+
+        $this->installer->createRunningBalanceRow($user, $this->console);
+    }
+
+    public function testRunningBalanceRowIsCreatedIfNotExist()
+    {
+        $user = new User();
+        $user->setEmail("test1@test.com");
+
+        $this->console
+            ->expects($this->at(0))
+            ->method('writeLine')
+            ->with("Checking if user 'test1@test.com' has a running_balance row..", 4);
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->returnValue(null));
+
+        $this->console
+            ->expects($this->at(1))
+            ->method('writeLine')
+            ->with("Running Balance row does not exist. Creating... ", 4);
+
         $this->objectManager
             ->expects($this->once())
-            ->method('flush');
+            ->method('persist')
+            ->with($this->isInstanceOf('JhFlexiTime\Entity\RunningBalance'));
 
-        $this->installer->install($this->console);
+        $this->installer->createRunningBalanceRow($user, $this->console);
+    }
+
+    public function testExceptionIsThrownIfRunningBalanceTableDoesNotExist()
+    {
+        $user = new User();
+        $user->setEmail("test1@test.com");
+
+        $e = new \Doctrine\DBAL\DBALException("Some Message");
+
+        $this->console
+            ->expects($this->at(0))
+            ->method('writeLine')
+            ->with("Checking if user 'test1@test.com' has a running_balance row..", 4);
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->throwException($e));
+
+        $this->setExpectedException('JhInstaller\Install\Exception');
+        $this->installer->createRunningBalanceRow($user, $this->console);
+
+        $errors = [
+            "The Database table has not been created. Be sure to run the schema tool. Message: Some Message"
+        ];
+
+        $this->assertEquals($errors, $this->installer->getErrors());
     }
 
     public function testGetErrorsReturnsEmptyArray()
@@ -168,6 +267,4 @@ use JhUser\Entity\User;class InstallerTest extends \PHPUnit_Framework_TestCase
 
         return [$user1, $user2];
     }
-
-
 }

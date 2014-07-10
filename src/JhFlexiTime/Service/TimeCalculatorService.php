@@ -168,7 +168,7 @@ class TimeCalculatorService
      */
     public function getBalanceForward(UserInterface $user)
     {
-        $balanceEntity = $this->balanceRepository->findByUser($user);
+        $balanceEntity = $this->balanceRepository->findOneByUser($user);
         return ($balanceEntity->getBalance()) ? $balanceEntity->getBalance() : 0;
     }
 

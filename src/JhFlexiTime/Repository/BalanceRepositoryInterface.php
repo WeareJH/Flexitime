@@ -15,7 +15,7 @@ interface BalanceRepositoryInterface
      * @param UserInterface $user
      * @return \JhFlexiTime\Entity\RunningBalance
      */
-    public function findByUser(UserInterface $user);
+    public function findOneByUser(UserInterface $user);
 
     /**
      * @param array $criteria

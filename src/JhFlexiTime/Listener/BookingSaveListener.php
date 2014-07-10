@@ -122,7 +122,7 @@ class BookingSaveListener extends AbstractListenerAggregate
      */
     public function getRunningBalance(UserInterface $user)
     {
-        $runningBalance = $this->balanceRepository->findByUser($user);
+        $runningBalance = $this->balanceRepository->findOneByUser($user);
         return $runningBalance;
     }
 
