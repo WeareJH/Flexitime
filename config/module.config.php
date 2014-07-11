@@ -129,6 +129,15 @@ return [
                         ],
                     ],
                 ],
+                'set-user-stating-balance' => [
+                    'options'   => [
+                        'route'     => 'set user init-balance <userEmail> <balance>',
+                        'defaults'  => [
+                            'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
+                            'action'     => 'set-user-stating-balance'
+                        ],
+                    ],
+                ],
             ],
         ],
     ],

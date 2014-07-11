@@ -85,4 +85,27 @@ class RunningBalanceCliController extends AbstractActionController
         $this->runningBalanceService->calculatePreviousMonthBalance();
         $this->console->writeLine("Finished! ", ColorInterface::GREEN);
     }
+
+    /**
+     * Set a Users Initial Balance
+     * + then recalculate their running balance
+     *
+     * @throws \RuntimeException
+     */
+    public function setUserStatingBalanceAction()
+    {
+        $request    = $this->getRequest();
+        $balance    = $request->getParam('balance');
+        $email      = $request->getParam('userEmail');
+
+        $user = $this->userRepository->findOneByEmail($email);
+
+        if (!$user) {
+            throw new \RuntimeException(sprintf('User with email: "%s" could not be found', $email));
+        }
+
+        $this->runningBalanceService->setUserStatingBalance($user, $balance);
+        //recalculate balance
+        $this->runningBalanceService->recalculateUserRunningBalance($user);
+    }
 }

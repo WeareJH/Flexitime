@@ -188,4 +188,15 @@ class RunningBalanceService
             $endDate
         );
     }
+
+    /**
+     * @param UserInterface $user
+     * @param float $balance
+     */
+    public function setUserStatingBalance(UserInterface $user, $balance)
+    {
+        $settings = $this->userSettingsRepository->findOneByUser($user);
+        $settings->setStartingBalance($balance);
+        $this->objectManager->flush();
+    }
 }

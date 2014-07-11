@@ -2,10 +2,8 @@
 
 namespace JhFlexiTimeTest\Service;
 
-
 use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Entity\UserSettings;
-use JhFlexiTime\Repository\UserSettingsRepository;
 use JhFlexiTime\Service\RunningBalanceService;
 use JhUser\Entity\User;
 
@@ -299,5 +297,22 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->with($user2, $runningBalance2, $userSettings1->getFlexStartDate(), 0);
 
         $service->recalculateAllUsersRunningBalance();
+    }
+
+    public function testSetUserBalance()
+    {
+        $user = new User;
+        $balance = 10;
+
+        $userSettings = new UserSettings;
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->returnValue($userSettings));
+
+        $this->objectManager->expects($this->once())->method('flush');
+        $this->runningBalanceService->setUserStatingBalance($user, $balance);
+        $this->assertEquals(10, $userSettings->getStartingBalance());
     }
 }

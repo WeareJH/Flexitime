@@ -164,6 +164,65 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
         $this->assertMatchedRouteName('re-calc-balance-all');
     }
 
+    public function testSetUserStartingBalance()
+    {
+        $balance = 10;
 
+        $user   = new User;
+        $email  = 'aydin@wearejh.com';
 
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findOneByEmail')
+            ->with($email)
+            ->will($this->returnValue($user));
+
+        $this->runningBalanceService
+            ->expects($this->once())
+            ->method('setUserStatingBalance')
+            ->with($user, $balance);
+
+        $this->runningBalanceService
+            ->expects($this->once())
+            ->method('recalculateUserRunningBalance')
+            ->with($user);
+
+        $this->dispatch(new Request(array('scriptname.php', "set user init-balance $email $balance")));
+
+        $this->assertResponseStatusCode(0);
+        $this->assertModuleName('jhflexitime');
+        $this->assertControllerName('jhflexitime\controller\runningbalancecli');
+        $this->assertControllerClass('runningbalanceclicontroller');
+        $this->assertActionName('set-user-stating-balance');
+        $this->assertMatchedRouteName('set-user-stating-balance');
+    }
+
+    public function testSetUserStartingBalanceThrowsExceptionIfUserNotExist()
+    {
+        $balance    = 10;
+        $email      = 'aydin@wearejh.com';
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findOneByEmail')
+            ->with($email)
+            ->will($this->returnValue(null));
+
+        $this->runningBalanceService
+            ->expects($this->never())
+            ->method('setUserStatingBalance');
+
+        $this->runningBalanceService
+            ->expects($this->never())
+            ->method('recalculateUserRunningBalance');
+
+        $this->dispatch(new Request(array('scriptname.php', "set user init-balance $email $balance")));
+
+        $this->assertResponseStatusCode(1);
+        $this->assertModuleName('jhflexitime');
+        $this->assertControllerName('jhflexitime\controller\runningbalancecli');
+        $this->assertControllerClass('runningbalanceclicontroller');
+        $this->assertActionName('set-user-stating-balance');
+        $this->assertMatchedRouteName('set-user-stating-balance');
+    }
 }
