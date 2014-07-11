@@ -107,7 +107,12 @@ class RunningBalanceService
             $runningBalance = $this->balanceRepository->findOneByUser($user);
             $userSettings   = $this->userSettingsRepository->findOneByUser($user);
 
-            $this->recalculateRunningBalance($user, $runningBalance, $userSettings->getFlexStartDate());
+            $this->recalculateRunningBalance(
+                $user,
+                $runningBalance,
+                $userSettings->getFlexStartDate(),
+                $userSettings->getStartingBalance()
+            );
         }
     }
 
@@ -120,18 +125,28 @@ class RunningBalanceService
     {
         $runningBalance = $this->balanceRepository->findOneByUser($user);
         $userSettings   = $this->userSettingsRepository->findOneByUser($user);
-        $this->recalculateRunningBalance($user, $runningBalance, $userSettings->getFlexStartDate());
+        $this->recalculateRunningBalance(
+            $user,
+            $runningBalance,
+            $userSettings->getFlexStartDate(),
+            $userSettings->getStartingBalance()
+        );
     }
 
     /**
      * @param UserInterface $user
      * @param RunningBalance $runningBalance
      * @param \DateTime $startDate
+     * @param int $initialBalance
      */
-    public function recalculateRunningBalance(UserInterface $user, RunningBalance $runningBalance, \DateTime $startDate)
-    {
+    public function recalculateRunningBalance(
+        UserInterface $user,
+        RunningBalance $runningBalance,
+        \DateTime $startDate,
+        $initialBalance
+    ) {
         $period = $this->getMonthsBetweenUserStartAndLastMonth($startDate, $this->lastMonth);
-        $runningBalance->setBalance(0);
+        $runningBalance->setBalance($initialBalance);
 
         foreach ($period as $date) {
             $this->calculateMonthBalance($user, $runningBalance, $date);

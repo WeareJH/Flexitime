@@ -113,6 +113,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
     {
         $user           = new User;
         $userStartDate  = new \DateTime("13 March 2014");
+        $startBalance   = 10;
 
         $lastMonth = new \DateTime("1 April 2014");
 
@@ -155,7 +156,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->with($user, $runningBalance, $dates[1]);
 
         $this->objectManager->expects($this->once())->method('flush');
-        $service->recalculateRunningBalance($user, $runningBalance, $userStartDate);
+        $service->recalculateRunningBalance($user, $runningBalance, $userStartDate, $startBalance);
     }
 
     public function testRecalculateIsCalledForEachUser()
@@ -291,11 +292,11 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $service->expects($this->at(0))
             ->method('recalculateRunningBalance')
-            ->with($user1, $runningBalance1, $userSettings1->getFlexStartDate());
+            ->with($user1, $runningBalance1, $userSettings1->getFlexStartDate(), 0);
 
         $service->expects($this->at(1))
             ->method('recalculateRunningBalance')
-            ->with($user2, $runningBalance2, $userSettings1->getFlexStartDate());
+            ->with($user2, $runningBalance2, $userSettings1->getFlexStartDate(), 0);
 
         $service->recalculateAllUsersRunningBalance();
     }
