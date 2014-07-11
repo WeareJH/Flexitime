@@ -86,12 +86,14 @@ class Installer implements InstallerInterface
      * @param AdapterInterface $console
      * @throws \JhInstaller\Install\Exception
      */
-    public function createSettingsRow(UserInterface $user, AdapterInterface $console)
+    public function createSettingsRow(UserInterface $user, AdapterInterface $console = null)
     {
-        $console->writeLine(
-            sprintf("Checking if user '%s' has a user_flex_settings row..", $user->getEmail()),
-            Color::YELLOW
-        );
+        if ($console) {
+            $console->writeLine(
+                sprintf("Checking if user '%s' has a user_flex_settings row..", $user->getEmail()),
+                Color::YELLOW
+            );
+        }
 
         try {
             $userSettings = $this->userSettingsRepository->findOneByUser($user);
@@ -104,7 +106,9 @@ class Installer implements InstallerInterface
         }
 
         if (!$userSettings) {
-            $console->writeLine("Settings row does not exist. Creating... ", Color::YELLOW);
+            if ($console) {
+                $console->writeLine("Settings row does not exist. Creating... ", Color::YELLOW);
+            }
             $userSettings = new UserSettings();
             $userSettings
                 ->setUser($user)
@@ -115,7 +119,9 @@ class Installer implements InstallerInterface
             $this->objectManager->persist($userSettings);
 
         } else {
-            $console->writeLine("Settings row exists. Skipping", Color::YELLOW);
+            if ($console) {
+                $console->writeLine("Settings row exists. Skipping", Color::YELLOW);
+            }
         }
     }
 
@@ -124,12 +130,15 @@ class Installer implements InstallerInterface
      * @param AdapterInterface $console
      * @throws \JhInstaller\Install\Exception
      */
-    public function createRunningBalanceRow(UserInterface $user, AdapterInterface $console)
+    public function createRunningBalanceRow(UserInterface $user, AdapterInterface $console = null)
     {
-        $console->writeLine(
-            sprintf("Checking if user '%s' has a running_balance row..", $user->getEmail()),
-            Color::YELLOW
-        );
+
+        if ($console) {
+            $console->writeLine(
+                sprintf("Checking if user '%s' has a running_balance row..", $user->getEmail()),
+                Color::YELLOW
+            );
+        }
 
         try {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
@@ -142,14 +151,19 @@ class Installer implements InstallerInterface
         }
 
         if (!$runningBalance) {
-            $console->writeLine("Running Balance row does not exist. Creating... ", Color::YELLOW);
+
+            if ($console) {
+                $console->writeLine("Running Balance row does not exist. Creating... ", Color::YELLOW);
+            }
             $runningBalance = new RunningBalance();
             $runningBalance->setUser($user);
 
             $this->objectManager->persist($runningBalance);
 
         } else {
-            $console->writeLine("Running Balance row exists. Skipping", Color::YELLOW);
+            if ($console) {
+                $console->writeLine("Running Balance row exists. Skipping", Color::YELLOW);
+            }
         }
     }
 

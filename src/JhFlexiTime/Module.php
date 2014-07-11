@@ -2,12 +2,13 @@
 
 namespace JhFlexiTime;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
-use JhFlexiTime\Entity\UserSettings;
 use JhInstaller\Install\Installable;
+use JhInstaller\Install\Exception as InstallException;
 
 /**
  * JhFlexiTime Module
@@ -46,21 +47,18 @@ class Module implements
     public function onRegister(EventInterface $e)
     {
         $application    = $e->getTarget();
-        $sm             = $application->getServiceManager();
-        $objectManager  = $sm->get('JhFlexiTime\ObjectManager');
+        $sl             = $application->getServiceManager();
+        $installer      = $sl->get('JhFlexiTime\Install\Installer');
         $user           = $e->getParam('user');
 
-        //TODO: Pull default start + end time from config
-        $userSettings = new UserSettings();
-        $userSettings->setDefaultStartTime(new \DateTime("09:00"));
-        $userSettings->setDefaultEndTime(new \DateTime("17:30"));
-        $userSettings->setFlexStartDate(new \DateTime());
-        $userSettings->setUser($user);
-
-        $objectManager->persist($userSettings);
-        $objectManager->flush();
+        try {
+            $installer->createSettingsRow($user);
+            $installer->createRunningBalanceRow($user);
+        } catch (InstallException $e) {
+            //will only happen if database schema not created
+            //log here
+        }
     }
-
 
     /**
      * {@inheritDoc}

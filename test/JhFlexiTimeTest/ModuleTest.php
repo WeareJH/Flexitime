@@ -112,12 +112,9 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $module->getConsoleUsage($mockConsole));
     }
 
-    public function testUserFlexSettingsRowCreatedSuccessfully()
+    public function testUserIsInstalledOnRegister()
     {
-        $event = $this->getEvent();
-        $mockObjectManager  = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-
-        $this->serviceLocator->setService('JhFlexiTime\ObjectManager', $mockObjectManager);
+        $event      = $this->getEvent();
         $user = new User();
         $event
             ->expects($this->once())
@@ -125,16 +122,21 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
             ->with('user')
             ->will($this->returnValue($user));
 
-        $userSettings = new UserSettings();
+        $installer  = $this->getMockBuilder('JhFlexiTime\Install\Installer')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $mockObjectManager
+        $installer
             ->expects($this->once())
-            ->method('persist')
-            ->with($this->isInstanceOf('JhFlexiTime\Entity\UserSettings'));
+            ->method('createSettingsRow')
+            ->with($user);
 
-        $mockObjectManager
+        $installer
             ->expects($this->once())
-            ->method('flush');
+            ->method('createRunningBalanceRow')
+            ->with($user);
+
+        $this->serviceLocator->setService('JhFlexiTime\Install\Installer', $installer);
 
         $module = new Module();
         $module->onRegister($event);
