@@ -136,6 +136,11 @@ return [
                             'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
                             'action'     => 'set-user-stating-balance'
                         ],
+                        'constraints' => array(
+                            //regex to match decimal and floats
+                            'balance' => '/^-?(?:\d+|\d*\.\d+)$/',
+                        ),
+
                     ],
                 ],
             ],

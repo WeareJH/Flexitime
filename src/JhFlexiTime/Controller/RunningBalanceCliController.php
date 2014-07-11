@@ -107,5 +107,10 @@ class RunningBalanceCliController extends AbstractActionController
         $this->runningBalanceService->setUserStatingBalance($user, $balance);
         //recalculate balance
         $this->runningBalanceService->recalculateUserRunningBalance($user);
+        $this->console->writeLine(
+            sprintf("Successfully set User '%s' balance to '%s'! ", $email, $balance),
+            ColorInterface::GREEN
+        );
+
     }
 }
