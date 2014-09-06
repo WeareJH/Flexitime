@@ -17,44 +17,38 @@ use JsonSerializable;
  */
 class Booking implements JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id = null;
 
     /**
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="JhUser\Entity\User")
      */
     protected $user = null;
 
     /**
      * @var \DateTime
-     * 
+     *
+     * @ORM\Id
      * @ORM\Column(type="date", name="date", nullable=false)
      */
     protected $date;
-    
+
     /**
      * @var \DateTime
-     * 
+     *
      * @ORM\Column(type="time", name="start_time", nullable=false)
      */
     protected $startTime;
-            
+
     /**
      * @var \DateTime
-     * 
+     *
      * @ORM\Column(type="time", name="end_time", nullable=false)
      */
     protected $endTime;
-    
+
     /**
      * @var int
-     * 
+     *
      * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $total = 0;
@@ -67,7 +61,7 @@ class Booking implements JsonSerializable
     protected $balance = 0;
 
     /** @var string
-     * 
+     *
      * @ORM\Column(type="string", length=512, nullable=true)
      */
     protected $notes = null;
@@ -80,14 +74,6 @@ class Booking implements JsonSerializable
         $this->date         = new DateTime("today");
         $this->startTime    = new DateTime('09:00:00');
         $this->endTime      = new DateTime('17:30:00');
-    }
-    
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -108,7 +94,7 @@ class Booking implements JsonSerializable
     {
         return $this->user;
     }
-    
+
     /**
      * @param DateTime $date
      * @return \JhFlexiTime\Entity\Booking
@@ -118,7 +104,7 @@ class Booking implements JsonSerializable
         $this->date = $date;
         return $this;
     }
-    
+
     /**
      * @return DateTime
      */
@@ -126,7 +112,7 @@ class Booking implements JsonSerializable
     {
         return $this->date;
     }
-    
+
     /**
      * @param DateTime $startTime
      * @return \JhFlexiTime\Entity\Booking
@@ -136,7 +122,7 @@ class Booking implements JsonSerializable
         $this->startTime = $startTime;
         return $this;
     }
-    
+
     /**
      * @return DateTime
      */
@@ -144,7 +130,7 @@ class Booking implements JsonSerializable
     {
         return $this->startTime;
     }
-    
+
     /**
      * @param DateTime $endTime
      * @return \JhFlexiTime\Entity\Booking
@@ -154,7 +140,7 @@ class Booking implements JsonSerializable
         $this->endTime = $endTime;
         return $this;
     }
-    
+
     /**
      * @return DateTime
      */
@@ -162,7 +148,7 @@ class Booking implements JsonSerializable
     {
         return $this->endTime;
     }
-    
+
     /**
      * @param string $total
      * @return \JhFlexiTime\Entity\Booking
@@ -172,7 +158,7 @@ class Booking implements JsonSerializable
         $this->total = $total;
         return $this;
     }
-    
+
     /**
      * @return string
      */
@@ -208,7 +194,7 @@ class Booking implements JsonSerializable
         $this->notes = $notes;
         return $this;
     }
-    
+
     /**
      * @return string
      */
