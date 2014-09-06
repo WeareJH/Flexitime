@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Service;
 
+use JhFlexiTime\DateTime\DateTime;
 use JhFlexiTime\Entity\Booking;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -82,12 +83,12 @@ class BookingService
 
     /**
      * @param array $data
-     * @param UserInterface $user
      * @return array
      */
-    public function create(array $data, UserInterface $user)
+    public function create(array $data)
     {
         $this->inputFilter->setData($data);
+
         if (!$this->inputFilter->isValid()) {
             return array(
                 'messages'  => $this->inputFilter->getMessages(),
@@ -97,29 +98,35 @@ class BookingService
         $booking = new Booking;
         $booking->setBalance(0 - $this->options->getHoursInDay());
         $this->hydrator->hydrate($this->inputFilter->getValues(), $booking);
-        $booking->setUser($user);
 
         $totalHours = $this->periodService->calculateHourDiff($booking->getStartTime(), $booking->getEndTime());
         $booking->setTotal($totalHours);
 
         $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, array('booking' => $booking));
-        $this->objectManager->persist($booking);
-        $this->objectManager->flush();
+
+        try {
+            $this->objectManager->persist($booking);
+            $this->objectManager->flush();
+        } catch (\Exception $e) {
+           //log
+        }
+
         $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, array('booking' => $booking));
 
         return $booking;
     }
 
     /**
+     * @param $userId
+     * @param DateTime $date
      * @param array $data
-     * @param $id
-     * @param UserInterface $user
-     * @return array
+     * @return Booking|array
      */
-    public function update($id, array $data, UserInterface $user)
+    public function update($userId, DateTime $date, array $data)
     {
+
         try {
-            $booking = $this->getBookingByUserAndId($user, $id);
+            $booking = $this->getBookingByUserAndDate($userId, $date);
         } catch (\Exception $e) {
             return [
                 'messages' => ['Booking Does Not Exist']
@@ -146,25 +153,37 @@ class BookingService
     }
 
     /**
-     * @param Booking $booking
+     * @param int $userId
+     * @param DateTime $date
+     * @return array|Booking
      */
-    public function delete(Booking $booking)
+    public function delete($userId, DateTime $date)
     {
+        try {
+            $booking = $this->getBookingByUserAndDate($userId, $date);
+        } catch (\Exception $e) {
+            return [
+                'messages' => ['Booking Does Not Exist']
+            ];
+        }
+
         $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, array('booking' => $booking));
         $this->objectManager->remove($booking);
         $this->objectManager->flush();
         $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, array('booking' => $booking));
+
+        return $booking;
     }
 
     /**
-     * @param UserInterface $user
-     * @param int $id
-     * @return object
+     * @param $userId
+     * @param DateTime|string $date
      * @throws \Exception
+     * @return object
      */
-    public function getBookingByUserAndId(UserInterface $user, $id)
+    public function getBookingByUserAndDate($userId, DateTime $date)
     {
-        $row = $this->bookingRepository->findOneBy(array('id' => (int) $id, 'user' => $user));
+        $row = $this->bookingRepository->findOneBy(array('date' => $date, 'user' => $userId));
         if (!is_object($row)) {
             throw new \Exception("Could not find Booking");
         }
@@ -174,10 +193,10 @@ class BookingService
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return array
      */
-    public function getUserBookingsForMonth(UserInterface $user, \DateTime $date)
+    public function getUserBookingsForMonth(UserInterface $user, DateTime $date)
     {
         $period = new \DatePeriod(
             new \DateTime(sprintf('first day of %s', $date->format('F Y'))),

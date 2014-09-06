@@ -17,9 +17,10 @@ class BookingFormTest extends \PHPUnit_Framework_TestCase
     public function testFormElements()
     {
         $objectManager  = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $user           = $this->getMock('ZfcUser\Entity\UserInterface');
         $fieldset = $this->getMockBuilder('\JhFlexiTime\Form\Fieldset\BookingFieldset')
-            ->setMethods(array('__construct', 'getName'))
-            ->setConstructorArgs(array($objectManager))
+            ->setMethods(['__construct', 'getName'])
+            ->setConstructorArgs([$objectManager, $user])
             ->getMock();
 
         $fieldset->expects($this->once())

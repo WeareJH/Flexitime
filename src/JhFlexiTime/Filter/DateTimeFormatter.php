@@ -3,7 +3,7 @@
 namespace JhFlexiTime\Filter;
 
 use Zend\Filter\DateTimeFormatter as ZfDateTimeFormatter;
-use DateTime;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class DateTimeFormatter

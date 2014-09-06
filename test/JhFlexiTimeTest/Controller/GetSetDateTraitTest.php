@@ -2,6 +2,7 @@
 
 namespace JhFlexiTimeTest\Controller;
 
+use JhFlexiTime\DateTime\DateTime;
 
 class GetSetDateTraitTest extends \PHPUnit_Framework_TestCase
 {
@@ -51,7 +52,7 @@ class GetSetDateTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDateReturnsCurrentlySetObjectIfSet()
     {
-        $date = new \DateTime();
+        $date = new DateTime();
         $this->traitObject->setDate($date);
         $this->assertEquals($date, $this->traitObject->getDate());
         $this->assertEquals($date, $this->traitObject->getDate("Mar", 2014));

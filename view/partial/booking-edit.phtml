@@ -7,6 +7,7 @@
         echo $this->form()->openTag($form); ?>
         <div class="row">
             <div class="col-sm-6">
+                <?php echo $this->formHidden($form->get('booking')->get('user')); ?>
                 <?php echo $this->formHidden($form->get('booking')->get('id')); ?>
                 <div class="form-group hidden <?php if ($this->formElementErrors($form->get('booking')->get('date'))) echo 'has-error'; ?>">
                     <?php echo $this->formLabel($form->get('booking')->get('date')); ?>

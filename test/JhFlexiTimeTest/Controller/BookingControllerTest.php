@@ -4,6 +4,7 @@ namespace JhFlexiTimeTest\Controller;
 
 use JhFlexiTime\Controller\BookingController;
 
+use JhFlexiTime\DateTime\DateTime;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -127,7 +128,7 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
         $booking = new Booking();
 
         return $booking
-            ->setDate(new \DateTime("25 March 2014"))
+            ->setDate(new DateTime("25 March 2014"))
             ->setUser($this->user)
             ->setNotes("ALL THE TIME");
     }
@@ -135,7 +136,7 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
     public function testGetListCanBeAccessed()
     {
         $booking    = $this->getMockBooking();
-        $date       = new \DateTime("25 March 2014");
+        $date       = new DateTime("25 March 2014");
 
         $this->controller->setDate($date);
         $this->configureMockBookingService('getUserBookingsForMonth', array($this->user, $date), array($booking));

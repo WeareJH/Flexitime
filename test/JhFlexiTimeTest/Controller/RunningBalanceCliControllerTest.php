@@ -9,6 +9,7 @@ use Zend\Console\Request;
 use Zend\Http\Request as HttpRequest;
 use Zend\Test\PHPUnit\Controller\AbstractConsoleControllerTestCase;
 use Zend\Console\ColorInterface;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class RunningBalanceCliControllerControllerTest

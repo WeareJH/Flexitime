@@ -5,13 +5,16 @@ namespace JhFlexiTime\InputFilter;
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\ValidatorInterface;
 use JhFlexiTime\Options\BookingOptionsInterface;
+use Zend\InputFilter\Input;
+use JhFlexiTime\Filter\DateTimeFormatter;
+use Zend\Validator\Date;
 
 /**
  * Class BookingInputFilter
  * @package JhFlexiTime\InputFilter
  * @author Aydin Hassan <aydin@wearejh.com>
  */
-class BookingInputFilter extends InputFilter
+class BookingInputFilter extends BaseInputFilter
 {
 
     //TODO: Get from module config
@@ -22,36 +25,46 @@ class BookingInputFilter extends InputFilter
 
     /**
      * @param ValidatorInterface $uniqueBookingValidator
+     * @param ValidatorInterface $userExistsValidator
      * @param BookingOptionsInterface $bookingOptions
      */
     public function __construct(
         ValidatorInterface $uniqueBookingValidator,
+        ValidatorInterface $userExistsValidator,
         BookingOptionsInterface $bookingOptions
     ) {
 
         $this->add(
             [
-                'name'      => 'date',
+                'name'      => 'user',
                 'required'  => true,
                 'filters'   => [
-                    [
-                        'name' => 'JhFlexiTime\Filter\DateTimeFormatter',
-                        'options' => [
-                            'format' => 'd-m-Y',
-                        ],
-                    ],
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
                 ],
                 'validators' => [
                     [
-                        'name'      => 'Date',
-                        'options'   => [
-                            'format' => 'd-m-Y',
+                        'name'    => 'StringLength',
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 1,
+                            'max'      => 512,
                         ],
                     ],
-                    $uniqueBookingValidator,
+                    $userExistsValidator
                 ],
             ]
         );
+
+
+        $date = new Input('date');
+        $date->setRequired(true);
+        $date->getFilterChain()->attach(new DateTimeFormatter(['format' => 'd-m-Y']));
+        $date->getValidatorChain()->attach($uniqueBookingValidator);
+        $date->getValidatorChain()->attach(new Date(['format' => 'd-m-Y']));
+
+
+        $this->add($date);
 
         $startTimeValidators = [
             [

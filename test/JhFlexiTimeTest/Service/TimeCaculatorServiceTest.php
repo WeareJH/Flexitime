@@ -6,6 +6,7 @@ use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Options\ModuleOptions;
 use JhFlexiTime\Service\TimeCalculatorService;
 use ZfcUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class TimeCalculatorServiceTest
@@ -61,7 +62,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->date                 = new \DateTime;
+        $this->date                 = new DateTime;
         $this->bookingRepository    = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
         $this->balanceRepository    = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
         $this->periodService        = $this->getMockBuilder('JhFlexiTime\Service\PeriodService')
@@ -180,8 +181,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthBalanceWithPreviousMonthReturnsFullMonthBalance()
     {
         $user = new User;
-        $this->date = new \DateTime("15 May 2014");
-        $date = new \DateTime("4 April 2014");
+        $this->date = new DateTime("15 May 2014");
+        $date = new DateTime("4 April 2014");
 
         $this->bookingRepository
              ->expects($this->once())
@@ -201,8 +202,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthBalanceWithSameMonthReturnsToDateBalance()
     {
         $user = new User;
-        $this->date = new \DateTime("15 May 2014");
-        $date = new \DateTime("4 May 2014");
+        $this->date = new DateTime("15 May 2014");
+        $date = new DateTime("4 May 2014");
 
         $this->bookingRepository
             ->expects($this->once())
@@ -222,16 +223,16 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthBalanceWithFutureMonthDateReturnsZero()
     {
         $user = new User;
-        $this->date = new \DateTime("15 May 2014");
-        $date = new \DateTime("16 June 2014");
+        $this->date = new DateTime("15 May 2014");
+        $date = new DateTime("16 June 2014");
         $this->assertEquals(0, $this->getService()->getMonthBalance($user, $date));
     }
 
     public function testGetMonthTotalWorkedHoursForPreviousMonth()
     {
         $user = new User;
-        $this->date = new \DateTime("15 May 2014");
-        $date = new \DateTime("4 April 2014");
+        $this->date = new DateTime("15 May 2014");
+        $date = new DateTime("4 April 2014");
 
         $this->bookingRepository
             ->expects($this->once())
@@ -245,8 +246,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthTotalWorkedHoursForCurrentMonth()
     {
         $user = new User;
-        $this->date = new \DateTime("15 May 2014");
-        $date = new \DateTime("15 May 2014");
+        $this->date = new DateTime("15 May 2014");
+        $date = new DateTime("15 May 2014");
 
         $this->bookingRepository
             ->expects($this->once())
@@ -260,9 +261,9 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetWeekTotals()
     {
         $user = new User;
-        $date = new \DateTime("15 May 2014");
+        $date = new DateTime("15 May 2014");
 
-        $week = ['firstDay' => new \DateTime("10 May 2014"), 'lastDay' => new \DateTime("17 May 2014")];
+        $week = ['firstDay' => new DateTime("10 May 2014"), 'lastDay' => new DateTime("17 May 2014")];
         $this->periodService
              ->expects($this->once())
              ->method('getFirstAndLastDayOfWeek')
@@ -294,8 +295,8 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthTotals()
     {
         $user = new User;
-        $date = new \DateTime("15 May 2014");
-        $this->date = new \DateTime("16 May 2014");
+        $date = new DateTime("15 May 2014");
+        $this->date = new DateTime("16 May 2014");
 
         $service = $this->getMock(
             'JhFlexiTime\Service\TimeCalculatorService',

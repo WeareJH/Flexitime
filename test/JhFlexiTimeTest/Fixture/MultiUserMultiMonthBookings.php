@@ -5,8 +5,8 @@ namespace JhFlexiTimeTest\Fixture;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\Booking;
-use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class MultiUserMultiMonthBookings
@@ -21,43 +21,54 @@ class MultiUserMultiMonthBookings extends AbstractFixture
     protected $bookingsForUser = [];
 
     /**
+     * @var User[]
+     */
+    protected $users;
+
+    /**
      * @var User
      */
     protected $user;
 
     /**
-     * @var \DateTime[]
+     * @var string[]
      */
-    protected $dates = [];
+    protected $months = [];
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $expectedDate;
 
     /**
      * @param User $user
-     * @param \DateTime $month
-     * @throws \InvalidArgumentException
      */
-    public function __construct(User $user, \DateTime $month)
+    public function __construct(User $user)
     {
-        $this->user = $user;
-
         $this->dates = [
-            new \DateTime("February 2014"),
-            new \DateTime("March 2014"),
-            new \DateTime("April 2014"),
+            new DateTime("1 April 2014"),
+            new DateTime("2 April 2014"),
+            new DateTime("3 April 2014"),
+            new DateTime("4 April 2014"),
+            new DateTime("5 April 2014"),
+            new DateTime("6 May 2014"),
+            new DateTime("7 May 2014"),
+            new DateTime("8 May 2014"),
+            new DateTime("9 May 2014"),
+            new DateTime("10 May 2014"),
+            new DateTime("1 September 2014"),
+            new DateTime("2 September 2014"),
+            new DateTime("3 September 2014"),
+            new DateTime("4 September 2014"),
+            new DateTime("5 September 2014"),
         ];
 
-        foreach ($this->dates as $date) {
-            if ($date->format('m-y') === $month->format('m-y')) {
-                throw new \InvalidArgumentException("Month must be unique");
-            }
-        }
+        //the user we are looking for
+        $this->user = $user;
 
-        $this->dates[] = $month;
-        $this->expectedDate = $month;
+        $this->users = [
+            $user,
+        ];
     }
 
     /**
@@ -65,29 +76,35 @@ class MultiUserMultiMonthBookings extends AbstractFixture
      */
     public function load(ObjectManager $manager)
     {
-        $manager->persist($this->user);
-        $manager->flush();
-
-        for ($i = 0; $i < 10; $i++) {
-            $booking = new Booking();
-            $booking->setUser($this->user);
-            $manager->persist($booking);
-            $booking->setDate($this->dates[array_rand($this->dates)]);
-            $this->bookingsForUser[] = $booking;
-        }
-
-        $user = new User;
-        $user
+        $randomUser1 = new User;
+        $randomUser1
             ->setEmail('test1@test.co.uk')
             ->setPassword("password");
-        $manager->persist($user);
+        $this->users[] = $randomUser1;
+
+        $randomUser2 = new User;
+        $randomUser2
+            ->setEmail('test2@test.co.uk')
+            ->setPassword("password");
+        $this->users[] = $randomUser2;
+
+        foreach ($this->users as $user) {
+            $manager->persist($user);
+        }
         $manager->flush();
 
-        for ($i = 0; $i < 10; $i++) {
-            $booking = new Booking();
-            $booking->setUser($user);
-            $booking->setDate($this->dates[array_rand($this->dates)]);
-            $manager->persist($booking);
+
+        foreach ($this->dates as $date) {
+            foreach ($this->users as $user) {
+                $booking = new Booking();
+                $booking->setUser($user);
+                $manager->persist($booking);
+                $booking->setDate($date);
+
+                if ($user === $this->user) {
+                    $this->bookingsForUser[] = $booking;
+                }
+            }
         }
 
         $manager->flush();
@@ -99,18 +116,5 @@ class MultiUserMultiMonthBookings extends AbstractFixture
     public function getBookingsForUser()
     {
         return $this->bookingsForUser;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalBookingsForDate()
-    {
-        return array_reduce($this->bookingsForUser, function ($total, Booking $booking) {
-            if ($booking->getDate()->format('m-y') == $this->expectedDate->format('m-y')) {
-                ++$total;
-            }
-            return $total;
-        }, 0);
     }
 }

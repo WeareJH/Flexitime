@@ -4,6 +4,7 @@ namespace JhFlexiTimeTest\Controller;
 
 use JhFlexiTime\Controller\BookingRestController;
 
+use JhFlexiTime\DateTime\DateTime;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -121,7 +122,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $booking = new Booking();
 
         return $booking
-            ->setDate(new \DateTime("25 March 2014"))
+            ->setDate(new DateTime("25 March 2014"))
             ->setUser($this->user)
             ->setNotes("ALL THE TIME");
     }
@@ -129,7 +130,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
     public function testGetListCanBeAccessed()
     {
         $booking    = $this->getMockBooking();
-        $date       = new \DateTime("25 March 2014");
+        $date       = new DateTime("25 March 2014");
 
         $this->controller->setDate($date);
         $this->configureMockBookingService('getUserBookingsForMonth', array($this->user, $date), array($booking));
@@ -157,9 +158,12 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function testGetCanBeAccessed()
     {
-        $id         = 1;
+        $id         = "123456789-5";
         $booking    = $this->getMockBooking();
-        $this->configureMockBookingService('getBookingByUserAndId', array($this->user, $id), $booking);
+        $this->bookingService->expects($this->once())
+            ->method('getBookingByUserAndDate')
+            ->with('5', $this->isInstanceOf('JhFlexiTime\DateTime\DateTime'))
+            ->will($this->returnValue($booking));
 
         $this->routeMatch->setParam('id', $id);
 
@@ -209,7 +213,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
     {
         $return = array('messages' => array('data' => 'INVALID YO'));
         $data = array('date' => '25-03-2014', 'startTime' => '09:00');
-        $this->configureMockBookingService('create', array($data, $this->user), $return);
+        $this->configureMockBookingService('create', array($data), $return);
 
         $this->request->setMethod('POST');
         $this->request->getPost()->set('date', '25-03-2014');
@@ -229,10 +233,15 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function testUpdateCanBeAccessed()
     {
-        $id = 5;
+        $id = "123456789-5";
         $booking = $this->getMockBooking();
-        $data = array('date' => '25-03-2014', 'startTime' => '09:00');
-        $this->configureMockBookingService('update', array($id, $data, $this->user), $booking);
+        $data = ['date' => '25-03-2014', 'startTime' => '09:00'];
+
+        $this->bookingService->expects($this->once())
+            ->method('update')
+            ->with('5', $this->isInstanceOf('JhFlexiTime\DateTime\DateTime'), $data)
+            ->will($this->returnValue($booking));
+
         $this->configureMockTimeCalculatorService(
             'getTotals',
             array($this->user, $booking->getDate()),
@@ -261,15 +270,19 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
         $this->assertSame($booking, $result->booking);
         $this->assertTrue($result->success);
-        $this->assertEquals($result->monthTotals, array('some-total', 20));
+        $this->assertEquals($result->monthTotals, ['some-total', 20]);
     }
 
     public function testUpdateCanBeAccessedButFail()
     {
-        $id = 5;
-        $return = array('messages' => array('data' => 'INVALID YO'));
-        $data = array('date' => '25-03-2014', 'startTime' => '09:00');
-        $this->configureMockBookingService('update', array($id, $data, $this->user), $return);
+        $id     = "123456789-5";
+        $return = ['messages' => ['data' => 'INVALID YO']];
+        $data   = ['date' => '25-03-2014', 'startTime' => '09:00'];
+
+        $this->bookingService->expects($this->once())
+            ->method('update')
+            ->with('5', $this->isInstanceOf('JhFlexiTime\DateTime\DateTime'), $data)
+            ->will($this->returnValue($return));
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('PUT');
@@ -283,16 +296,20 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->messages));
         $this->assertTrue(isset($result->success));
 
-        $this->assertSame($result->messages, array('data' => 'INVALID YO'));
+        $this->assertSame($result->messages, ['data' => 'INVALID YO']);
         $this->assertFalse($result->success);
     }
 
     public function testDeleteCanBeAccessed()
     {
-        $id = 5;
+        $id      = "123456789-5";
         $booking = $this->getMockBooking();
-        $this->configureMockBookingService('getBookingByUserAndId', array($this->user, $id), $booking);
-        $this->configureMockBookingService('delete', array($booking), $booking);
+
+        $this->bookingService->expects($this->once())
+            ->method('delete')
+            ->with('5', $this->isInstanceOf('JhFlexiTime\DateTime\DateTime'))
+            ->will($this->returnValue($booking));
+
         $this->configureMockTimeCalculatorService(
             'getTotals',
             array($this->user, $booking->getDate()),
@@ -323,11 +340,13 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function testDeleteCanBeAccessedButFail()
     {
-        $id = 5;
+        $id     = "123456789-5";
+        $return = ['messages' => ['data' => 'Invalid ID']];
         $this->bookingService->expects($this->once())
-            ->method('getBookingByUserAndId')
-            ->will($this->throwException(new \Exception))
-            ->with($this->user, $id);
+            ->method('delete')
+            ->with('5', $this->isInstanceOf('JhFlexiTime\DateTime\DateTime'))
+            ->will($this->returnValue($return));
+
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('DELETE');
@@ -338,9 +357,9 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
         $this->assertTrue(isset($result->success));
-        $this->assertTrue(isset($result->message));
+        $this->assertTrue(isset($result->messages));
 
         $this->assertFalse($result->success);
-        $this->assertEquals($result->message, 'Invalid ID');
+        $this->assertEquals($result->messages, ['data' => 'Invalid ID']);
     }
 }

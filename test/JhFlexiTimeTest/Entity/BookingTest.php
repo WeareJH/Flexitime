@@ -3,8 +3,7 @@
 namespace JhFlexiTimeTest\Entity;
 
 use JhFlexiTime\Entity\Booking;
-use ReflectionClass;
-use DateTime;
+use JhFlexiTime\DateTime\DateTime;
 
 class BookingTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,25 +19,6 @@ class BookingTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->booking = new Booking;
-    }
-
-    /**
-     * @param Booking $booking
-     * @param $id
-     */
-    public function setId(Booking $booking, $id)
-    {
-        $reflector = new ReflectionClass($booking);
-        $property  = $reflector->getProperty('id');
-        $property->setAccessible(true);
-        $property->setValue($booking, $id);
-    }
-
-    public function testId()
-    {
-        $this->assertNull($this->booking->getId());
-        $this->setId($this->booking, 1);
-        $this->assertEquals(1, $this->booking->getId());
     }
 
     /**
@@ -134,46 +114,55 @@ class BookingTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testJsonSerializeWithDefaultValues()
-    {
-        $date = new DateTime("today");
-
-        $expected = array(
-            'id'        => null,
-            'date'      => $date->format('d-m-Y'),
-            'startTime' => '09:00',
-            'endTime'   => '17:30',
-            'total'     => 0,
-            'balance'   => 0,
-            'notes'     => null
-        );
-
-        $this->assertEquals($expected, $this->booking->jsonSerialize());
-    }
-
     public function testJsonSerializeWithModifiedValues()
     {
         $date = new DateTime("24 March 2014");
 
         $expected = array(
-            'id'        => 1,
+            'id'        => $date->getTimestamp() . "-2",
             'date'      => $date->format('d-m-Y'),
             'startTime' => '11:00',
             'endTime'   => '19:30',
             'total'     => 10,
             'balance'   => 2.5,
-            'notes'     => 'Just point and click and see if it works. deploy?!'
+            'notes'     => 'Just point and click and see if it works. deploy?!',
+            'user'      => 2
         );
 
-        $this->setId($this->booking, 1);
+        $user = $this->getMock('ZfcUser\Entity\UserInterface');
+        $user->expects($this->exactly(2))
+            ->method('getId')
+            ->will($this->returnValue(2));
+
         $this->booking
             ->setDate($date)
             ->setStartTime(new DateTime("11:00"))
             ->setEndTime(new DateTime("19:30"))
             ->setTotal(10)
             ->setBalance(2.5)
-            ->setNotes('Just point and click and see if it works. deploy?!');
+            ->setNotes('Just point and click and see if it works. deploy?!')
+            ->setUser($user);
 
         $this->assertEquals($expected, $this->booking->jsonSerialize());
+    }
+
+    public function testGetIdThrowsExceptionIfUserNotSet()
+    {
+        $this->setExpectedException('\RuntimeException', 'No User is set. Needed to generate ID');
+        $this->booking->getId();
+    }
+
+    public function testGetIdContainsUSerIdAndDate()
+    {
+        $user = $this->getMock('ZfcUser\Entity\UserInterface');
+        $user->expects($this->once())
+            ->method('getId')
+            ->will($this->returnValue(2));
+        $date = new DateTime("24 March 2014");
+
+        $this->booking->setUser($user);
+        $this->booking->setDate($date);
+        $id     = $this->booking->getId();
+        $this->assertEquals($date->getTimestamp() . "-2", $id);
     }
 }

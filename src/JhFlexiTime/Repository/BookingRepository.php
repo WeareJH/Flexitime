@@ -5,6 +5,7 @@ namespace JhFlexiTime\Repository;
 use Doctrine\Common\Persistence\ObjectRepository;
 use ZfcUser\Entity\UserInterface;
 use JhFlexiTime\Entity\Booking;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Booking repository
@@ -45,13 +46,13 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      * Find all bookings for a given user/month
      *
      * @param \ZfcUser\Entity\UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return Booking[]
      */
-    public function findByUserAndMonth(UserInterface $user, \DateTime $date)
+    public function findByUserAndMonth(UserInterface $user, DateTime $date)
     {
-        $firstDay = new \DateTime(sprintf('first day of %s', $date->format('F Y')));
-        $lastDay = new \DateTime(sprintf('last day of %s', $date->format('F Y')));
+        $firstDay = new DateTime(sprintf('first day of %s', $date->format('F Y')));
+        $lastDay = new DateTime(sprintf('last day of %s', $date->format('F Y')));
         
         $params = array(
             'user'      => $user,
@@ -75,13 +76,13 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      * for this user + month
      *
      * @param UserInterface $user
-     * @param \DateTime $month
+     * @param DateTime $month
      * @return bool
      */
-    public function isUsersFirstBookingForMonth(UserInterface $user, \DateTime $month)
+    public function isUsersFirstBookingForMonth(UserInterface $user, DateTime $month)
     {
-        $firstDay   = new \DateTime(sprintf('first day of %s', $month->format('F Y')));
-        $lastDay    = new \DateTime(sprintf('last day of %s', $month->format('F Y')));
+        $firstDay   = new DateTime(sprintf('first day of %s', $month->format('F Y')));
+        $lastDay    = new DateTime(sprintf('last day of %s', $month->format('F Y')));
 
         $params = array(
             'user'          => $user,
@@ -108,13 +109,13 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      * and the current day of the passed in DateTime object
      *
      * @param UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return float
      */
-    public function getMonthBookedToDateTotalByUser(UserInterface $user, \DateTime $date)
+    public function getMonthBookedToDateTotalByUser(UserInterface $user, DateTime $date)
     {
-        $firstDay = new \DateTime(sprintf('first day of %s', $date->format('F')));
-        $currentDay = new \DateTime($date->format('Y-m-d'));
+        $firstDay = new DateTime(sprintf('first day of %s', $date->format('F')));
+        $currentDay = new DateTime($date->format('Y-m-d'));
 
         $params = array(
             'user'          => $user,
@@ -144,13 +145,13 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      * and the last day of the month
      *
      * @param UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return float
      */
-    public function getMonthBookedTotalByUser(UserInterface $user, \DateTime $date)
+    public function getMonthBookedTotalByUser(UserInterface $user, DateTime $date)
     {
-        $firstDay   = new \DateTime(sprintf('first day of %s', $date->format('F')));
-        $lastDay    = new \DateTime(sprintf('last day of %s', $date->format('F')));
+        $firstDay   = new DateTime(sprintf('first day of %s', $date->format('F')));
+        $lastDay    = new DateTime(sprintf('last day of %s', $date->format('F')));
 
         $params = array(
             'user'      => $user,
@@ -177,11 +178,11 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
+     * @param DateTime $startDate
+     * @param DateTime $endDate
      * @return float
      */
-    public function getTotalBookedBetweenByUser(UserInterface $user, \DateTime $startDate, \DateTime $endDate)
+    public function getTotalBookedBetweenByUser(UserInterface $user, DateTime $startDate, DateTime $endDate)
     {
         $params = array(
             'user'      => $user,

@@ -4,7 +4,7 @@ namespace JhFlexiTime\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
-use DateTime;
+use JhFlexiTime\DateTime\DateTime;
 use JsonSerializable;
 
 /**
@@ -25,7 +25,7 @@ class Booking implements JsonSerializable
     protected $user = null;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Id
      * @ORM\Column(type="date", name="date", nullable=false)
@@ -33,14 +33,14 @@ class Booking implements JsonSerializable
     protected $date;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="time", name="start_time", nullable=false)
      */
     protected $startTime;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="time", name="end_time", nullable=false)
      */
@@ -74,6 +74,18 @@ class Booking implements JsonSerializable
         $this->date         = new DateTime("today");
         $this->startTime    = new DateTime('09:00:00');
         $this->endTime      = new DateTime('17:30:00');
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        if (!$this->user) {
+            throw new \RuntimeException("No User is set. Needed to generate ID");
+        }
+
+        return $this->date->format('U') . "-" . $this->user->getId();
     }
 
     /**
@@ -209,7 +221,8 @@ class Booking implements JsonSerializable
     public function jsonSerialize()
     {
         return array(
-            'id'        => $this->id,
+            'id'        => $this->getId(),
+            'user'      => $this->user->getId(),
             'date'      => $this->date->format('d-m-Y'),
             'startTime' => $this->startTime->format('H:i'),
             'endTime'   => $this->endTime->format('H:i'),

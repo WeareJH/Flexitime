@@ -3,6 +3,7 @@
 namespace JhFlexiTime\Repository;
 
 use ZfcUser\Entity\UserInterface;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Interface BookingRepositoryInterface
@@ -25,37 +26,37 @@ interface BookingRepositoryInterface
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return array
      */
-    public function findByUserAndMonth(UserInterface $user, \DateTime $date);
+    public function findByUserAndMonth(UserInterface $user, DateTime $date);
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $month
+     * @param DateTime $month
      * @return bool
      */
-    public function isUsersFirstBookingForMonth(UserInterface $user, \DateTime $month);
+    public function isUsersFirstBookingForMonth(UserInterface $user, DateTime $month);
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return float
      */
-    public function getMonthBookedTotalByUser(UserInterface $user, \DateTime $date);
+    public function getMonthBookedTotalByUser(UserInterface $user, DateTime $date);
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
+     * @param DateTime $startDate
+     * @param DateTime $endDate
      * @return float
      */
-    public function getTotalBookedBetweenByUser(UserInterface $user, \DateTime $startDate, \DateTime $endDate);
+    public function getTotalBookedBetweenByUser(UserInterface $user, DateTime $startDate, DateTime $endDate);
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return float
      */
-    public function getMonthBookedToDateTotalByUser(UserInterface $user, \DateTime $date);
+    public function getMonthBookedToDateTotalByUser(UserInterface $user, DateTime $date);
 }

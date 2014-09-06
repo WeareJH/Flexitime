@@ -2,11 +2,10 @@
 
 namespace JhFlexiTimeTest\Service;
 
+use JhFlexiTime\DateTime\DateTime;
 use JhFlexiTime\Entity\Booking;
 use JhFlexiTime\Service\BookingService;
 use JhFlexiTime\Options\ModuleOptions;
-use JhFlexiTime\Service\PeriodServiceInterface;
-use JhFlexiTime\Repository\BookingRepositoryInterface;
 use JhUser\Entity\User;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Zend\InputFilter\InputFilterInterface;
@@ -122,41 +121,40 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('trigger');
 
         $this->bookingService->setEventManager($eventManager);
-        $ret = $this->bookingService->create($data, $user);
+        $ret = $this->bookingService->create($data);
         $this->assertEquals(-7.5, $ret->getBalance());
         $this->assertEquals(2, $ret->getTotal());
-        $this->assertSame($user, $ret->getUser());
     }
 
     public function testUpdateBookingReturnsErrorIfBookingNotExist()
     {
-        $id     = 10;
         $data   = [];
-        $user   = new User();
+        $userId = 2;
+        $date   = new DateTime("20 September 2014");
 
         $this->bookingRepository
             ->expects($this->once())
             ->method('findOneBy')
-            ->with(['id' => $id, 'user' => $user])
+            ->with(['date' => $date, 'user' => $userId])
             ->will($this->returnValue(null));
 
-        $ret = $this->bookingService->update($id, $data, $user);
+        $ret = $this->bookingService->update($userId, $date, $data);
         $this->assertSame(['messages' => ['Booking Does Not Exist']], $ret);
     }
 
     public function testUpdateBookingReturnsErrorIfValidationFails()
     {
-        $id     = 10;
         $data = [
             'notes' => 'yo'
         ];
-        $user   = new User();
-        $booking = new Booking();
+        $booking    = new Booking();
+        $userId     = 2;
+        $date       = new DateTime("20 September 2014");
 
         $this->bookingRepository
             ->expects($this->once())
             ->method('findOneBy')
-            ->with(['id' => $id, 'user' => $user])
+            ->with(['date' => $date, 'user' => $userId])
             ->will($this->returnValue($booking));
 
         $this->inputFilter
@@ -174,22 +172,22 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('getMessages')
             ->will($this->returnValue(['notes' => 'ERROR!']));
 
-        $ret = $this->bookingService->update($id, $data, $user);
+        $ret = $this->bookingService->update($userId, $date, $data);
         $this->assertSame(['messages' => ['notes' => 'ERROR!']], $ret);
     }
 
     public function testUpdateSavesAfterSuccessfulValidation()
     {
-        $id         = 10;
         $data       = ['notes' => 'yo' ];
-        $user       = new User();
         $booking    = new Booking();
+        $userId     = 2;
+        $date       = new DateTime("20 September 2014");
         $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $this->bookingRepository
             ->expects($this->once())
             ->method('findOneBy')
-            ->with(['id' => $id, 'user' => $user])
+            ->with(['date' => $date, 'user' => $userId])
             ->will($this->returnValue($booking));
 
         $this->inputFilter
@@ -233,14 +231,23 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
             ->with('update.post', null, ['booking' => $booking]);
 
         $this->bookingService->setEventManager($eventManager);
-        $ret = $this->bookingService->update($id, $data, $user);
+        $ret = $this->bookingService->update($userId, $date, $data);
         $this->assertEquals(2, $booking->getTotal());
         $this->assertSame($ret, $booking);
     }
 
     public function testDeleteBooking()
     {
-        $booking = new Booking();
+        $booking    = new Booking();
+        $userId     = 2;
+        $date       = new DateTime("20 September 2014");
+
+        $this->bookingRepository
+            ->expects($this->once())
+            ->method('findOneBy')
+            ->with(['date' => $date, 'user' => $userId])
+            ->will($this->returnValue($booking));
+
         $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
         $eventManager
             ->expects($this->at(1))
@@ -262,35 +269,53 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('flush');
 
         $this->bookingService->setEventManager($eventManager);
-        $this->bookingService->delete($booking);
+        $ret = $this->bookingService->delete($userId, $date);
+        $this->assertSame($booking, $ret);
     }
 
-    public function testGetBookingByUserAndIdThrowsExceptionIfNotExist()
+    public function testDeleteBookingReturnsErrorIfBookingNotExist()
     {
-        $user = new User();
-
-        $this->bookingRepository
-             ->expects($this->once())
-             ->method('findOneBy')
-             ->with(['id' => 1, 'user' => $user])
-             ->will($this->returnValue(null));
-
-        $this->setExpectedException('Exception', 'Could not find Booking');
-        $this->bookingService->getBookingByUserAndId($user, 1);
-    }
-
-    public function testGetBookingByUserAndIdReturnsBooking()
-    {
-        $user = new User();
-        $booking = new Booking();
+        $userId     = 2;
+        $date       = new DateTime("20 September 2014");
 
         $this->bookingRepository
             ->expects($this->once())
             ->method('findOneBy')
-            ->with(['id' => 1, 'user' => $user])
+            ->with(['date' => $date, 'user' => $userId])
+            ->will($this->returnValue(null));
+
+        $ret = $this->bookingService->delete($userId, $date);
+        $this->assertSame(['messages' => ['Booking Does Not Exist']], $ret);
+    }
+
+    public function testGetBookingByUserAndDateThrowsExceptionIfNotExist()
+    {
+        $userId = 2;
+        $date   = new DateTime("20 September 2014");
+
+        $this->bookingRepository
+             ->expects($this->once())
+             ->method('findOneBy')
+             ->with(['date' => $date, 'user' => $userId])
+             ->will($this->returnValue(null));
+
+        $this->setExpectedException('Exception', 'Could not find Booking');
+        $this->bookingService->getBookingByUserAndDate($userId, $date);
+    }
+
+    public function testGetBookingByUserAndIdReturnsBooking()
+    {
+        $userId     = 2;
+        $date       = new DateTime("20 September 2014");
+        $booking    = new Booking();
+
+        $this->bookingRepository
+            ->expects($this->once())
+            ->method('findOneBy')
+            ->with(['date' => $date, 'user' => $userId])
             ->will($this->returnValue($booking));
 
-        $ret = $this->bookingService->getBookingByUserAndId($user, 1);
+        $ret = $this->bookingService->getBookingByUserAndDate($userId, $date);
         $this->assertSame($booking, $ret);
     }
 
@@ -332,7 +357,7 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
     public function testGetUserBookingsForMonth()
     {
         $user = new User();
-        $date = new \DateTime("14 May 2014");
+        $date = new DateTime("14 May 2014");
 
         $bookings = $this->getBookingCollection($date);
 
@@ -343,9 +368,6 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
              ->will($this->returnValue($bookings));
 
         $ret = $this->bookingService->getUserBookingsForMonth($user, $date);
-
-
-
 
         $expected = [
             'weeks' => [
@@ -498,26 +520,26 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
     protected function getBookingCollection(\DateTime $date, $addFalsePositives = true)
     {
         $bookings = [
-            $this->getBooking(new \DateTime("14 May 2014")),
-            $this->getBooking(new \DateTime("15 May 2014")),
-            $this->getBooking(new \DateTime("16 May 2014")),
-            $this->getBooking(new \DateTime("17 May 2014")),
-            $this->getBooking(new \DateTime("18 May 2014")),
-            $this->getBooking(new \DateTime("19 May 2014")),
-            $this->getBooking(new \DateTime("1 May 2014")),
-            $this->getBooking(new \DateTime("30 May 2014")),
-            $this->getBooking(new \DateTime("31 May 2014")),
+            $this->getBooking(new DateTime("14 May 2014")),
+            $this->getBooking(new DateTime("15 May 2014")),
+            $this->getBooking(new DateTime("16 May 2014")),
+            $this->getBooking(new DateTime("17 May 2014")),
+            $this->getBooking(new DateTime("18 May 2014")),
+            $this->getBooking(new DateTime("19 May 2014")),
+            $this->getBooking(new DateTime("1 May 2014")),
+            $this->getBooking(new DateTime("30 May 2014")),
+            $this->getBooking(new DateTime("31 May 2014")),
         ];
 
         if ($addFalsePositives) {
-            $bookings[] = $this->getBooking(new \DateTime("5 June 2014"));
-            $bookings[] = $this->getBooking(new \DateTime("3 April 2014"));
+            $bookings[] = $this->getBooking(new DateTime("5 June 2014"));
+            $bookings[] = $this->getBooking(new DateTime("3 April 2014"));
         }
 
         return $bookings;
     }
 
-    protected function getBooking(\DateTime $date)
+    protected function getBooking(DateTime $date)
     {
         $booking = new Booking();
         $booking->setDate($date);

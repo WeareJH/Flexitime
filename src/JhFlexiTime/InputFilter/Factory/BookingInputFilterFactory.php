@@ -2,10 +2,11 @@
 
 namespace JhFlexiTime\InputFilter\Factory;
 
+use DoctrineModule\Validator\ObjectExists;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use JhFlexiTime\InputFilter\BookingInputFilter;
-use JhFlexiTime\Validator\UniqueUserObject;
+use JhFlexiTime\Validator\UniqueObject;
 
 /**
  * Class BookingInputFilterFactory
@@ -24,21 +25,27 @@ class BookingInputFilterFactory implements FactoryInterface
         $parentLocator      = $serviceLocator->getServiceLocator();
         $objectManager      = $parentLocator->get('JhFlexiTime\ObjectManager');
         $bookingRepository  = $parentLocator->get('JhFlexiTime\Repository\BookingRepository');
-        $user               = $parentLocator->get('zfcuser_auth_service')->getIdentity();
+        $userRepository     = $parentLocator->get('JhUser\Repository\UserRepository');
         $bookingOptions     = $parentLocator->get('BookingOptions');
 
-        $uniqueValidator = new UniqueUserObject(array(
+        $uniqueValidator = new UniqueObject([
             'object_manager'    => $objectManager,
             'object_repository' => $bookingRepository,
-            'user'              => $user,
             'fields' => array(
                 'date',
                 'user',
-            )
-        ));
+            ),
+            'use_context' => true,
+        ]);
+
+        $userExistsValidator = new ObjectExists([
+            'object_repository' => $userRepository,
+            'fields'            => ['id']
+        ]);
 
         return new BookingInputFilter(
             $uniqueValidator,
+            $userExistsValidator,
             $bookingOptions
         );
     }

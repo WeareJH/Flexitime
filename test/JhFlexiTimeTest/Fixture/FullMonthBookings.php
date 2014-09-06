@@ -5,8 +5,8 @@ namespace JhFlexiTimeTest\Fixture;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\Booking;
-use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class FullMonthBookings
@@ -16,7 +16,7 @@ use JhUser\Entity\User;
 class FullMonthBookings extends AbstractFixture
 {
     /**
-     * @var \DateTime[]
+     * @var DateTime[]
      */
     protected $dates;
 
@@ -37,36 +37,36 @@ class FullMonthBookings extends AbstractFixture
     {
         $this->user = $user;
         $this->dates = [
-            new \DateTime("1 May 2014"),
-            new \DateTime("2 May 2014"),
-            new \DateTime("3 May 2014"),
-            new \DateTime("4 May 2014"),
-            new \DateTime("5 May 2014"),
-            new \DateTime("6 May 2014"),
-            new \DateTime("7 May 2014"),
-            new \DateTime("8 May 2014"),
-            new \DateTime("9 May 2014"),
-            new \DateTime("10 May 2014"),
-            new \DateTime("11 May 2014"),
-            new \DateTime("12 May 2014"),
-            new \DateTime("13 May 2014"),
-            new \DateTime("14 May 2014"),
-            new \DateTime("15 May 2014"),
-            new \DateTime("16 May 2014"),
-            new \DateTime("17 May 2014"),
-            new \DateTime("18 May 2014"),
-            new \DateTime("19 May 2014"),
-            new \DateTime("20 May 2014"),
-            new \DateTime("21 May 2014"),
-            new \DateTime("22 May 2014"),
-            new \DateTime("23 May 2014"),
-            new \DateTime("24 May 2014"),
-            new \DateTime("25 May 2014"),
-            new \DateTime("26 May 2014"),
-            new \DateTime("27 May 2014"),
-            new \DateTime("28 May 2014"),
-            new \DateTime("30 May 2014"),
-            new \DateTime("31 May 2014"),
+            new DateTime("1 May 2014"),
+            new DateTime("2 May 2014"),
+            new DateTime("3 May 2014"),
+            new DateTime("4 May 2014"),
+            new DateTime("5 May 2014"),
+            new DateTime("6 May 2014"),
+            new DateTime("7 May 2014"),
+            new DateTime("8 May 2014"),
+            new DateTime("9 May 2014"),
+            new DateTime("10 May 2014"),
+            new DateTime("11 May 2014"),
+            new DateTime("12 May 2014"),
+            new DateTime("13 May 2014"),
+            new DateTime("14 May 2014"),
+            new DateTime("15 May 2014"),
+            new DateTime("16 May 2014"),
+            new DateTime("17 May 2014"),
+            new DateTime("18 May 2014"),
+            new DateTime("19 May 2014"),
+            new DateTime("20 May 2014"),
+            new DateTime("21 May 2014"),
+            new DateTime("22 May 2014"),
+            new DateTime("23 May 2014"),
+            new DateTime("24 May 2014"),
+            new DateTime("25 May 2014"),
+            new DateTime("26 May 2014"),
+            new DateTime("27 May 2014"),
+            new DateTime("28 May 2014"),
+            new DateTime("30 May 2014"),
+            new DateTime("31 May 2014"),
         ];
     }
 
@@ -91,7 +91,7 @@ class FullMonthBookings extends AbstractFixture
     }
 
     /**
-     * @return \DateTime[]
+     * @return DateTime[]
      */
     public function getDates()
     {
@@ -99,11 +99,11 @@ class FullMonthBookings extends AbstractFixture
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getMonth()
     {
-        return new \DateTime("May 2014");
+        return new DateTime("May 2014");
     }
 
     /**

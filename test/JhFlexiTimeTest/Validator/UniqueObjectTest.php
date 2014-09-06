@@ -200,30 +200,57 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
         $validator  = $this->getValidator(['user', 'date']);
 
         $date = new \JhFlexiTime\DateTime\DateTime("12/04/88");
-        $user = 2;
+
+        $user = new User;
 
         $context = [
-            'user' => $user,
+            'user' => 2,
             'date' => $date,
         ];
 
         $object = (object) $context;
 
-        $classMetadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
-        $classMetadata
-            ->expects($this->once())
-            ->method('getIdentifierFieldNames')
-            ->will($this->returnValue(array('user', 'date')));
-        $classMetadata
+        $foundIdentifiers = [
+            'user' => $user,
+            'date' => $date,
+        ];
+
+        $bookingClassMetadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $bookingClassMetadata
             ->expects($this->once())
             ->method('getIdentifierValues')
             ->with($object)
-            ->will($this->returnValue(array('user' => $user, 'date' => $date)));
+            ->will($this->returnValue($foundIdentifiers));
+
+        $bookingClassMetadata
+            ->expects($this->once())
+            ->method('getIdentifierFieldNames')
+            ->will($this->returnValue(['user', 'date']));
+
+
+        $userIdValues = [0 => 2];
+        $userClassMetadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $userClassMetadata
+            ->expects($this->once())
+            ->method('getIdentifierValues')
+            ->with($user)
+            ->will($this->returnValue($userIdValues));
+
+
+        $metaMap = [
+            ['stdClass', $bookingClassMetadata],
+            ['JhUser\Entity\User', $userClassMetadata],
+        ];
 
         $this->objectManager->expects($this->any())
             ->method('getClassMetadata')
-            ->with('stdClass')
-            ->will($this->returnValue($classMetadata));
+            ->will($this->returnValueMap($metaMap));
+
+        $e = new \Doctrine\Common\Persistence\Mapping\MappingException();
+        $this->objectManager->expects($this->at(3))
+            ->method('getClassMetadata')
+            ->with('JhFlexiTime\DateTime\DateTime')
+            ->will($this->throwException($e));
 
         $this->repository
             ->expects($this->any())
@@ -233,7 +260,7 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
         $this->repository
             ->expects($this->once())
             ->method('findOneBy')
-            ->with(['user' => $user, 'date' => $date])
+            ->with(['user' => 2, 'date' => $date])
             ->will($this->returnValue($object));
 
         $this->assertTrue($validator->isValid('12-04-88', $context));
