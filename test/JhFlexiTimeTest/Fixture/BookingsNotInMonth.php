@@ -5,8 +5,8 @@ namespace JhFlexiTimeTest\Fixture;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\Booking;
-use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class BookingsNotInMonth
@@ -16,9 +16,9 @@ use JhUser\Entity\User;
 class BookingsNotInMonth extends AbstractFixture
 {
     /**
-     * @var \DateTime
+     * @var DateTime[]
      */
-    protected $date;
+    protected $dates;
 
     /**
      * @var User
@@ -27,12 +27,30 @@ class BookingsNotInMonth extends AbstractFixture
 
     /**
      * @param User $user
-     * @param \DateTime $date
      */
-    public function __construct(User $user, \DateTime $date)
+    public function __construct(User $user)
     {
         $this->user = $user;
-        $this->date = $date;
+
+        $this->dates = [
+            new DateTime("1 April 2014"),
+            new DateTime("2 April 2014"),
+            new DateTime("3 April 2014"),
+            new DateTime("4 April 2014"),
+            new DateTime("5 April 2014"),
+            new DateTime("6 May 2014"),
+            new DateTime("7 May 2014"),
+            new DateTime("8 May 2014"),
+            new DateTime("9 May 2014"),
+            new DateTime("10 May 2014"),
+            new DateTime("1 September 2014"),
+            new DateTime("2 September 2014"),
+            new DateTime("3 September 2014"),
+            new DateTime("4 September 2014"),
+            new DateTime("5 September 2014"),
+        ];
+
+        $this->monthWithNoBookings = new DateTime("1 October 2014");
     }
 
     /**
@@ -43,21 +61,21 @@ class BookingsNotInMonth extends AbstractFixture
         $manager->persist($this->user);
         $manager->flush();
 
-        $ops = ["+", "-"];
-        for ($i = 0; $i < 10; $i++) {
+        foreach ($this->dates as $date) {
             $booking = new Booking();
-
-            $date = clone $this->date;
-
-            //create date which is between +1 and +10 months in future
-            //or -1 and -10 months in past
-            $date->modify(sprintf("%s %s month", $ops[array_rand($ops)], rand(1, 10)));
-
             $booking->setUser($this->user);
             $booking->setDate($date);
             $manager->persist($booking);
         }
 
         $manager->flush();
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getMonthWithNoBookings()
+    {
+        return $this->monthWithNoBookings;
     }
 }

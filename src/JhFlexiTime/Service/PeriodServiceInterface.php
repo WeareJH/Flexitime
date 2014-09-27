@@ -2,6 +2,8 @@
 
 namespace JhFlexiTime\Service;
 
+use JhFlexiTime\DateTime\DateTime;
+
 /**
  * Interface PeriodServiceInterface
  * @package JhFlexiTime\Service
@@ -10,40 +12,40 @@ namespace JhFlexiTime\Service;
 interface PeriodServiceInterface
 {
     /**
-     * @param \DateTime $month
+     * @param DateTime $month
      * @return float
      */
-    public function getTotalHoursInMonth(\DateTime $month);
+    public function getTotalHoursInMonth(DateTime $month);
 
     /**
-     * @param \DateTime $month
+     * @param DateTime $month
      * @return float
      */
-    public function getTotalHoursToDateInMonth(\DateTime $month);
+    public function getTotalHoursToDateInMonth(DateTime $month);
 
     /**
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function calculateHourDiff(\DateTime $start, \DateTime $end);
+    public function calculateHourDiff(DateTime $start, DateTime $end);
 
     /**
-     * @param \DateTime $today
+     * @param DateTime $today
      * @return float
      */
-    public function getRemainingHoursInMonth(\DateTime $today);
+    public function getRemainingHoursInMonth(DateTime $today);
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return array
      */
-    public function getWeeksInMonth(\DateTime $date);
+    public function getWeeksInMonth(DateTime $date);
 
     /**
-     * @param \DateTime $dateA
-     * @param \DateTime $dateB
+     * @param DateTime $dateA
+     * @param DateTime $dateB
      * @return bool
      */
-    public function isDateAfterDay(\DateTime $dateA, \DateTime $dateB);
+    public function isDateAfterDay(DateTime $dateA, DateTime $dateB);
 }

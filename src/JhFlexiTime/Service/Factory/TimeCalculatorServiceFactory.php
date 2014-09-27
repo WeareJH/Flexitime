@@ -5,6 +5,7 @@ namespace JhFlexiTime\Service\Factory;
 use JhFlexiTime\Service\TimeCalculatorService;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class TimeCalculatorServiceFactory
@@ -25,7 +26,7 @@ class TimeCalculatorServiceFactory implements FactoryInterface
             $serviceLocator->get('JhFlexiTime\Repository\BookingRepository'),
             $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
             $serviceLocator->get('JhFlexiTime\Service\PeriodService'),
-            new \DateTime('today')
+            new DateTime('today')
         );
     }
 }

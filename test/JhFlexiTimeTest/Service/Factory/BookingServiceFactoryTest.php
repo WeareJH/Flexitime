@@ -34,7 +34,8 @@ class BookingServiceFactoryTest extends \PHPUnit_Framework_TestCase
             'JhFlexiTime\Service\PeriodService' =>
                 $this->getMock('JhFlexiTime\Service\PeriodServiceInterface'),
             'InputFilterManager' =>
-                $FilterPluginManager
+                $FilterPluginManager,
+            'JhUser\Repository\UserRepository' => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
         ];
 
         $serviceLocator

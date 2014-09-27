@@ -71,9 +71,9 @@ class BookingRestController extends AbstractRestfulController
      */
     public function get($id)
     {
-        $user = $this->zfcUserAuthentication()->getIdentity();
+        $id   = $this->parseIdCriteria($id);
         return new JsonModel(array(
-            'booking' => $this->bookingService->getBookingByUserAndId($user, $id),
+            'booking' => $this->bookingService->getBookingByUserAndDate($id['user'], $id['date']),
         ));
     }
 
@@ -83,8 +83,7 @@ class BookingRestController extends AbstractRestfulController
      */
     public function create($data)
     {
-        $user           = $this->zfcUserAuthentication()->getIdentity();
-        $return         = $this->bookingService->create($data, $user);
+        $return = $this->bookingService->create($data);
 
         if (is_array($return)) {
             $return['success'] = false;
@@ -94,8 +93,8 @@ class BookingRestController extends AbstractRestfulController
         return new JsonModel(array(
             'success'       => true,
             'booking'       => $return,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($user, $return->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($user, $return->getDate())
+            'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
+            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
         ));
     }
 
@@ -106,8 +105,8 @@ class BookingRestController extends AbstractRestfulController
      */
     public function update($id, $data)
     {
-        $user   = $this->zfcUserAuthentication()->getIdentity();
-        $return = $this->bookingService->update($id, $data, $user);
+        $id     = $this->parseIdCriteria($id);
+        $return = $this->bookingService->update($id['user'], $id['date'], $data);
 
         if (is_array($return)) {
             $return['success'] = false;
@@ -117,8 +116,8 @@ class BookingRestController extends AbstractRestfulController
         return new JsonModel(array(
             'booking'       => $return,
             'success'       => true,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($user, $return->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($user, $return->getDate())
+            'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
+            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
         ));
     }
 
@@ -128,22 +127,29 @@ class BookingRestController extends AbstractRestfulController
      */
     public function delete($id)
     {
-        $user = $this->zfcUserAuthentication()->getIdentity();
-        try {
-            $booking = $this->bookingService->getBookingByUserAndId($user, $id);
-        } catch (\Exception $e) {
-            return new JsonModel(array(
-                'success'   => false,
-                'message'   => 'Invalid ID',
-            ));
+        $id     = $this->parseIdCriteria($id);
+        $return = $this->bookingService->delete($id['user'], $id['date']);
+        if (is_array($return)) {
+            $return['success'] = false;
+            return new JsonModel($return);
         }
-
-        $this->bookingService->delete($booking);
 
         return new JsonModel(array(
             'success'       => true,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($user, $booking->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($user, $booking->getDate())
+            'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
+            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
         ));
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function parseIdCriteria($id)
+    {
+        $idParts    = explode("-", $id);
+        $date       = new \JhFlexiTime\DateTime\DateTime();
+        $date->setTimestamp($idParts[0]);
+        return ['date' => $date,'user' => $idParts[1]];
     }
 }

@@ -10,6 +10,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger as FixturePurger;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor as FixtureExecutor;
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Base test case to be used when a new service manager instance is required
@@ -50,6 +51,7 @@ abstract class ServiceManagerFactory
     public static function getServiceManager(array $config = null)
     {
         $config = $config ?: static::getApplicationConfig();
+
         $serviceManager = new ServiceManager(
             new ServiceManagerConfig(
                 isset($config['service_manager']) ? $config['service_manager'] : []
@@ -69,6 +71,9 @@ abstract class ServiceManagerFactory
                 /* @var $em \Doctrine\ORM\EntityManager */
                 $em = $sl->get('Doctrine\ORM\EntityManager');
                 $schemaTool = new SchemaTool($em);
+
+                Type::overrideType('date', 'JhFlexiTime\DBAL\Types\DateType');
+                Type::overrideType('time', 'JhFlexiTime\DBAL\Types\TimeType');
 
                 $schemaTool->dropDatabase();
                 $schemaTool->createSchema($em->getMetadataFactory()->getAllMetadata());

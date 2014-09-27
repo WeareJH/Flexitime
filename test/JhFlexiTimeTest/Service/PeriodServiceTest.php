@@ -4,6 +4,7 @@ namespace JhFlexiTimeTest\Service;
 
 use JhFlexiTime\Service\PeriodService;
 use JhFlexiTime\Options\ModuleOptions;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class PeriodServiceTest
@@ -57,8 +58,8 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testHourDiffCalculatorThrowsExceptionWhenEndBeforeStart()
     {
-        $start  = new \DateTime("10:00");
-        $end    = new \DateTime("09:00");
+        $start  = new DateTime("10:00");
+        $end    = new DateTime("09:00");
 
         $this->setExpectedException('InvalidArgumentException', 'End time should be after start time');
         $this->periodService->calculateHourDiff($start, $end);
@@ -69,8 +70,8 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testHourDiffCalculatorThrowsExceptionWhenEndSameAsStart()
     {
-        $start  = new \DateTime("10:00");
-        $end    = new \DateTime("10:00");
+        $start  = new DateTime("10:00");
+        $end    = new DateTime("10:00");
 
         $this->setExpectedException('InvalidArgumentException', 'End time should be after start time');
         $this->periodService->calculateHourDiff($start, $end);
@@ -81,8 +82,8 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
      * returns the difference between the new balance and the old balance,
      * minus the lunch duration
      *
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @param int $expected
      *
      * @dataProvider hourDiffProvider
@@ -105,28 +106,28 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
          *  Start Time | End Time | Expected Hour Diff
          */
         return array(
-            array(new \DateTime("09:00"),   new \DateTime("10:00"), 0),
-            array(new \DateTime("09:00"),   new \DateTime("9:30"), -0.5),
-            array(new \DateTime("09:00"),   new \DateTime("17:30"), 7.5),
-            array(new \DateTime("07:00"),   new \DateTime("17:30"), 9.5),
+            array(new DateTime("09:00"),   new DateTime("10:00"), 0),
+            array(new DateTime("09:00"),   new DateTime("9:30"), -0.5),
+            array(new DateTime("09:00"),   new DateTime("17:30"), 7.5),
+            array(new DateTime("07:00"),   new DateTime("17:30"), 9.5),
             //only calculates hours not days
-            array(new \DateTime("yesterday 09:00"),   new \DateTime("17:30"), 7.5),
-            array(new \DateTime("yesterday 09:00"),   new \DateTime("tomorrow 17:30"), 7.5),
+            array(new DateTime("yesterday 09:00"),   new DateTime("17:30"), 7.5),
+            array(new DateTime("yesterday 09:00"),   new DateTime("tomorrow 17:30"), 7.5),
 
-            array(new \DateTime("09:15"),   new \DateTime("17:30"), 7.25),
-            array(new \DateTime("09:00"),   new \DateTime("17:45"), 7.75),
-            array(new \DateTime("09:20"),   new \DateTime("17:00"), 6.67),
-            array(new \DateTime("09:25"),   new \DateTime("17:00"), 6.58),
+            array(new DateTime("09:15"),   new DateTime("17:30"), 7.25),
+            array(new DateTime("09:00"),   new DateTime("17:45"), 7.75),
+            array(new DateTime("09:20"),   new DateTime("17:00"), 6.67),
+            array(new DateTime("09:25"),   new DateTime("17:00"), 6.58),
         );
     }
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param int $expectedTotal
      *
      * @dataProvider remainingHoursProvider
      */
-    public function testRemainingHoursInMonth(\DateTime $date, $expectedTotal)
+    public function testRemainingHoursInMonth(DateTime $date, $expectedTotal)
     {
         $remainingHours = $this->periodService->getRemainingHoursInMonth($date);
         $this->assertEquals($expectedTotal, $remainingHours);
@@ -141,19 +142,19 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
          *  Date | Expected Remaining Hours
          */
         return array(
-            array(new \DateTime("10 March 2014"),   112.5),
-            array(new \DateTime("01 January 2014"), 165.00),
-            array(new \DateTime("27 April 2014"),   22.5),
+            array(new DateTime("10 March 2014"),   112.5),
+            array(new DateTime("01 January 2014"), 165.00),
+            array(new DateTime("27 April 2014"),   22.5),
         );
     }
 
     /**
-     * @param \DateTime $month
+     * @param DateTime $month
      * @param $expectedTotal
      *
      * @dataProvider monthProvider
      */
-    public function testGetTotalHoursInMonth(\DateTime $month, $expectedTotal)
+    public function testGetTotalHoursInMonth(DateTime $month, $expectedTotal)
     {
         $hours = $this->periodService->getTotalHoursInMonth($month);
         $this->assertEquals($expectedTotal, $hours);
@@ -168,21 +169,21 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
          *  Date | Expected Total Month Hours
          */
         return array(
-            array(new \DateTime("10 March 2014"), 157.5),
-            array(new \DateTime("01 March 2014 00:00"), 157.5),
-            array(new \DateTime("31 March 2014 23:59:59"), 157.5),
-            array(new \DateTime("01 April 1988"), 157.5),
-            array(new \DateTime("08 February 2011"), 150),
+            array(new DateTime("10 March 2014"), 157.5),
+            array(new DateTime("01 March 2014 00:00"), 157.5),
+            array(new DateTime("31 March 2014 23:59:59"), 157.5),
+            array(new DateTime("01 April 1988"), 157.5),
+            array(new DateTime("08 February 2011"), 150),
         );
     }
 
     /**
-     * @param \DateTime $month
+     * @param DateTime $month
      * @param $expectedTotal
      *
      * @dataProvider monthToDateProvider
      */
-    public function testGetTotalHoursToDateInMonth(\DateTime $month, $expectedTotal)
+    public function testGetTotalHoursToDateInMonth(DateTime $month, $expectedTotal)
     {
         $hours = $this->periodService->getTotalHoursToDateInMonth($month);
         $this->assertEquals($expectedTotal, $hours);
@@ -197,20 +198,20 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
          *  Date | Expected Total Month Hours
          */
         return array(
-            array(new \DateTime("10 March 2014"), 45),
-            array(new \DateTime("01 March 2014 00:00"), 0),
-            array(new \DateTime("31 March 2014 23:59:59"), 157.5),
-            array(new \DateTime("01 April 1988"), 7.5),
-            array(new \DateTime("08 February 2011"), 45),
+            array(new DateTime("10 March 2014"), 45),
+            array(new DateTime("01 March 2014 00:00"), 0),
+            array(new DateTime("31 March 2014 23:59:59"), 157.5),
+            array(new DateTime("01 April 1988"), 7.5),
+            array(new DateTime("08 February 2011"), 45),
         );
     }
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param array $expected
      * @dataProvider firstAndLastDayOfWeekProvider
      */
-    public function testGetFirstAndLastDayOfWeek(\DateTime $date, array $expected)
+    public function testGetFirstAndLastDayOfWeek(DateTime $date, array $expected)
     {
         $result = $this->periodService->getFirstAndLastDayOfWeek($date);
         $this->assertEquals($expected, $result);
@@ -220,38 +221,38 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                new \DateTime("28 April 2014"),
+                new DateTime("28 April 2014"),
                 [
-                    'firstDay' => new \DateTime("28th April 2014"),
-                    'lastDay' => new \DateTime("30th April 2014"),
+                    'firstDay' => new DateTime("28th April 2014"),
+                    'lastDay' => new DateTime("30th April 2014"),
                 ]
             ],
             [
-                new \DateTime("1 May 2014"),
+                new DateTime("1 May 2014"),
                 [
-                    'firstDay' => new \DateTime("1 May 2014"),
-                    'lastDay' => new \DateTime("4 May 2014"),
+                    'firstDay' => new DateTime("1 May 2014"),
+                    'lastDay' => new DateTime("4 May 2014"),
                 ]
             ],
             [
-                new \DateTime("29 February 2012"),
+                new DateTime("29 February 2012"),
                 [
-                    'firstDay' => new \DateTime("27 February 2012"),
-                    'lastDay' => new \DateTime("29 February 2012"),
+                    'firstDay' => new DateTime("27 February 2012"),
+                    'lastDay' => new DateTime("29 February 2012"),
                 ]
             ],
             [
-                new \DateTime("12 November 2014"),
+                new DateTime("12 November 2014"),
                 [
-                    'firstDay' => new \DateTime("10 November 2014"),
-                    'lastDay' => new \DateTime("16 November 2014"),
+                    'firstDay' => new DateTime("10 November 2014"),
+                    'lastDay' => new DateTime("16 November 2014"),
                 ]
             ],
             [
-                new \DateTime("10 December 2014"),
+                new DateTime("10 December 2014"),
                 [
-                    'firstDay' => new \DateTime("8 December 2014"),
-                    'lastDay' => new \DateTime("14 December 2014"),
+                    'firstDay' => new DateTime("8 December 2014"),
+                    'lastDay' => new DateTime("14 December 2014"),
                 ]
             ],
         ];
@@ -259,11 +260,11 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param $expected
      * @dataProvider getWeeksInMonthProvider
      */
-    public function testGetWeeksInMonth(\DateTime $date, $expected)
+    public function testGetWeeksInMonth(DateTime $date, $expected)
     {
         $weeks = $this->periodService->getWeeksInMonth($date);
         $this->assertEquals($expected, $weeks);
@@ -297,9 +298,9 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         ];
 
         return [
-            [new \DateTime("April 28 2014"), $April2014periods],
-            [new \DateTime("March 28 2011"), $march2011Periods],
-            [new \DateTime("February 1 2011"), $february2011Periods],
+            [new DateTime("April 28 2014"), $April2014periods],
+            [new DateTime("March 28 2011"), $march2011Periods],
+            [new DateTime("February 1 2011"), $february2011Periods],
         ];
     }
 
@@ -313,9 +314,9 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     public function createPeriod($start, $end)
     {
         //hack to include last day in DatePeriod
-        $end = new \DateTime($end);
+        $end = new DateTime($end);
         $end->modify('+1 day');
-        $period = new \DatePeriod(new \DateTime($start), new \DateInterval('P1D'), $end);
+        $period = new \DatePeriod(new DateTime($start), new \DateInterval('P1D'), $end);
 
         return iterator_to_array($period);
     }
@@ -331,7 +332,7 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param $expected
      * @dataProvider daysInWeekProvider
      */
@@ -344,26 +345,26 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     public function daysInWeekProvider()
     {
         return [
-            [new \DateTime("6 April 2014"), $this->createPeriod("1 April 2014", "6 April 2014")],
-            [new \DateTime("12 June 2014"), $this->createPeriod("9 June 2014", "15 June 2014")],
+            [new DateTime("6 April 2014"), $this->createPeriod("1 April 2014", "6 April 2014")],
+            [new DateTime("12 June 2014"), $this->createPeriod("9 June 2014", "15 June 2014")],
         ];
     }
 
     public function testGetNumWorkingDaysInWeek()
     {
-        $date = new \DateTime("6 April 2014");
+        $date = new DateTime("6 April 2014");
         $this->assertSame(4, $this->periodService->getNumWorkingDaysInWeek($date));
     }
 
     public function testGetPeriodThrowsExceptionIfInvalidTypePassedIn()
     {
         $this->setExpectedException('InvalidArgumentException', 'Type is invalid');
-        $this->periodService->getPeriod(new \DateTime, 'NOTAVALIDTYPE');
+        $this->periodService->getPeriod(new DateTime, 'NOTAVALIDTYPE');
     }
 
     public function testGetDaysInWeekThrowsExceptionIfDateNotInAnyWeek()
     {
-        $date = new \DateTime("6 April 2014");
+        $date = new DateTime("6 April 2014");
 
         $this->periodService = $this->getMock(
             'JhFlexiTime\Service\PeriodService',
@@ -375,19 +376,19 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('getWeeksInMonth')
             ->with($date)
-            ->will($this->returnValue([[new \DateTime("1 January 2014")]]));
+            ->will($this->returnValue([[new DateTime("1 January 2014")]]));
 
         $this->setExpectedException("Exception", "Day is not present in returned month");
         $this->periodService->getDaysInWeek($date);
     }
 
     /**
-     * @param \DateTime $a
-     * @param \DateTime $b
+     * @param DateTime $a
+     * @param DateTime $b
      * @param bool $expected
      * @dataProvider isDateAfterDayProvider
      */
-    public function testIsDateAfterDay(\DateTime $a, \DateTime $b, $expected)
+    public function testIsDateAfterDay(DateTime $a, DateTime $b, $expected)
     {
         $result = $this->periodService->isDateAfterDay($a, $b);
         $this->assertEquals($result, $expected);
@@ -396,11 +397,11 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     public function isDateAfterDayProvider()
     {
         return [
-            [new \DateTime("12 April 2014"),            new \DateTime("12 April 2014 23:59:59"),    false],
-            [new \DateTime("13 April 2014 00:00:00"),   new \DateTime("12 April 2014 23:59:59"),    true],
-            [new \DateTime("13 April 2014"),            new \DateTime("12 April 2014 23:59:59"),    true],
-            [new \DateTime("14 April 2014"),            new \DateTime("12 April 2014"),             true],
-            [new \DateTime("13 April 2014 00:00"),      new \DateTime("12 April 2014"),             true],
+            [new DateTime("12 April 2014"),            new DateTime("12 April 2014 23:59:59"),    false],
+            [new DateTime("13 April 2014 00:00:00"),   new DateTime("12 April 2014 23:59:59"),    true],
+            [new DateTime("13 April 2014"),            new DateTime("12 April 2014 23:59:59"),    true],
+            [new DateTime("14 April 2014"),            new DateTime("12 April 2014"),             true],
+            [new DateTime("13 April 2014 00:00"),      new DateTime("12 April 2014"),             true],
         ];
     }
 }

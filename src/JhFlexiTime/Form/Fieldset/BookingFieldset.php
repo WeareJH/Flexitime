@@ -7,13 +7,14 @@ use JhFlexiTime\Entity\Booking;
 use Zend\Form\Fieldset;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use ZfcUser\Entity\UserInterface;
 
 /**
  * Class BookingFieldset
  * @package JhFlexiTime\Form\Fieldset
  * @author Aydin Hassan <aydin@wearejh.com>
  */
-class BookingFieldset extends Fieldset implements InputFilterProviderInterface
+class BookingFieldset extends Fieldset
 {
 
     /**
@@ -22,11 +23,17 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
     protected $objectManager;
 
     /**
+     * @var UserInterface
+     */
+    protected $user;
+
+    /**
      * @param \Doctrine\Common\Persistence\ObjectManager $objectManager
      */
-    public function __construct(ObjectManager $objectManager)
+    public function __construct(ObjectManager $objectManager, UserInterface $user)
     {
         $this->objectManager = $objectManager;
+        $this->user          = $user;
         parent::__construct('booking');
         $this->addElements();
     }
@@ -39,6 +46,15 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
 
         $this->setHydrator(new DoctrineHydrator($this->objectManager, 'JhFlexiTime\Entity\Booking'))
             ->setObject(new Booking());
+
+        $this->add(array(
+            'type'          => 'Zend\Form\Element\Hidden',
+            'name'          => 'user',
+            'attributes'    => [
+                'id'    => 'book-user',
+                'value' => $this->user->getId(),
+            ]
+        ));
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Hidden',
@@ -120,32 +136,5 @@ class BookingFieldset extends Fieldset implements InputFilterProviderInterface
                 'class' => 'form-control input-sm',
             )
         ));
-    }
-
-    /**
-     * Input Specification
-     * @return array
-     */
-    public function getInputFilterSpecification()
-    {
-        return array(
-            'notes' => array(
-                'required'  => false,
-                'filters'   => array(
-                    array('name' => 'StripTags'),
-                    array('name' => 'StringTrim')
-                ),
-                'validators' => array(
-                    array(
-                        'name'    => 'StringLength',
-                        'options' => array(
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 512,
-                        ),
-                    ),
-                ),
-            ),
-        );
     }
 }

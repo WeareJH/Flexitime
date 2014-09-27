@@ -5,8 +5,8 @@ namespace JhFlexiTimeTest\Fixture;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\Booking;
-use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class SingleBookingInMonth
@@ -32,9 +32,9 @@ class SingleBookingInMonth extends AbstractFixture
 
     /**
      * @param User $user
-     * @param \DateTime $date
+     * @param DateTime $date
      */
-    public function __construct(User $user, \DateTime $date)
+    public function __construct(User $user, DateTime $date)
     {
         $this->user = $user;
         $this->date = $date;

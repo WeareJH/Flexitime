@@ -23,7 +23,8 @@ class BookingFormFactory implements FactoryInterface
     {
         $parentLocator      = $serviceLocator->getServiceLocator();
         $objectManager      = $parentLocator->get('JhFlexiTime\ObjectManager');
-        $bookingFieldset    = new BookingFieldset($objectManager);
+        $user               = $parentLocator->get('zfcuser_auth_service')->getIdentity();
+        $bookingFieldset    = new BookingFieldset($objectManager, $user);
         return new BookingForm($objectManager, $bookingFieldset);
     }
 }

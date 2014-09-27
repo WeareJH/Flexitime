@@ -3,6 +3,7 @@
 namespace JhFlexiTimeTest\Controller;
 
 use JhFlexiTime\Controller\BookingAdminController;
+use JhFlexiTime\DateTime\DateTime;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -147,7 +148,7 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $headers->addHeaderLine('Accept', 'application/json');
         $this->routeMatch->setParam('action', 'list');
         $this->routeMatch->setParam('id', 2);
-        $date = new \DateTime("25 March 2014");
+        $date = new DateTime("25 March 2014");
         $booking = $this->getMockBooking();
         $user = new User;
         $user->setEmail('jack.bauer@ctu.com');
@@ -226,7 +227,7 @@ class BookingAdminControllerTest extends AbstractHttpControllerTestCase
         $booking = new Booking();
 
         return $booking
-            ->setDate(new \DateTime("25 March 2014"))
+            ->setDate(new DateTime("25 March 2014"))
             ->setUser($this->user)
             ->setNotes("ALL THE TIME");
     }

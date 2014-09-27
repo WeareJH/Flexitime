@@ -4,7 +4,7 @@ namespace JhFlexiTime\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
-use DateTime;
+use JhFlexiTime\DateTime\DateTime;
 use JsonSerializable;
 
 /**
@@ -17,44 +17,38 @@ use JsonSerializable;
  */
 class Booking implements JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id = null;
 
     /**
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="JhUser\Entity\User")
      */
     protected $user = null;
 
     /**
-     * @var \DateTime
-     * 
+     * @var DateTime
+     *
+     * @ORM\Id
      * @ORM\Column(type="date", name="date", nullable=false)
      */
     protected $date;
-    
+
     /**
-     * @var \DateTime
-     * 
+     * @var DateTime
+     *
      * @ORM\Column(type="time", name="start_time", nullable=false)
      */
     protected $startTime;
-            
+
     /**
-     * @var \DateTime
-     * 
+     * @var DateTime
+     *
      * @ORM\Column(type="time", name="end_time", nullable=false)
      */
     protected $endTime;
-    
+
     /**
      * @var int
-     * 
+     *
      * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $total = 0;
@@ -67,7 +61,7 @@ class Booking implements JsonSerializable
     protected $balance = 0;
 
     /** @var string
-     * 
+     *
      * @ORM\Column(type="string", length=512, nullable=true)
      */
     protected $notes = null;
@@ -81,13 +75,17 @@ class Booking implements JsonSerializable
         $this->startTime    = new DateTime('09:00:00');
         $this->endTime      = new DateTime('17:30:00');
     }
-    
+
     /**
-     * @return int
+     * @return string
      */
     public function getId()
     {
-        return $this->id;
+        if (!$this->user) {
+            throw new \RuntimeException("No User is set. Needed to generate ID");
+        }
+
+        return $this->date->format('U') . "-" . $this->user->getId();
     }
 
     /**
@@ -108,7 +106,7 @@ class Booking implements JsonSerializable
     {
         return $this->user;
     }
-    
+
     /**
      * @param DateTime $date
      * @return \JhFlexiTime\Entity\Booking
@@ -118,7 +116,7 @@ class Booking implements JsonSerializable
         $this->date = $date;
         return $this;
     }
-    
+
     /**
      * @return DateTime
      */
@@ -126,7 +124,7 @@ class Booking implements JsonSerializable
     {
         return $this->date;
     }
-    
+
     /**
      * @param DateTime $startTime
      * @return \JhFlexiTime\Entity\Booking
@@ -136,7 +134,7 @@ class Booking implements JsonSerializable
         $this->startTime = $startTime;
         return $this;
     }
-    
+
     /**
      * @return DateTime
      */
@@ -144,7 +142,7 @@ class Booking implements JsonSerializable
     {
         return $this->startTime;
     }
-    
+
     /**
      * @param DateTime $endTime
      * @return \JhFlexiTime\Entity\Booking
@@ -154,7 +152,7 @@ class Booking implements JsonSerializable
         $this->endTime = $endTime;
         return $this;
     }
-    
+
     /**
      * @return DateTime
      */
@@ -162,7 +160,7 @@ class Booking implements JsonSerializable
     {
         return $this->endTime;
     }
-    
+
     /**
      * @param string $total
      * @return \JhFlexiTime\Entity\Booking
@@ -172,7 +170,7 @@ class Booking implements JsonSerializable
         $this->total = $total;
         return $this;
     }
-    
+
     /**
      * @return string
      */
@@ -208,7 +206,7 @@ class Booking implements JsonSerializable
         $this->notes = $notes;
         return $this;
     }
-    
+
     /**
      * @return string
      */
@@ -223,7 +221,8 @@ class Booking implements JsonSerializable
     public function jsonSerialize()
     {
         return array(
-            'id'        => $this->id,
+            'id'        => $this->getId(),
+            'user'      => $this->user->getId(),
             'date'      => $this->date->format('d-m-Y'),
             'startTime' => $this->startTime->format('H:i'),
             'endTime'   => $this->endTime->format('H:i'),

@@ -23,7 +23,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
 
         $mockValidator  = $this->getMockValidator(true);
         $mockOptions    = $this->getMock('JhFlexiTime\Options\BookingOptionsInterface');
-        $filter         = new BookingInputFilter($mockValidator, $mockOptions);
+        $filter         = new BookingInputFilter($mockValidator, $mockValidator, $mockOptions);
         $filter->setData($input);
 
 
@@ -76,7 +76,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ->method($method)
             ->will($this->returnValue($value));
 
-        $filter = new BookingInputFilter($mockValidator, $mockOptions);
+        $filter = new BookingInputFilter($mockValidator, $mockValidator, $mockOptions);
         $filter->setData($input);
 
         $this->assertFalse($filter->isValid(), 'Input must not be valid');
@@ -87,6 +87,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
     public function optionsProvider()
     {
         $input = array(
+            'user'      => 2,
             'date'      => '12-04-1988',
             'startTime' => '08:00',
             'endTime'   => '17:00',
@@ -151,7 +152,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ->method($method)
             ->will($this->returnValue($value));
 
-        $filter = new BookingInputFilter($mockValidator, $mockOptions);
+        $filter = new BookingInputFilter($mockValidator, $mockValidator, $mockOptions);
         $filter->setData($input);
 
         $this->assertTrue($filter->isValid(), 'Input must not be valid');
@@ -161,6 +162,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
     public function optionsValidProvider()
     {
         $input = array(
+            'user'      => 2,
             'date'      => '12-04-1988',
             'startTime' => '08:00',
             'endTime'   => '17:00',
@@ -200,12 +202,14 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
         return array(
             'completely-valid-input' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '08:00',
                     'endTime'   => '17:00',
                     'notes'     => 'Some notes',
                 ),
                 array(
+                    'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '08:00',
                     'endTime'   => '17:00',
@@ -215,12 +219,14 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'valid-time-low-boundary' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '07:00',
                     'endTime'   => '16:00',
                     'notes'     => 'Some notes',
                 ),
                 array(
+                    'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '07:00',
                     'endTime'   => '16:00',
@@ -230,12 +236,14 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'valid-time-high-boundary' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '10:00',
                     'endTime'   => '19:00',
                     'notes'     => 'Some notes',
                 ),
                 array(
+                    'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '10:00',
                     'endTime'   => '19:00',
@@ -245,12 +253,14 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'space-padded-valid-input' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
                     'notes'     => '    Some notes   ',
                 ),
                 array(
+                    'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
@@ -260,6 +270,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'invalid-date-format' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-not-a-month-2014',
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
@@ -274,6 +285,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'invalid-date' => array(
                 array(
+                    'user'      => 2,
                     'date'      => 'not-a-date',
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
@@ -287,6 +299,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'greater-than-time' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '10:01',
                     'endTime'   => '19:01',
@@ -305,6 +318,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'invalid-time' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => 'not-a-time',
                     'endTime'   => 'not-a-time',
@@ -323,6 +337,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'message-to-long' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '09:00',
                     'endTime'   => '17:00',
@@ -337,6 +352,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
             ),
             'invalid-time-step' => array(
                 array(
+                    'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '09:04',
                     'endTime'   => '17:07',
@@ -356,6 +372,9 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
                 ),
                 null,
                 array(
+                    'user' => array(
+                        'isEmpty' => 'Value is required and can\'t be empty',
+                    ),
                     'date' => array(
                         'isEmpty' => 'Value is required and can\'t be empty',
                     ),
@@ -376,8 +395,9 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
         $mockOptions    = $this->getMock('JhFlexiTime\Options\BookingOptionsInterface');
 
 
-        $filter = new BookingInputFilter($mockValidator, $mockOptions);
+        $filter = new BookingInputFilter($mockValidator, $mockValidator, $mockOptions);
         $filter->setData([
+            'user'      => 2,
             'date'      => '12-04-1988',
             'startTime' => '00:00',
             'endTime'   => '00:00',

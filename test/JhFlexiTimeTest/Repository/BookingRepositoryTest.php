@@ -3,8 +3,6 @@
 namespace JhFlexiTimeTest\Repository;
 
 use JhFlexiTime\Entity\Booking;
-use JhFlexiTime\Repository\BalanceRepository;
-use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Repository\BookingRepository;
 use JhFlexiTimeTest\Fixture\FullMonthBookings;
 use JhFlexiTimeTest\Fixture\MultiUserBookings;
@@ -12,9 +10,9 @@ use JhFlexiTimeTest\Fixture\MultiUserMultiMonthBookings;
 use JhFlexiTimeTest\Fixture\SingleBookingInMonth;
 use JhUser\Entity\User;
 use JhFlexiTimeTest\Util\ServiceManagerFactory;
-use JhFlexiTimeTest\Fixture\SingleRunningBalance;
 use JhFlexiTimeTest\Fixture\SingleUser;
 use JhFlexiTimeTest\Fixture\BookingsNotInMonth;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class BookingRepositoryTest
@@ -44,7 +42,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setEmail("aydin@hotmail.co.uk")
             ->setPassword("password");
         $bookingsFixture = new MultiUserBookings($user);
-        $this->fixtureExecutor->execute(array($bookingsFixture));
+        $this->fixtureExecutor->execute([$bookingsFixture]);
         $bookings = $this->repository->findAllByUser($user);
         $this->assertEquals(count($bookingsFixture->getBookingsForUser()), count($bookings));
 
@@ -68,11 +66,11 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setEmail("aydin@hotmail.co.uk")
             ->setPassword("password");
 
-        $date = new \DateTime("10 May 2014");
-        $bookingsFixture = new MultiUserMultiMonthBookings($user, $date);
-        $this->fixtureExecutor->execute(array($bookingsFixture));
+        $date = new DateTime("10 September 2014");
+        $bookingsFixture = new MultiUserMultiMonthBookings($user);
+        $this->fixtureExecutor->execute([$bookingsFixture]);
         $bookings = $this->repository->findByUserAndMonth($user, $date);
-        $this->assertEquals($bookingsFixture->getTotalBookingsForDate(), count($bookings));
+        $this->assertEquals(5, count($bookings));
         array_map(function (Booking $booking) use ($user) {
             $this->assertEquals($booking->getUser()->getId(), $user->getId());
             $this->assertEquals($booking->getUser()->getEmail(), $user->getEmail());
@@ -84,7 +82,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
         $userFixture = new SingleUser;
         $this->fixtureExecutor->execute(array($userFixture));
 
-        $date = new \DateTime("10 May 2014");
+        $date = new DateTime("10 May 2014");
         $this->assertTrue($this->repository->isUsersFirstBookingForMonth($userFixture->getUser(), $date));
     }
 
@@ -95,12 +93,12 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setEmail("aydin@hotmail.co.uk")
             ->setPassword("password");
 
-        $date = new \DateTime("10 May 2014");
-
-        $bookingFixture = new BookingsNotInMonth($user, $date);
+        $bookingFixture = new BookingsNotInMonth($user);
         $this->fixtureExecutor->execute(array($bookingFixture));
 
-        $this->assertTrue($this->repository->isUsersFirstBookingForMonth($user, $date));
+        $this->assertTrue(
+            $this->repository->isUsersFirstBookingForMonth($user, $bookingFixture->getMonthWithNoBookings())
+        );
     }
 
     public function testIsUsersFirstBookingForMonthReturnsFalseIfBookingExistsInMonth()
@@ -110,7 +108,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setEmail("aydin@hotmail.co.uk")
             ->setPassword("password");
 
-        $date = new \DateTime("10 May 2014");
+        $date = new DateTime("10 May 2014");
 
         $bookingFixture = new SingleBookingInMonth($user, $date);
         $this->fixtureExecutor->execute(array($bookingFixture));
@@ -147,7 +145,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
         $userFixture = new SingleUser;
         $this->fixtureExecutor->execute(array($userFixture));
 
-        $date = new \DateTime;
+        $date = new DateTime;
         $bookingsTotal = $this->repository->getMonthBookedToDateTotalByUser($userFixture->getUser(), $date);
         $this->assertEquals(0, $bookingsTotal);
     }
@@ -178,7 +176,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
         $userFixture = new SingleUser;
         $this->fixtureExecutor->execute(array($userFixture));
 
-        $date = new \DateTime;
+        $date = new DateTime;
         $bookingsTotal = $this->repository->getMonthBookedTotalByUser($userFixture->getUser(), $date);
         $this->assertEquals(0, $bookingsTotal);
     }
@@ -219,30 +217,26 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
         $userFixture = new SingleUser;
         $this->fixtureExecutor->execute(array($userFixture));
 
-        $dateA = new \DateTime;
-        $dateB = new \DateTime;
+        $dateA = new DateTime;
+        $dateB = new DateTime;
         $bookingsTotal = $this->repository->getTotalBookedBetweenByUser($userFixture->getUser(), $dateA, $dateB);
         $this->assertEquals(0, $bookingsTotal);
     }
 
-    public function testFindByIdReturnsBookingIfExists()
+    public function testFindByIdThrowsExceptionBecauseOfCompositeKey()
     {
         $user = new User();
         $user
             ->setEmail("aydin@hotmail.co.uk")
             ->setPassword("password");
-        $bookingFixture = new SingleBookingInMonth($user, new \DateTime);
+        $bookingFixture = new SingleBookingInMonth($user, new DateTime);
         $this->fixtureExecutor->execute(array($bookingFixture));
 
-        $result = $this->repository->find($bookingFixture->getBooking()->getId());
-        $this->assertInstanceOf('JhFlexiTime\Entity\Booking', $result);
-        $this->assertSame($bookingFixture->getBooking()->getId(), $result->getId());
-    }
-
-    public function testFindByIdReturnsNullIfBookingNotExists()
-    {
-        $result = $this->repository->find(1);
-        $this->assertNull($result);
+        $this->setExpectedException(
+            'Doctrine\ORM\ORMException',
+            'The identifier date is missing for a query of JhFlexiTime\Entity\Booking'
+        );
+        $this->repository->find($bookingFixture->getBooking()->getId());
     }
 
     public function testFindByReturnsEmptyIfNonExist()

@@ -5,6 +5,7 @@ namespace JhFlexiTime\Service\Factory;
 use JhFlexiTime\Service\RunningBalanceService;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class RunningBalanceServiceFactory
@@ -26,7 +27,7 @@ class RunningBalanceServiceFactory implements FactoryInterface
             $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
             $serviceLocator->get('JhFlexiTime\Service\PeriodService'),
             $serviceLocator->get('JhFlexiTime\ObjectManager'),
-            new \DateTime('today')
+            new DateTime('today')
         );
     }
 }

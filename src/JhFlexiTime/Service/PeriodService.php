@@ -3,6 +3,7 @@
 namespace JhFlexiTime\Service;
 
 use JhFlexiTime\Options\ModuleOptions;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Calculate hours in various periods
@@ -40,26 +41,26 @@ class PeriodService implements PeriodServiceInterface
     /**
      * Create a date period, depending on the the type given
      *
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param string $type
      * @return \DatePeriod
      * @throws \InvalidArgumentException
      */
-    public function getPeriod(\DateTime $date, $type)
+    public function getPeriod(DateTime $date, $type)
     {
         switch ($type) {
             case self::MONTH_TO_DATE:
                 return new \DatePeriod(
-                    new \DateTime(sprintf('first day of %s', $date->format('F Y'))),
+                    new DateTime(sprintf('first day of %s', $date->format('F Y'))),
                     new \DateInterval('P1D'),
-                    new \DateTime(sprintf('%s 23:59:59', $date->format('d M Y')))
+                    new DateTime(sprintf('%s 23:59:59', $date->format('d M Y')))
                 );
                 break;
             case self::FULL_MONTH:
                 return new \DatePeriod(
-                    new \DateTime(sprintf('first day of %s', $date->format('F Y'))),
+                    new DateTime(sprintf('first day of %s', $date->format('F Y'))),
                     new \DateInterval('P1D'),
-                    new \DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
+                    new DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
                 );
                 break;
         }
@@ -91,19 +92,19 @@ class PeriodService implements PeriodServiceInterface
     }
 
     /**
-     * @param \DateTime $month
+     * @param DateTime $month
      * @return int
      */
-    public function getTotalHoursInMonth(\DateTime $month)
+    public function getTotalHoursInMonth(DateTime $month)
     {
         return $this->getTotalHoursInPeriod($this->getPeriod($month, self::FULL_MONTH));
     }
 
     /**
-     * @param \DateTime $month
+     * @param DateTime $month
      * @return int
      */
-    public function getTotalHoursToDateInMonth(\DateTime $month)
+    public function getTotalHoursToDateInMonth(DateTime $month)
     {
         return $this->getTotalHoursInPeriod($this->getPeriod($month, self::MONTH_TO_DATE));
     }
@@ -115,12 +116,12 @@ class PeriodService implements PeriodServiceInterface
      * Minus the lunch duration from the total,
      * so only return total working hours
      *
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @throws \InvalidArgumentException
      * @return float hour diff
      */
-    public function calculateHourDiff(\DateTime $start, \DateTime $end)
+    public function calculateHourDiff(DateTime $start, DateTime $end)
     {
         if ($end <= $start) {
             throw new \InvalidArgumentException("End time should be after start time");
@@ -140,10 +141,10 @@ class PeriodService implements PeriodServiceInterface
      * using the config as a base for how many hours
      * should be worked per day
      *
-     * @param \DateTime $today
+     * @param DateTime $today
      * @return int
      */
-    public function getRemainingHoursInMonth(\DateTime $today)
+    public function getRemainingHoursInMonth(DateTime $today)
     {
         $date       = clone $today;
         $lastDay    = clone $today;
@@ -159,11 +160,11 @@ class PeriodService implements PeriodServiceInterface
      * Get an array of all the dates of the week the given date
      * is in
      *
-     * @param \DateTime $date
-     * @return \DateTime[]
+     * @param DateTime $date
+     * @return DateTime[]
      * @throws \Exception
      */
-    public function getDaysInWeek(\DateTime $date)
+    public function getDaysInWeek(DateTime $date)
     {
         $weeks = $this->getWeeksInMonth($date);
 
@@ -183,11 +184,11 @@ class PeriodService implements PeriodServiceInterface
      * Get an array of the first and last day of
      * the week the given day is in
      *
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return array
      * @throws \Exception
      */
-    public function getFirstAndLastDayOfWeek(\DateTime $date)
+    public function getFirstAndLastDayOfWeek(DateTime $date)
     {
         $week = $this->getDaysInWeek($date);
 
@@ -201,10 +202,10 @@ class PeriodService implements PeriodServiceInterface
      * Get the week which this date is in, and count the number
      * of non-working days
      *
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return int
      */
-    public function getNumWorkingDaysInWeek(\DateTime $date)
+    public function getNumWorkingDaysInWeek(DateTime $date)
     {
         $week = $this->getDaysInWeek($date);
         $week = $this->removeNonWorkingDays($week);
@@ -214,8 +215,8 @@ class PeriodService implements PeriodServiceInterface
     /**
      * Remove any non-working days
      *
-     * @param \DateTime[] $dates
-     * @return \DateTime[]
+     * @param DateTime[] $dates
+     * @return DateTime[]
      */
     public function removeNonWorkingDays(array $dates)
     {
@@ -232,20 +233,29 @@ class PeriodService implements PeriodServiceInterface
     /**
      * Get an array of weeks, with each day of the week in it
      *
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return array
      */
-    public function getWeeksInMonth(\DateTime $date)
+    public function getWeeksInMonth(DateTime $date)
     {
-        $period = new \DatePeriod(
-            new \DateTime(sprintf('first day of %s', $date->format('F Y'))),
+        $tmpDatePeriod = new \DatePeriod(
+            new DateTime(sprintf('first day of %s', $date->format('F Y'))),
             new \DateInterval('P1D'),
-            new \DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
+            new DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
         );
+
+        //convert DateTime to JhDateTime
+        $datePeriod = [];
+        foreach ($tmpDatePeriod as $date) {
+            $jhDate = new DateTime();
+            $jhDate->setTimestamp($date->getTimestamp());
+            $datePeriod[] = $jhDate;
+        }
+
 
         $weeks = [];
         $weekCounter = 0;
-        foreach ($period as $day) {
+        foreach ($datePeriod as $day) {
             $dayNum = $day->format('N');
 
             if (!isset($weeks[$weekCounter])) {
@@ -263,11 +273,11 @@ class PeriodService implements PeriodServiceInterface
     }
 
     /**
-     * @param \DateTime $dateA
-     * @param \DateTime $dateB
+     * @param DateTime $dateA
+     * @param DateTime $dateB
      * @return bool
      */
-    public function isDateAfterDay(\DateTime $dateA, \DateTime $dateB)
+    public function isDateAfterDay(DateTime $dateA, DateTime $dateB)
     {
         $date = clone $dateB;
         $date->modify("23:59:59");

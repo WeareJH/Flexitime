@@ -9,7 +9,7 @@ use JhFlexiTime\Entity\RunningBalance;
 use ZfcUser\Entity\UserInterface;
 use Zend\EventManager\Event;
 use JhFlexiTime\Entity\Booking;
-use Zend\I18n\Validator\DateTime;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class BookingSaveListenerTest
@@ -33,7 +33,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
         $this->bookingSaveListener  = new BookingSaveListener(
             $this->objectManager,
             $this->balanceRepository,
-            new \DateTime("12 April 2014"),
+            new DateTime("12 April 2014"),
             new ModuleOptions(),
             $this->userSettingsRepository
         );
@@ -82,12 +82,12 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
         $booking->setUser($user);
         $booking->setTotal(15);
         $booking->setBalance(0);
-        $booking->setDate(new \DateTime("12 March 2014"));
+        $booking->setDate(new DateTime("12 March 2014"));
 
         $event = new Event();
         $event->setParam('booking', $booking);
 
-        $date = new \DateTime("12 April 2014");
+        $date = new DateTime("12 April 2014");
 
         $bookingSaveListener = $this->getMock(
             'JhFlexiTime\Listener\BookingSaveListener',
@@ -164,12 +164,12 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param \DateTime $a
-     * @param \DateTime $b
+     * @param DateTime $a
+     * @param DateTime $b
      * @param bool $expected
      * @dataProvider isDateInPreviousMonthProvider
      */
-    public function testIsDateInPreviousMonth(\DateTime $a, \DateTime $b, $expected)
+    public function testIsDateInPreviousMonth(DateTime $a, DateTime $b, $expected)
     {
         $result = $this->bookingSaveListener->isDateInPreviousMonth($a, $b);
         $this->assertEquals($result, $expected);
@@ -178,11 +178,11 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
     public function isDateInPreviousMonthProvider()
     {
         return [
-            [new \DateTime("12 April 2014"),            new \DateTime("12 May 2014 23:59:59"),    true],
-            [new \DateTime("30 April 2014 23:59:59"),   new \DateTime("12 May 2014 23:59:59"),    true],
-            [new \DateTime("30 April 2014 23:59:59"),   new \DateTime("1 May 2014 00:00:00"),     true],
-            [new \DateTime("12 April 2014"),            new \DateTime("12 March 2014 23:59:59"),  false],
-            [new \DateTime("1 April 2014 00:00:00"),    new \DateTime("31 March 2014 23:59:59"),  false],
+            [new DateTime("12 April 2014"),            new DateTime("12 May 2014 23:59:59"),    true],
+            [new DateTime("30 April 2014 23:59:59"),   new DateTime("12 May 2014 23:59:59"),    true],
+            [new DateTime("30 April 2014 23:59:59"),   new DateTime("1 May 2014 00:00:00"),     true],
+            [new DateTime("12 April 2014"),            new DateTime("12 March 2014 23:59:59"),  false],
+            [new DateTime("1 April 2014 00:00:00"),    new DateTime("31 March 2014 23:59:59"),  false],
         ];
     }
 
@@ -236,7 +236,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $booking = new Booking();
         $booking->setUser($user);
-        $booking->setDate(new \DateTime("30 March 2014"));
+        $booking->setDate(new DateTime("30 March 2014"));
 
         $settings = new UserSettings();
         $settings->setFlexStartDate($startTrackingDate);
@@ -253,11 +253,11 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
     public function startTrackingDateProvider()
     {
         return [
-            [new \DateTime("1 April 2014"), false],
-            [new \DateTime("10 June 2014"), false],
-            [new \DateTime("31 March 2014"), true],
-            [new \DateTime("1 March 2014"), true],
-            [new \DateTime("1 February 2014"), true],
+            [new DateTime("1 April 2014"), false],
+            [new DateTime("10 June 2014"), false],
+            [new DateTime("31 March 2014"), true],
+            [new DateTime("1 March 2014"), true],
+            [new DateTime("1 February 2014"), true],
         ];
     }
 }

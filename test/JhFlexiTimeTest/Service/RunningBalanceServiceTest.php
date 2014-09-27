@@ -6,7 +6,13 @@ use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Service\RunningBalanceService;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
+/**
+ * Class RunningBalanceServiceTest
+ * @package JhFlexiTimeTest\Service
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
+ */
 class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -27,7 +33,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->periodService            = $this->getMock('JhFlexiTime\Service\PeriodServiceInterface');
         $this->bookingRepository        = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
         $this->objectManager            = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $this->date                     = new \DateTime("2 May 2014");
+        $this->date                     = new DateTime("2 May 2014");
 
         $this->runningBalanceService = new RunningBalanceService(
             $this->userRepository,
@@ -41,49 +47,49 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @param array $expectedMonths
      * @dataProvider monthRangeProvider
      */
-    public function testGetMonths(\DateTime $start, \DateTime $end, array $expectedMonths)
+    public function testGetMonths(DateTime $start, DateTime $end, array $expectedMonths)
     {
         $period = $this->runningBalanceService->getMonthsBetweenUserStartAndLastMonth($start, $end);
-        $months = iterator_to_array($period);
-        $this->assertEquals($months, $expectedMonths);
+        //$months = iterator_to_array($period);
+        $this->assertEquals($period, $expectedMonths);
     }
 
     public function monthRangeProvider()
     {
         return [
             [
-                new \DateTime("12 February 2014"),
-                new \DateTime("12 May 2014"),
+                new DateTime("12 February 2014"),
+                new DateTime("12 May 2014"),
                 [
-                    new \DateTime('Feb 2014'),
-                    new \DateTime('Mar 2014'),
-                    new \DateTime('Apr 2014'),
-                    new \DateTime('May 2014')
+                    new DateTime('Feb 2014'),
+                    new DateTime('Mar 2014'),
+                    new DateTime('Apr 2014'),
+                    new DateTime('May 2014')
                 ]
             ],
             [
-                new \DateTime("01 January 2014"),
-                new \DateTime("12 May 2014"),
+                new DateTime("01 January 2014"),
+                new DateTime("12 May 2014"),
                 [
-                    new \DateTime('Jan 2014'),
-                    new \DateTime('Feb 2014'),
-                    new \DateTime('Mar 2014'),
-                    new \DateTime('Apr 2014'),
-                    new \DateTime('May 2014')
+                    new DateTime('Jan 2014'),
+                    new DateTime('Feb 2014'),
+                    new DateTime('Mar 2014'),
+                    new DateTime('Apr 2014'),
+                    new DateTime('May 2014')
                 ]
             ],
             [
-                new \DateTime("01 March 2014"),
-                new \DateTime("1 May 2014 00:00:00"),
+                new DateTime("01 March 2014"),
+                new DateTime("1 May 2014 00:00:00"),
                 [
-                    new \DateTime('Mar 2014'),
-                    new \DateTime('Apr 2014'),
-                    new \DateTime('May 2014')
+                    new DateTime('Mar 2014'),
+                    new DateTime('Apr 2014'),
+                    new DateTime('May 2014')
                 ]
             ],
         ];
@@ -102,7 +108,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $hoursWorked,
         $expectedBalance
     ) {
-        $date           = new \DateTime("2 May 2014");
+        $date           = new DateTime("2 May 2014");
         $user           = new User();
         $runningBalance = new RunningBalance();
         $runningBalance->setBalance($initalBalance);
@@ -136,18 +142,25 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
     public function testRecalculateUserRunningBalance()
     {
         $user           = new User;
-        $userStartDate  = new \DateTime("13 March 2014");
+        $userStartDate  = new DateTime("13 March 2014");
         $startBalance   = 10;
 
-        $lastMonth = new \DateTime("1 April 2014");
+        $lastMonth = new DateTime("1 April 2014");
 
         $period = new \DatePeriod(
-            new \DateTime("1 March 2014"),
+            new DateTime("1 March 2014"),
             new \DateInterval("P1M"),
-            new \DateTime("1 May 2014")
+            new DateTime("1 May 2014")
         );
 
-        $dates = iterator_to_array($period);
+        //convert DateTime to JhDateTime
+        $dates = [];
+        foreach ($period as $date) {
+            $jhDate = new DateTime();
+            $jhDate->setTimestamp($date->getTimestamp());
+            $dates[] = $jhDate;
+        }
+
         $service = $this->getMock(
             'JhFlexiTime\Service\RunningBalanceService',
             [
@@ -169,10 +182,9 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
              ->expects($this->once())
              ->method('getMonthsBetweenUserStartAndLastMonth')
              ->with($this->equalTo($userStartDate), $this->equalTo($lastMonth))
-             ->will($this->returnValue($period));
+             ->will($this->returnValue($dates));
 
         $runningBalance = new RunningBalance();
-
 
         $service
             ->expects($this->at(1))
@@ -212,7 +224,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $users = [$user1, $user2];
 
-        $lastMonth = new \DateTime("1 April 2014");
+        $lastMonth = new DateTime("1 April 2014");
 
         $this->userRepository
              ->expects($this->once())
@@ -249,7 +261,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $user = new User;
         $runningBalance = new RunningBalance;
         $userSettings = new UserSettings;
-        $userSettings->setFlexStartDate(new \DateTime("12 March 2014"));
+        $userSettings->setFlexStartDate(new DateTime("12 March 2014"));
 
         $this->balanceRepository
             ->expects($this->once())
@@ -288,8 +300,8 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $runningBalance2 = new RunningBalance;
         $userSettings1 = new UserSettings;
         $userSettings2 = new UserSettings;
-        $userSettings1->setFlexStartDate(new \DateTime("12 March 2014"));
-        $userSettings2->setFlexStartDate(new \DateTime("12 March 2014"));
+        $userSettings1->setFlexStartDate(new DateTime("12 March 2014"));
+        $userSettings2->setFlexStartDate(new DateTime("12 March 2014"));
 
         $users = [$user1, $user2];
 

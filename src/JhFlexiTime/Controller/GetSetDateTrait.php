@@ -3,6 +3,7 @@
 namespace JhFlexiTime\Controller;
 
 use Zend\Validator\Date as DateValidator;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class GetSetDateTrait
@@ -11,14 +12,14 @@ use Zend\Validator\Date as DateValidator;
 trait GetSetDateTrait
 {
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $date;
 
     /**
      * @param string $month
      * @param string $year
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDate($month = null, $year = null)
     {
@@ -26,9 +27,9 @@ trait GetSetDateTrait
         if (!$this->date) {
             $validator  = new DateValidator(array('format' => 'M Y'));
             if ($validator->isValid(sprintf("%s %s", $month, $year))) {
-                $period = new \DateTime(sprintf('last day of %s %s 23:59:59', $month, $year));
+                $period = new DateTime(sprintf('last day of %s %s 23:59:59', $month, $year));
             } else {
-                $period = new \DateTime;
+                $period = new DateTime;
             }
             $this->date = $period;
         }
@@ -37,9 +38,9 @@ trait GetSetDateTrait
     }
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      */
-    public function setDate(\DateTime $date)
+    public function setDate(DateTime $date)
     {
         $this->date = $date;
     }

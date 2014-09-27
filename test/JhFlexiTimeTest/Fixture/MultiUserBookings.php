@@ -5,8 +5,8 @@ namespace JhFlexiTimeTest\Fixture;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\Booking;
-use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class MultiUserBookings
@@ -41,13 +41,6 @@ class MultiUserBookings extends AbstractFixture
         $manager->persist($this->user);
         $manager->flush();
 
-        for ($i = 0; $i < 10; $i++) {
-            $booking = new Booking();
-            $booking->setUser($this->user);
-            $manager->persist($booking);
-            $this->bookingsForUser[] = $booking;
-        }
-
         $user = new User;
         $user
             ->setEmail('test1@test.co.uk')
@@ -55,8 +48,18 @@ class MultiUserBookings extends AbstractFixture
         $manager->persist($user);
         $manager->flush();
 
-        for ($i = 0; $i < 10; $i++) {
+        $dateFormat = "%s September 2014";
+        for ($i = 1; $i <= 10; $i++) {
+            $date = new DateTime(sprintf($dateFormat, $i));
+
             $booking = new Booking();
+            $booking->setDate($date);
+            $booking->setUser($this->user);
+            $manager->persist($booking);
+            $this->bookingsForUser[] = $booking;
+
+            $booking = new Booking();
+            $booking->setDate($date);
             $booking->setUser($user);
             $manager->persist($booking);
         }

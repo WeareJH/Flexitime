@@ -4,7 +4,7 @@ namespace JhFlexiTime\Service;
 
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use ZfcUser\Entity\UserInterface;
-use JhFlexiTime\Repository\BookingRepository;
+use JhFlexiTime\DateTime\DateTime;
 use JhFlexiTime\Options\ModuleOptions;
 use JhFlexiTime\Repository\BalanceRepositoryInterface;
 
@@ -38,7 +38,7 @@ class TimeCalculatorService
     protected $options;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $referenceDate;
 
@@ -47,14 +47,14 @@ class TimeCalculatorService
      * @param BookingRepositoryInterface $bookingRepository
      * @param BalanceRepositoryInterface $balanceRepository
      * @param PeriodServiceInterface $periodService
-     * @param \DateTime $date
+     * @param DateTime $date
      */
     public function __construct(
         ModuleOptions $options,
         BookingRepositoryInterface $bookingRepository,
         BalanceRepositoryInterface $balanceRepository,
         PeriodServiceInterface $periodService,
-        \DateTime $date
+        DateTime $date
     ) {
         $this->options              = $options;
         $this->bookingRepository    = $bookingRepository;
@@ -65,10 +65,10 @@ class TimeCalculatorService
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $period
+     * @param DateTime $period
      * @return float
      */
-    public function getMonthBalance(UserInterface $user, \DateTime $period)
+    public function getMonthBalance(UserInterface $user, DateTime $period)
     {
         $firstDayOfMonth = clone $this->referenceDate;
         $firstDayOfMonth->modify('first day of this month');
@@ -95,10 +95,10 @@ class TimeCalculatorService
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $period
+     * @param DateTime $period
      * @return float
      */
-    public function getMonthTotalWorked(UserInterface $user, \DateTime $period)
+    public function getMonthTotalWorked(UserInterface $user, DateTime $period)
     {
         $firstDayOfMonth = clone $this->referenceDate;
         $firstDayOfMonth->modify('first day of this month');
@@ -114,10 +114,10 @@ class TimeCalculatorService
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $period
+     * @param DateTime $period
      * @return array
      */
-    public function getWeekTotals(UserInterface $user, \DateTime $period)
+    public function getWeekTotals(UserInterface $user, DateTime $period)
     {
         $week    = $this->periodService->getFirstAndLastDayOfWeek($period);
         $tWorked = $this->bookingRepository->getTotalBookedBetweenByUser($user, $week['firstDay'], $week['lastDay']);
@@ -132,10 +132,10 @@ class TimeCalculatorService
 
     /**
      * @param UserInterface $user
-     * @param \DateTime $period
+     * @param DateTime $period
      * @return array
      */
-    public function getTotals(UserInterface $user, \DateTime $period)
+    public function getTotals(UserInterface $user, DateTime $period)
     {
         return [
             'monthTotalWorkedHours' => $this->getMonthTotalWorked($user, $period),

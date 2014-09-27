@@ -319,6 +319,7 @@ $(function() {
         submitBtn.toggleClass('active');
 
         var data = {
+            'user'      : row.find("#book-user").val(),
             'date'      : date,
             'startTime' : row.find("#book-starttime").val(),
             'endTime'   : row.find("#book-endtime").val(),

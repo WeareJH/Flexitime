@@ -16,26 +16,15 @@ class BookingFieldsetTest extends \PHPUnit_Framework_TestCase
      */
     public function testFieldsetHasAllElements()
     {
-        $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $fieldset = new BookingFieldset($objectManager);
+        $objectManager  = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $user           = $this->getMock('ZfcUser\Entity\UserInterface');
+        $fieldset = new BookingFieldset($objectManager, $user);
 
         $this->assertTrue($fieldset->has("id"));
         $this->assertTrue($fieldset->has("date"));
         $this->assertTrue($fieldset->has("startTime"));
         $this->assertTrue($fieldset->has("endTime"));
         $this->assertTrue($fieldset->has("notes"));
-    }
-
-    /**
-     * Test Input Filter Spec is Valid
-     */
-    public function testFieldSetInputFilterSpec()
-    {
-        $objectManager      = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $fieldset           = new BookingFieldset($objectManager);
-        $inputFilterFactory = new \Zend\InputFilter\Factory();
-
-        $inputFilter = $inputFilterFactory->createInput($fieldset->getInputFilterSpecification());
-        $this->assertInstanceOf('Zend\InputFilter\Input', $inputFilter);
+        $this->assertTrue($fieldset->has("user"));
     }
 }

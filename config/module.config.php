@@ -53,7 +53,7 @@ return [
                 'options' => [
                     'route' => '/flexi-time-rest[/:id]',
                     'constraints' => [
-                        'id' => '[0-9]+',
+                        'id' => '[0-9-]+',
                     ],
                     'defaults' => [
                         'controller' => 'JhFlexiTime\Controller\BookingRest',
