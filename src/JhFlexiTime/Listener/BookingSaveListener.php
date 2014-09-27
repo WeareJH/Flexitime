@@ -74,20 +74,47 @@ class BookingSaveListener extends AbstractListenerAggregate
     {
         $sharedEvents = $events->getSharedManager();
         $this->listeners[]
-            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', [$this, 'updateBalance'], 100);
+            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', [$this, 'createBooking'], 100);
         $this->listeners[]
-            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', [$this, 'updateBalance'], 100);
+            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', [$this, 'updateBooking'], 100);
         $this->listeners[]
-            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', [$this, 'updateBalance'], 100);
+            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', [$this, 'deleteBooking'], 100);
     }
 
     /**
      * @param Event $e
-     * @return void
      */
-    public function updateBalance(Event $e)
+    public function createBooking(Event $e)
     {
         $booking = $e->getParam('booking');
+        $this->updateBalance($booking, 'create');
+    }
+
+    /**
+     * @param Event $e
+     */
+    public function updateBooking(Event $e)
+    {
+        $booking = $e->getParam('booking');
+        $this->updateBalance($booking, 'update');
+    }
+
+    /**
+     * @param Event $e
+     */
+    public function deleteBooking(Event $e)
+    {
+        $booking = $e->getParam('booking');
+        $this->updateBalance($booking, 'delete');
+    }
+
+    /**
+     * @param Booking $booking
+     * @param string $type
+     * @return void
+     */
+    public function updateBalance(Booking $booking, $type)
+    {
 
         //if this booking date is in a previous month
         //but not before the user's start date
@@ -95,11 +122,30 @@ class BookingSaveListener extends AbstractListenerAggregate
         if ($this->isDateInPreviousMonth($booking->getDate(), $this->date) &&
             $this->isDateAfterUsersStartTrackingMonth($booking)
         ) {
-            $this->updateRunningBalance($booking, $this->getRunningBalance($booking->getUser()));
+
+            $runningBalance = $this->getRunningBalance($booking->getUser());
+
+            switch ($type) {
+                case 'delete':
+                    $this->removeRunningBalance($booking, $runningBalance);
+                    break;
+                case 'update':
+                case 'create':
+                    $this->updateRunningBalance($booking, $runningBalance);
+                    break;
+            }
         }
 
-        $newBalance = $booking->getTotal() - $this->options->getHoursInDay();
-        $booking->setBalance($newBalance);
+        switch ($type) {
+            case 'delete':
+                break;
+            case 'update':
+            case 'create':
+                //update booking balance
+                $newBalance = $booking->getTotal() - $this->options->getHoursInDay();
+                $booking->setBalance($newBalance);
+                break;
+        }
     }
 
     /**
@@ -113,6 +159,16 @@ class BookingSaveListener extends AbstractListenerAggregate
         $balanceDiff    = $newBalance - $oldBalance;
 
         $runningBalance->addBalance($balanceDiff);
+    }
+
+    /**
+     * @param Booking $booking
+     * @param RunningBalance $runningBalance
+     */
+    public function removeRunningBalance(Booking $booking, RunningBalance $runningBalance)
+    {
+        $balanceDiff  = $booking->getTotal();
+        $runningBalance->subtractBalance($balanceDiff);
     }
 
     /**
