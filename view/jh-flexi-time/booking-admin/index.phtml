@@ -1,5 +1,7 @@
 <?php $this->HeadScript()->appendFile('/assets/vendor/angular/angular.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/assets/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular-gravatar/build/angular-gravatar.min.js','text/javascript'); ?>
+<?php $this->HeadScript()->appendFile('/assets/vendor/angular-gravatar/build/md5.min.js','text/javascript'); ?>
 <?php $this->HeadScript()->appendFile('/js/flexi-time-admin.js','text/javascript'); ?>
 
 <?php $this->headTitle($this->translate("Admin Time")); ?>
@@ -12,9 +14,9 @@
                 <div class="text-center">
 
                     <h1>
-                        <a class="m-pager" href="#" ng-click="updatePeriod(pagination.prev.m, pagination.prev.y, user)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                        <a class="m-pager" href="#" ng-click="updatePeriod(user, pagination.prev.m, pagination.prev.y)"><span class="glyphicon glyphicon-chevron-left"></span></a>
                         {{ user.fName | uppercase }} - {{ date | date: 'MMMM yyyy' | uppercase }}
-                        <a class="m-pager" href="#" ng-click="updatePeriod(pagination.next.m, pagination.next.y, user)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                        <a class="m-pager" href="#" ng-click="updatePeriod(user, pagination.next.m, pagination.next.y)"><span class="glyphicon glyphicon-chevron-right"></span></a>
                     </h1>
 
                     <div id="totals-brief">
@@ -33,8 +35,8 @@
         <div class="row">
             <div class="col-sm-3" >
                 <div class="list-group col-container" id="users"  >
-                    <a href class="list-group-item user" ng-click="loadUserRecords(user.id)" ng-repeat="user in users">
-                        <img ng-src="{{ user.img }}"/> &nbsp;&nbsp; {{ user.name }}
+                    <a href class="list-group-item user" ng-click="updatePeriod(user, null, null)" ng-repeat="user in users">
+                        <img gravatar-src="'{{ user.email }}'" gravatar-size="40" gravatar-default="mm"/> &nbsp;&nbsp; {{ user.name }}
                     </a>
                 </div>
             </div>

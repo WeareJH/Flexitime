@@ -1,36 +1,36 @@
-var app = angular.module("JhHubAdmin", ['ui.bootstrap']);
+var app = angular.module("JhHubAdmin", ['ui.bootstrap', 'ui.gravatar']);
 var today = new Date();
 
 app.controller("AdminTimeCtrl", function ($scope, $http) {
 
-    $scope.currentDate = new Date();
+    $scope.today = new Date();
 
-    $http.get('/admin/flexi-time/users').success(function(data) {
+    $http.get('/user-rest').success(function(data) {
         var users = [];
         for(var i in data.users) {
             var user = data.users[i];
             if(i == 0) {
-                $scope.loadUserRecords(user.id);
+                $scope.updatePeriod(user, null, null);
             }
 
             users.push({
                 id      : user.id,
                 email   : user.email,
-                name    : user.name,
-                img     : data.images[user.email]
+                name    : user.name
             })
         }
         $scope.users = users;
     });
 
-    $scope.updatePeriod = function(month, year, user) {
+    $scope.updatePeriod = function(user, month, year) {
 
         $http({
-            url: '/admin/flexi-time/list/' + user.id,
+            url: '/flexi-time-rest',
             method: 'GET',
             params: {
-                y: year,
-                m: month
+                y:      year,
+                m:      month,
+                user:   user.id
             }
         }).success(function(data) {
             $scope.records      = data.bookings;
@@ -42,27 +42,8 @@ app.controller("AdminTimeCtrl", function ($scope, $http) {
                 name    : data.bookings.user.name,
                 id      : data.bookings.user.id
             }
-            $scope.user     = user;
-            $scope.date     = new Date(data.date.date.split(" ")[0]);
-            $scope.today    = new Date(data.today.date.split(" ")[0]);
-        });
-
-    };
-
-    $scope.loadUserRecords = function(userId) {
-        $http.get('/admin/flexi-time/list/' + userId).success(function(data) {
-            $scope.records      = data.bookings;
-            $scope.totals       = data.bookings.totals;
-            $scope.pagination   = data.pagination;
-            var user = {
-                fName   : data.bookings.user.name.split(' ')[0],
-                email   : data.bookings.user.email,
-                name    : data.bookings.user.name,
-                id      : data.bookings.user.id
-            }
-            $scope.user     = user;
-            $scope.date     = new Date(data.date.date.split(" ")[0]);
-            $scope.today    = new Date(data.today.date.split(" ")[0]);
+            $scope.user = user;
+            $scope.date = new Date(data.date.date.split(" ")[0]);
         });
     }
 });

@@ -20,12 +20,15 @@ return [
 
     //controllers
     'controllers' => [
+        'invokables' => [
+            'JhFlexiTime\Controller\BookingAdmin'       => 'JhFlexiTime\Controller\BookingAdminController'
+        ],
         'factories' => [
             'JhFlexiTime\Controller\Booking'            => 'JhFlexiTime\Controller\Factory\BookingControllerFactory',
             'JhFlexiTime\Controller\BookingRest'        => 'JhFlexiTime\Controller\Factory\BookingRestControllerFactory',
             'JhFlexiTime\Controller\Settings'           => 'JhFlexiTime\Controller\Factory\SettingsControllerFactory',
             'JhFlexiTime\Controller\RunningBalanceCli'  => 'JhFlexiTime\Controller\Factory\RunningBalanceCliControllerFactory',
-            'JhFlexiTime\Controller\BookingAdmin'       => 'JhFlexiTime\Controller\Factory\BookingAdminControllerFactory',
+            'JhFlexiTime\Controller\UserRest'           => 'JhFlexiTime\Controller\Factory\UserRestControllerFactory',
         ],
     ],
 
@@ -82,33 +85,7 @@ return [
                             'route' => '/flexi-time',
                             'defaults' => [
                                 'controller' => 'JhFlexiTime\Controller\BookingAdmin',
-                                'action'     => 'list',
-                            ],
-                        ],
-                        'may_terminate' => true,
-                        'child_routes'  => [
-                            'list' => [
-                                'type'      => 'segment',
-                                'options'   => [
-                                    'route' => '/list[/:id]',
-                                    'defaults' => [
-                                        'action' => 'list',
-                                    ],
-                                    'constraints' => [
-                                        'id' => '\d+',
-                                    ],
-                                ],
-
-                            ],
-                            'users' => [
-                                'type'      => 'literal',
-                                'options'   => [
-                                    'route'     => '/users',
-                                    'defaults'  => [
-                                        'controller' => 'JhFlexiTime\Controller\BookingAdmin',
-                                        'action'     => 'users',
-                                    ],
-                                ],
+                                'action'     => 'index',
                             ],
                         ],
                     ],
@@ -241,7 +218,7 @@ return [
                     'options' => [
                         'name'          => 'Flexitime Admin',
                         'label'         => 'Flexitime',
-                        'route'         => 'zfcadmin/flexi-time/list',
+                        'route'         => 'zfcadmin/flexi-time',
                     ],
                 ]
             ],
@@ -254,5 +231,36 @@ return [
                 __DIR__ . '/../public',
             ],
         ],
+    ],
+
+    'zfc_rbac' => [
+        'guards' => [
+            'ZfcRbac\Guard\RouteGuard' => [
+                'flexi-time*' => ['user'],
+            ]
+        ],
+    ],
+
+    'jh_hub' => [
+        'roles' => [
+            'admin' => [
+                'permissions' => [
+                    'flexi-time.createOthers',
+                    'flexi-time.editOthers',
+                    'flexi-time.readOthers',
+                    'flexi-time.deleteOthers',
+                ],
+                'children' => [
+                    'user' => [
+                        'permissions' => [
+                            'flexi-time.create',
+                            'flexi-time.edit',
+                            'flexi-time.read',
+                            'flexi-time.delete',
+                        ],
+                    ],
+                ],
+            ],
+        ]
     ],
 ];

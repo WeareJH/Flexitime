@@ -33,9 +33,13 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp()
     {
+
+        $userRepository = $this->getMock('JhUser\Repository\UserRepositoryInterface');
+
         $this->controller = new BookingRestController(
             $this->getBookingService(),
-            $this->getTimeCalculatorService()
+            $this->getTimeCalculatorService(),
+            $userRepository
         );
 
         $this->request      = new Request();

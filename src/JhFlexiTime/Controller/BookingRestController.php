@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Controller;
 
+use JhUser\Repository\UserRepositoryInterface;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\Validator\Date as DateValidator;
 use Zend\View\Model\JsonModel;
@@ -27,17 +28,24 @@ class BookingRestController extends AbstractRestfulController
      */
     protected $timeCalculatorService;
 
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
 
     /**
      * @param BookingService $bookingService
      * @param TimeCalculatorService $timeCalculatorService
+     * @param UserRepositoryInterface $userRepository
      */
     public function __construct(
         BookingService $bookingService,
-        TimeCalculatorService $timeCalculatorService
+        TimeCalculatorService $timeCalculatorService,
+        UserRepositoryInterface $userRepository
     ) {
         $this->bookingService           = $bookingService;
         $this->timeCalculatorService    = $timeCalculatorService;
+        $this->userRepository           = $userRepository;
     }
 
     /**
@@ -45,11 +53,24 @@ class BookingRestController extends AbstractRestfulController
      */
     public function getList()
     {
-        $month  = (string) $this->params()->fromQuery('m');
-        $year   = (string) $this->params()->fromQuery('y');
+        $month  = $this->params()->fromQuery('m', false);
+        $year   = $this->params()->fromQuery('y', false);
+        $userId = $this->params()->fromQuery('user', false);
         $period = $this->getDate($month, $year);
 
-        $user           = $this->zfcUserAuthentication()->getIdentity();
+        if ($userId && $this->isGranted('flexi-time.readOthers')) {
+
+            $user = $this->userRepository->find($userId);
+            if (!$user) {
+                return new JsonModel([
+                    'success' => false,
+                    'message' => 'User does not exist',
+                ]);
+            }
+        } else {
+            $user = $this->zfcUserAuthentication()->getIdentity();
+        }
+
         $records        = $this->bookingService->getUserBookingsForMonth($user, $period);
         $pagination     = $this->bookingService->getPagination($period);
         $totals         = $this->timeCalculatorService->getTotals($user, $period);
@@ -62,6 +83,7 @@ class BookingRestController extends AbstractRestfulController
             ],
             'pagination' => $pagination,
             'date'       => $period,
+            'today'      => new \DateTime("today"),
         ]);
     }
 
