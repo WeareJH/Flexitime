@@ -2,8 +2,6 @@
 
 namespace JhFlexiTime;
 
-use JhFlexiTime\Install\Installer;
-
 return [
     'doctrine' => [
         'driver' => [
@@ -31,20 +29,25 @@ return [
         ],
     ],
 
-    //routing
+    //router
     'router' => [
         'routes' => [
             'flexi-time' => [
-                'type'    => 'segment',
-                'options' => [
-                    'route'    => '/flexi-time[/][:action][/:id]',
-                    'constraints' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'     => '[0-9]+',
-                    ],
+                'type'      => 'literal',
+                'options'   => [
+                    'route'     => '/flexi-time',
                     'defaults' => [
                         'controller' => 'JhFlexiTime\Controller\Booking',
                         'action'     => 'list',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes'  => [
+                    'list' => [
+                        'type'      => 'literal',
+                        'options'   => [
+                            'route' => '/list',
+                        ],
                     ],
                 ],
             ],
@@ -70,7 +73,6 @@ return [
                     ],
                 ],
             ],
-
             //admin routes
             'zfcadmin' => [
                 'child_routes' => [
@@ -108,7 +110,7 @@ return [
                                     ],
                                 ],
                             ],
-                        ] ,
+                        ],
                     ],
                 ],
             ],

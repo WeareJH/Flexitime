@@ -2,10 +2,14 @@
 
 namespace JhFlexiTime\InputFilter;
 
-use Zend\InputFilter\InputFilter;
+use Zend\Filter\StringTrim;
+use Zend\Filter\StripTags;
+use Zend\Validator\DateStep;
+use Zend\Validator\GreaterThan;
+use Zend\Validator\LessThan;
+use Zend\Validator\StringLength;
 use Zend\Validator\ValidatorInterface;
 use JhFlexiTime\Options\BookingOptionsInterface;
-use Zend\InputFilter\Input;
 use JhFlexiTime\Filter\DateTimeFormatter;
 use Zend\Validator\Date;
 
@@ -34,154 +38,136 @@ class BookingInputFilter extends BaseInputFilter
         BookingOptionsInterface $bookingOptions
     ) {
 
-        $this->add(
-            [
-                'name'      => 'user',
-                'required'  => true,
-                'filters'   => [
-                    ['name' => 'StripTags'],
-                    ['name' => 'StringTrim'],
-                ],
-                'validators' => [
-                    [
-                        'name'    => 'StringLength',
-                        'options' => [
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 512,
-                        ],
-                    ],
-                    $userExistsValidator
-                ],
-            ]
-        );
+        //user
+        $user = new Input('user');
+        $user->setRequired(true);
+        $user->getFilterChain()
+            ->attach(new StripTags())
+            ->attach(new StringTrim());
 
+        $user->getValidatorChain()
+            ->attach(new StringLength([
+                'encoding' => 'UTF-8',
+                'min'      => 1,
+                'max'      => 512,
+            ]))
+            ->attach($userExistsValidator);
 
+        $this->add($user);
+
+        //date
         $date = new Input('date');
         $date->setRequired(true);
-        $date->getFilterChain()->attach(new DateTimeFormatter(['format' => 'd-m-Y']));
-        $date->getValidatorChain()->attach($uniqueBookingValidator);
-        $date->getValidatorChain()->attach(new Date(['format' => 'd-m-Y']));
-
+        $date->getFilterChain()
+            ->attach(new DateTimeFormatter(['format' => 'd-m-Y']));
+        $date->getValidatorChain()
+            ->attach($uniqueBookingValidator)
+            ->attach(new Date(['format' => 'd-m-Y']));
 
         $this->add($date);
 
-        $startTimeValidators = [
-            [
-                'name'      => 'Date',
-                'options'   => [
-                    'format' => 'H:i',
-                ],
-            ],
-            [
-                'name'      => 'DateStep',
-                'options'   => [
-                    'format'    => 'H:i',
-                    'baseValue' => '00:00',
-                    'step'      => new \DateInterval("PT{$this->config['step']}S"),
-                ],
-            ],
-        ];
+        $startTimeValidators = $this->getStartTimeValidators();
 
         if ($bookingOptions->getMinStartTime()) {
-            $startTimeValidators[] = [
-                'name'      => 'GreaterThan',
-                'options'   => [
-                    'min'       => $bookingOptions->getMinStartTime(),
-                    'inclusive' => true,
-                ],
-            ];
+            $startTimeValidators[] = new GreaterThan([
+                'min'       => $bookingOptions->getMinStartTime(),
+                'inclusive' => true,
+            ]);
         }
 
         if ($bookingOptions->getMaxStartTime()) {
-            $startTimeValidators[] = [
-                'name'      => 'LessThan',
-                'options'   => [
-                    'max'       => $bookingOptions->getMaxStartTime(),
-                    'inclusive' => true,
-                ],
-            ];
+            $startTimeValidators[] = new LessThan([
+                'max'       => $bookingOptions->getMaxStartTime(),
+                'inclusive' => true,
+            ]);
         }
 
-        $this->add(
-            [
-                'name'      => 'startTime',
-                'required'  => true,
-                'filters'   => [
-                    ['name' => 'StringTrim']
-                ],
-                'validators' => $startTimeValidators,
-            ]
-        );
+        //start time
+        $startTime = new Input('startTime');
+        $startTime->setRequired(true);
+        $startTime->getFilterChain()
+            ->attach(new StringTrim());
 
-        $endTimeValidators = [
-            [
-                'name'      => 'Date',
-                'options'   => [
-                    'format' => 'H:i',
-                ],
-            ],
-            [
-                'name'      => 'DateStep',
-                'options'   => [
-                    'format'    => 'H:i',
-                    'baseValue' => '00:00',
-                    'step'      => new \DateInterval("PT{$this->config['step']}S"),
-                ],
-            ],
-        ];
+        foreach ($startTimeValidators as $validator) {
+            $startTime->getValidatorChain()->attach($validator);
+        }
+        $this->add($startTime);
+
+        $endTimeValidators = $this->getEndTimeValidators();
 
         if ($bookingOptions->getMinEndTime()) {
-            $endTimeValidators[] = [
-                'name'      => 'GreaterThan',
-                'options'   => [
-                    'min'       => $bookingOptions->getMinEndTime(),
-                    'inclusive' => true,
-                ],
-            ];
+            $endTimeValidators[] = new GreaterThan([
+                'min'       => $bookingOptions->getMinEndTime(),
+                'inclusive' => true,
+            ]);
         }
 
         if ($bookingOptions->getMaxEndTime()) {
-            $endTimeValidators[] = [
-                'name'      => 'LessThan',
-                'options'   => [
-                    'max'       => $bookingOptions->getMaxEndTime(),
-                    'inclusive' => true,
-                ],
-            ];
+            $endTimeValidators[] = new LessThan([
+                'max'       => $bookingOptions->getMaxEndTime(),
+                'inclusive' => true,
+            ]);
         }
 
-        $this->add(
-            [
-                'name'      => 'endTime',
-                'required'  => true,
-                'filters'   => [
-                    ['name' => 'StringTrim']
-                ],
-                'validators' => $endTimeValidators,
-            ]
-        );
+        //end time
+        $endTime = new Input('endTime');
+        $endTime->setRequired(true);
+        $endTime->getFilterChain()
+            ->attach(new StringTrim());
+
+        foreach ($endTimeValidators as $validator) {
+            $endTime->getValidatorChain()->attach($validator);
+        }
+        $this->add($endTime);
 
         //notes
-        $this->add(
-            [
-                'name'      => 'notes',
-                'required'  => false,
-                'filters'   => [
-                    ['name' => 'StripTags'],
-                    ['name' => 'StringTrim'],
-                ],
-                'validators' => [
-                    [
-                        'name'    => 'StringLength',
-                        'options' => [
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 512,
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $notes = new Input('notes');
+        $notes->setRequired(false);
+        $notes->getFilterChain()
+            ->attach(new StripTags())
+            ->attach(new StringTrim());
+
+        $notes->getValidatorChain()
+            ->attach(new StringLength([
+                'encoding' => 'UTF-8',
+                'min'      => 1,
+                'max'      => 512,
+            ]));
+
+        $this->add($notes);
+    }
+
+    /**
+     * @return ValidatorInterface[]
+     */
+    protected function getStartTimeValidators()
+    {
+        return [
+            new Date([
+                'format' => 'H:i'
+            ]),
+            new DateStep([
+                'format'    => 'H:i',
+                'baseValue' => '00:00',
+                'step'      => new \DateInterval("PT{$this->config['step']}S"),
+            ]),
+        ];
+    }
+
+    /**
+     * @return ValidatorInterface[]
+     */
+    protected function getEndTimeValidators()
+    {
+        return [
+            new Date([
+                'format' => 'H:i'
+            ]),
+            new DateStep([
+                'format'    => 'H:i',
+                'baseValue' => '00:00',
+                'step'      => new \DateInterval("PT{$this->config['step']}S"),
+            ]),
+        ];
     }
 }

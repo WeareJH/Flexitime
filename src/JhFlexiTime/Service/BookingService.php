@@ -125,9 +125,8 @@ class BookingService
     public function update($userId, DateTime $date, array $data)
     {
 
-        try {
-            $booking = $this->getBookingByUserAndDate($userId, $date);
-        } catch (\Exception $e) {
+        $booking = $this->getBookingByUserAndDate($userId, $date);
+        if (null === $booking) {
             return [
                 'messages' => ['Booking Does Not Exist']
             ];
@@ -159,9 +158,8 @@ class BookingService
      */
     public function delete($userId, DateTime $date)
     {
-        try {
-            $booking = $this->getBookingByUserAndDate($userId, $date);
-        } catch (\Exception $e) {
+        $booking = $this->getBookingByUserAndDate($userId, $date);
+        if (null === $booking) {
             return [
                 'messages' => ['Booking Does Not Exist']
             ];
@@ -183,12 +181,7 @@ class BookingService
      */
     public function getBookingByUserAndDate($userId, DateTime $date)
     {
-        $row = $this->bookingRepository->findOneBy(array('date' => $date, 'user' => $userId));
-        if (!is_object($row)) {
-            throw new \Exception("Could not find Booking");
-        }
-
-        return $row;
+        return $this->bookingRepository->findOneBy(array('date' => $date, 'user' => $userId));
     }
 
     /**

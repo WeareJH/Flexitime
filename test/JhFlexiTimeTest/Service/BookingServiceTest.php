@@ -288,21 +288,6 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['messages' => ['Booking Does Not Exist']], $ret);
     }
 
-    public function testGetBookingByUserAndDateThrowsExceptionIfNotExist()
-    {
-        $userId = 2;
-        $date   = new DateTime("20 September 2014");
-
-        $this->bookingRepository
-             ->expects($this->once())
-             ->method('findOneBy')
-             ->with(['date' => $date, 'user' => $userId])
-             ->will($this->returnValue(null));
-
-        $this->setExpectedException('Exception', 'Could not find Booking');
-        $this->bookingService->getBookingByUserAndDate($userId, $date);
-    }
-
     public function testGetBookingByUserAndIdReturnsBooking()
     {
         $userId     = 2;

@@ -7,10 +7,15 @@ use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\InputInterface;
 use Zend\InputFilter\EmptyContextInterface;
 
+/**
+ * Class BaseInputFilter
+ * @package JhFlexiTime\InputFilter
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
+ */
 class BaseInputFilter extends ZfBaseInputFilter
 {
     /**
-     * Validate a set of inputs against the current data
+     * Extension so we get the filtered values not the raw values
      *
      * @param array $inputs
      * @param array $data
@@ -20,6 +25,7 @@ class BaseInputFilter extends ZfBaseInputFilter
     {
         // backwards compatibility
         if (empty($data)) {
+            //this is the line changed from base class
             $data = $this->getValues();
         }
         $this->validInputs = array();
