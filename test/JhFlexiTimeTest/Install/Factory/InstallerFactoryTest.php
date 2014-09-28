@@ -14,7 +14,7 @@ class InstallerFactoryTest extends \PHPUnit_Framework_TestCase
     public function testFactoryProcessesWithoutErrors()
     {
         $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
-        $services         = array(
+        $services         = [
             'Jhuser\Repository\UserRepository' =>
                 $this->getMock('Jhuser\Repository\UserRepositoryInterface'),
             'JhFlexiTime\Repository\UserSettingsRepository' =>
@@ -23,7 +23,7 @@ class InstallerFactoryTest extends \PHPUnit_Framework_TestCase
                 $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
             'JhFlexiTime\ObjectManager' =>
                 $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
-        );
+        ];
 
         $serviceLocator
             ->expects($this->any())

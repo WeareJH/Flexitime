@@ -63,7 +63,7 @@ class BalanceRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testFindOneByReturnsBalanceIfExists()
     {
         $balance = new SingleRunningBalance();
-        $this->fixtureExecutor->execute(array($balance));
+        $this->fixtureExecutor->execute([$balance]);
         $result = $this->repository->findOneBy(["user" => $balance->getBalance()->getUser()->getId()]);
         $this->assertInstanceOf('JhFlexiTime\Entity\RunningBalance', $result);
         $this->assertSame($balance->getBalance()->getUser()->getEmail(), $result->getUser()->getEmail());

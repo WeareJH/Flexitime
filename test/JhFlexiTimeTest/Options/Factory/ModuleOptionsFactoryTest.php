@@ -17,10 +17,10 @@ class ModuleOptionsFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryReturnsInjectedOptions()
     {
-        $config = array('lunch_duration' => 2);
+        $config = ['lunch_duration' => 2];
 
         $locator = new ServiceManager();
-        $locator->setService('Config', array('flexi' => array('policy_options' => $config)));
+        $locator->setService('Config', ['flexi' => ['policy_options' => $config]]);
 
         $factory = new ModuleOptionsFactory();
         $this->assertEquals(2, $factory->createService($locator)->getLunchDuration());
@@ -31,10 +31,10 @@ class ModuleOptionsFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryReturnsDefaultOptionsWithEmptyConfig()
     {
-        $config = array();
+        $config = [];
 
         $locator = new ServiceManager();
-        $locator->setService('Config', array('flexi' => array('policy_options' => $config)));
+        $locator->setService('Config', ['flexi' => ['policy_options' => $config]]);
 
         $factory = new ModuleOptionsFactory();
         $this->assertEquals(1, $factory->createService($locator)->getLunchDuration());
@@ -45,7 +45,7 @@ class ModuleOptionsFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryReturnsDefaultOptionsWithNoConfig()
     {
-        $config = array();
+        $config = [];
 
         $locator = new ServiceManager();
         $locator->setService('Config', $config);

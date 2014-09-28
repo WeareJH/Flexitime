@@ -4,10 +4,10 @@
     <thead>
         <tr>
             <th style="width: 30%"></th>
-            <th style="width: 20%"><?php echo $this->translate('Date') ?></th>
-            <th style="width: 20%"><?php echo $this->translate('Time') ?></th>
-            <th style="width: 10%"><?php echo $this->translate('Total') ?></th>
-            <th style="width: 10%"><?php echo $this->translate('Notes') ?></th>
+            <th style="width: 20%"><?= $this->translate('Date') ?></th>
+            <th style="width: 20%"><?= $this->translate('Time') ?></th>
+            <th style="width: 10%"><?= $this->translate('Total') ?></th>
+            <th style="width: 10%"><?= $this->translate('Notes') ?></th>
             <th style="width: 10%"></th>
         </tr>
     </thead>
@@ -16,26 +16,26 @@
     <?php endif; ?>
     <tbody>
         <?php foreach($week['dates'] as $key => $day): ?>
-        <tr id="row-<?php echo $day['date']->format('d-m-Y');?>" class="day <?php echo $this->bookingClasses($day['date'], (isset($day['booking']))); ?>" <?php echo (isset($day['booking'])) ? 'data-id="' . $day['booking']->getId() . '"' : ''  ?>>
+        <tr id="row-<?= $day['date']->format('d-m-Y');?>" class="day <?= $this->bookingClasses($day['date'], (isset($day['booking']))); ?>" <?= (isset($day['booking'])) ? 'data-id="' . $day['booking']->getId() . '"' : ''  ?>>
             <?php if(!isset($day['booking'])): ?>
                 <?php if(!$key): ?>
                     <td style="width: 30%"><b>WEEK <?=($this->weekNum + 1)?></b> -
                         <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?> </span>
 
                         <?php $weekBalance = $week['balance']; ?>
-                        <span class="pull-right week-balance <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                            <?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?>
+                        <span class="pull-right week-balance <?= ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                            <?= ($weekBalance >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $weekBalance); ?>
                         </span>
                     </td>
                 <?php else: ?>
                     <td style="width: 30%"></td>
                 <?php endif; ?>
-                <td style="width: 20%" class="col-date"><?php echo $day['date']->format('l, jS'); ?></td>
+                <td style="width: 20%" class="col-date"><?= $day['date']->format('l, jS'); ?></td>
                 <td style="width: 20%" class="col-time"></td>
                 <td style="width: 10%" class="col-total"></td>
                 <td style="width: 10%" class="col-notes"></td>
                 <td style="width: 10%" class="col-actions">
-                    <button data-date="<?php echo $day['date']->format('d-m-Y');?>" class="btn btn-success btn-xs pull-right popover-book has-spinner" type="button" id="popover-book-<?php echo $day['date']->format('d-m-Y'); ?>">
+                    <button data-date="<?= $day['date']->format('d-m-Y');?>" class="btn btn-success btn-xs pull-right popover-book has-spinner" type="button" id="popover-book-<?= $day['date']->format('d-m-Y'); ?>">
                         <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </td>
@@ -46,27 +46,27 @@
                         <span class="text-muted week-total"><?=$week['workedHours']?> / <?=$week['totalHours']?> </span>
 
                         <?php $weekBalance = $week['balance']; ?>
-                        <span class="pull-right week-balance <?php echo ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                            <?php echo ($weekBalance >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $weekBalance); ?>
+                        <span class="pull-right week-balance <?= ($weekBalance >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                            <?= ($weekBalance >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $weekBalance); ?>
                         </span>
                     </td>
                 <?php else: ?>
                     <td style="width: 30%"></td>
                 <?php endif; ?>
-                <td style="width: 20%" class="col-date"><?php echo $day['booking']->getDate()->format('l, jS') ?></td>
-                <td style="width: 20%" class="col-time"><?php echo $day['booking']->getStartTime()->format('H:i') ?> - <?php echo $day['booking']->getEndTime()->format('H:i') ?></td>
-                <td style="width: 10%" class="col-total"><?php echo $day['booking']->getTotal() ?></td>
+                <td style="width: 20%" class="col-date"><?= $day['booking']->getDate()->format('l, jS') ?></td>
+                <td style="width: 20%" class="col-time"><?= $day['booking']->getStartTime()->format('H:i') ?> - <?= $day['booking']->getEndTime()->format('H:i') ?></td>
+                <td style="width: 10%" class="col-total"><?= $day['booking']->getTotal() ?></td>
                 <td style="width: 10%" class="col-notes">
                     <?php $notes = $day['booking']->getNotes(); ?>
                     <?php if($notes): ?>
-                        <span class="fx-tooltip fx-tooltip-note" data-toggle="tooltip" data-placement="top" title="<?php echo $notes ?>">
+                        <span class="fx-tooltip fx-tooltip-note" data-toggle="tooltip" data-placement="top" title="<?= $notes ?>">
                             <span class="glyphicon glyphicon-comment"></span>
                         </span>
                     <?php endif; ?>
                 </td>
                 <td style="width: 10%" class="col-actions">
                     <div class="btn-group pull-right">
-                        <button id="popover-edit-<?php echo $day['date']->format('d-m-Y'); ?>" class="btn btn-xs btn-default popover-edit" data-id="<?php echo $day['booking']->getId(); ?>" data-date="<?php echo $day['date']->format('d-m-Y');?>">
+                        <button id="popover-edit-<?= $day['date']->format('d-m-Y'); ?>" class="btn btn-xs btn-default popover-edit" data-id="<?= $day['booking']->getId(); ?>" data-date="<?= $day['date']->format('d-m-Y');?>">
                             <span class="glyphicon glyphicon-pencil"></span>
                         </button>
 
@@ -74,7 +74,7 @@
                 </td>
             <?php endif; ?>
         </tr>
-        <?php echo $this->partial('booking/edit', array('day' => $day, 'form' => $this->form)); ?>
+        <?= $this->partial('booking/edit', ['day' => $day, 'form' => $this->form]); ?>
         <?php endforeach; ?>
     </tbody>
 

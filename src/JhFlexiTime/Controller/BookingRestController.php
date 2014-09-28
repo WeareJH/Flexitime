@@ -54,15 +54,15 @@ class BookingRestController extends AbstractRestfulController
         $pagination     = $this->bookingService->getPagination($period);
         $totals         = $this->timeCalculatorService->getTotals($user, $period);
 
-        return new JsonModel(array(
-            'bookings' => array(
+        return new JsonModel([
+            'bookings' => [
                 'records'   => $records,
                 'totals'    => $totals,
                 'user'      => $user,
-            ),
+            ],
             'pagination' => $pagination,
             'date'       => $period,
-        ));
+        ]);
     }
 
     /**
@@ -72,9 +72,9 @@ class BookingRestController extends AbstractRestfulController
     public function get($id)
     {
         $id   = $this->parseIdCriteria($id);
-        return new JsonModel(array(
+        return new JsonModel([
             'booking' => $this->bookingService->getBookingByUserAndDate($id['user'], $id['date']),
-        ));
+        ]);
     }
 
     /**
@@ -90,12 +90,12 @@ class BookingRestController extends AbstractRestfulController
             return new JsonModel($return);
         }
 
-        return new JsonModel(array(
+        return new JsonModel([
             'success'       => true,
             'booking'       => $return,
             'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
             'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
-        ));
+        ]);
     }
 
     /**
@@ -113,12 +113,12 @@ class BookingRestController extends AbstractRestfulController
             return new JsonModel($return);
         }
 
-        return new JsonModel(array(
+        return new JsonModel([
             'booking'       => $return,
             'success'       => true,
             'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
             'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
-        ));
+        ]);
     }
 
     /**
@@ -134,11 +134,11 @@ class BookingRestController extends AbstractRestfulController
             return new JsonModel($return);
         }
 
-        return new JsonModel(array(
+        return new JsonModel([
             'success'       => true,
             'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
             'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
-        ));
+        ]);
     }
 
     /**

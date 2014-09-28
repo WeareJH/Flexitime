@@ -62,7 +62,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
             ->expects($this->once())
             ->method('calculatePreviousMonthBalance');
 
-        $this->dispatch(new Request(array('scriptname.php', "calc-prev-month-balance")));
+        $this->dispatch(new Request(['scriptname.php', "calc-prev-month-balance"]));
 
         $this->assertResponseStatusCode(0);
         $this->assertModuleName('jhflexitime');
@@ -102,7 +102,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
             ->expects($this->never())
             ->method('recalculateAllUsersRunningBalance');
 
-        $this->dispatch(new Request(array('scriptname.php', "re-calc-balance-user $email")));
+        $this->dispatch(new Request(['scriptname.php', "re-calc-balance-user $email"]));
 
         $this->assertResponseStatusCode(0);
         $this->assertModuleName('jhflexitime');
@@ -130,7 +130,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
             ->expects($this->never())
             ->method('recalculateUserRunningBalance');
 
-        $this->dispatch(new Request(array('scriptname.php', "re-calc-balance-user $email")));
+        $this->dispatch(new Request(['scriptname.php', "re-calc-balance-user $email"]));
         $this->assertResponseStatusCode(1);
         $this->assertModuleName('jhflexitime');
         $this->assertControllerName('jhflexitime\controller\runningbalancecli');
@@ -155,7 +155,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
             ->expects($this->once())
             ->method('recalculateAllUsersRunningBalance');
 
-        $this->dispatch(new Request(array('scriptname.php', "re-calc-balance-all")));
+        $this->dispatch(new Request(['scriptname.php', "re-calc-balance-all"]));
 
         $this->assertResponseStatusCode(0);
         $this->assertModuleName('jhflexitime');
@@ -188,7 +188,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
             ->method('recalculateUserRunningBalance')
             ->with($user);
 
-        $this->dispatch(new Request(array('scriptname.php', "set user init-balance $email $balance")));
+        $this->dispatch(new Request(['scriptname.php', "set user init-balance $email $balance"]));
 
         $this->assertResponseStatusCode(0);
         $this->assertModuleName('jhflexitime');
@@ -217,7 +217,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
             ->expects($this->never())
             ->method('recalculateUserRunningBalance');
 
-        $this->dispatch(new Request(array('scriptname.php', "set user init-balance $email $balance")));
+        $this->dispatch(new Request(['scriptname.php', "set user init-balance $email $balance"]));
 
         $this->assertResponseStatusCode(1);
         $this->assertModuleName('jhflexitime');

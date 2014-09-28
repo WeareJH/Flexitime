@@ -18,11 +18,11 @@ class RunningBalanceCliControllerFactoryTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $services = array(
+        $services = [
             'JhUser\Repository\UserRepository'          => $this->getMock('JhUser\Repository\UserRepositoryInterface'),
             'JhFlexiTime\Service\RunningBalanceService' => $mockRunningBalanceService,
             'Console'                                   => $this->getMock('Zend\Console\Adapter\AdapterInterface')
-        );
+        ];
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $serviceLocator

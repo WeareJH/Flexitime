@@ -39,12 +39,12 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         );
 
         $this->request      = new Request();
-        $this->routeMatch   = new RouteMatch(array());
+        $this->routeMatch   = new RouteMatch([]);
         $this->event        = new MvcEvent();
 
         $serviceManager     = ServiceManagerFactory::getServiceManager();
         $config             = $serviceManager->get('Config');
-        $routerConfig       = isset($config['router']) ? $config['router'] : array();
+        $routerConfig       = isset($config['router']) ? $config['router'] : [];
         $router             = HttpRouter::factory($routerConfig);
         $this->event->setRouter($router);
         $this->event->setRouteMatch($this->routeMatch);
@@ -83,7 +83,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
             ->method($method)
             ->will($this->returnValue($return));
 
-        call_user_func_array(array($expects, "with"), $params);
+        call_user_func_array([$expects, "with"], $params);
     }
 
     public function configureMockTimeCalculatorService($method, array $params, $return)
@@ -92,7 +92,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
             ->method($method)
             ->will($this->returnValue($return));
 
-        call_user_func_array(array($expects, "with"), $params);
+        call_user_func_array([$expects, "with"], $params);
     }
 
     public function getBookingService()
@@ -133,9 +133,9 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $date       = new DateTime("25 March 2014");
 
         $this->controller->setDate($date);
-        $this->configureMockBookingService('getUserBookingsForMonth', array($this->user, $date), array($booking));
-        $this->configureMockBookingService('getPagination', array($date), array());
-        $this->configureMockTimeCalculatorService('getTotals', array($this->user, $date), array('some-total', 20));
+        $this->configureMockBookingService('getUserBookingsForMonth', [$this->user, $date], [$booking]);
+        $this->configureMockBookingService('getPagination', [$date], []);
+        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $date], ['some-total', 20]);
 
         $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
@@ -146,13 +146,13 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->pagination));
         $this->assertTrue(isset($result->date));
 
-        $expectedTime = array(
-            'records' => array($booking),
-            'totals'  => array('some-total', 20),
+        $expectedTime = [
+            'records' => [$booking],
+            'totals'  => ['some-total', 20],
             'user'    => $this->user,
-        );
+        ];
         $this->assertEquals($expectedTime, $result->getVariable('bookings'));
-        $this->assertEquals(array(), $result->getVariable('pagination'));
+        $this->assertEquals([], $result->getVariable('pagination'));
         $this->assertSame($date, $result->getVariable('date'));
     }
 
@@ -178,17 +178,17 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
     public function testCreateCanBeAccessed()
     {
         $booking = $this->getMockBooking();
-        $this->configureMockBookingService('create', array(), $booking);
+        $this->configureMockBookingService('create', [], $booking);
         $this->configureMockTimeCalculatorService(
             'getTotals',
-            array($this->user, $booking->getDate()),
-            array('some-total', 20)
+            [$this->user, $booking->getDate()],
+            ['some-total', 20]
         );
 
         $this->configureMockTimeCalculatorService(
             'getWeekTotals',
-            array($this->user, $booking->getDate()),
-            array('some-total', 20)
+            [$this->user, $booking->getDate()],
+            ['some-total', 20]
         );
 
         $this->request->setMethod('POST');
@@ -206,14 +206,14 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
         $this->assertSame($booking, $result->booking);
         $this->assertTrue($result->success);
-        $this->assertEquals($result->monthTotals, array('some-total', 20));
+        $this->assertEquals($result->monthTotals, ['some-total', 20]);
     }
 
     public function testCreateCanBeAccessedButFail()
     {
-        $return = array('messages' => array('data' => 'INVALID YO'));
-        $data = array('date' => '25-03-2014', 'startTime' => '09:00');
-        $this->configureMockBookingService('create', array($data), $return);
+        $return = ['messages' => ['data' => 'INVALID YO']];
+        $data = ['date' => '25-03-2014', 'startTime' => '09:00'];
+        $this->configureMockBookingService('create', [$data], $return);
 
         $this->request->setMethod('POST');
         $this->request->getPost()->set('date', '25-03-2014');
@@ -227,7 +227,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->messages));
         $this->assertTrue(isset($result->success));
 
-        $this->assertSame($result->messages, array('data' => 'INVALID YO'));
+        $this->assertSame($result->messages, ['data' => 'INVALID YO']);
         $this->assertFalse($result->success);
     }
 
@@ -244,14 +244,14 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
         $this->configureMockTimeCalculatorService(
             'getTotals',
-            array($this->user, $booking->getDate()),
-            array('some-total', 20)
+            [$this->user, $booking->getDate()],
+            ['some-total', 20]
         );
 
         $this->configureMockTimeCalculatorService(
             'getWeekTotals',
-            array($this->user, $booking->getDate()),
-            array('some-total', 20)
+            [$this->user, $booking->getDate()],
+            ['some-total', 20]
         );
 
         $this->routeMatch->setParam('id', $id);
@@ -312,14 +312,14 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
         $this->configureMockTimeCalculatorService(
             'getTotals',
-            array($this->user, $booking->getDate()),
-            array('some-total', 20)
+            [$this->user, $booking->getDate()],
+            ['some-total', 20]
         );
 
         $this->configureMockTimeCalculatorService(
             'getWeekTotals',
-            array($this->user, $booking->getDate()),
-            array('some-total', 20)
+            [$this->user, $booking->getDate()],
+            ['some-total', 20]
         );
 
         $this->routeMatch->setParam('id', $id);
@@ -335,7 +335,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->weekTotals));
 
         $this->assertTrue($result->success);
-        $this->assertEquals($result->monthTotals, array('some-total', 20));
+        $this->assertEquals($result->monthTotals, ['some-total', 20]);
     }
 
     public function testDeleteCanBeAccessedButFail()

@@ -22,7 +22,7 @@ class BookingOptionsFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
 
         return new BookingOptions(
-            isset($config['flexi']['booking_options']) ? $config['flexi']['booking_options'] : array()
+            isset($config['flexi']['booking_options']) ? $config['flexi']['booking_options'] : []
         );
     }
 }

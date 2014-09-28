@@ -22,7 +22,7 @@ class ModuleOptionsFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
 
         return new ModuleOptions(
-            isset($config['flexi']['policy_options']) ? $config['flexi']['policy_options'] : array()
+            isset($config['flexi']['policy_options']) ? $config['flexi']['policy_options'] : []
         );
     }
 }

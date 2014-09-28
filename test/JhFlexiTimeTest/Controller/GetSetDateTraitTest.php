@@ -28,10 +28,10 @@ class GetSetDateTraitTest extends \PHPUnit_Framework_TestCase
 
     public function invalidDateParamsProvider()
     {
-        return array(
-            array("not-a-month", 20145, new \DateTime("last day of March 2014 23:59:59")),
-            array("Apr", '1988v', new \DateTime("last day of April 1988 23:59:59")),
-        );
+        return [
+            ["not-a-month", 20145, new \DateTime("last day of March 2014 23:59:59")],
+            ["Apr", '1988v', new \DateTime("last day of April 1988 23:59:59")],
+        ];
     }
 
     /**
@@ -44,10 +44,10 @@ class GetSetDateTraitTest extends \PHPUnit_Framework_TestCase
 
     public function validDateParamsProvider()
     {
-        return array(
-            array("Mar", 2014, new \DateTime("last day of March 2014 23:59:59")),
-            array("Apr", 1988, new \DateTime("last day of April 1988 23:59:59")),
-        );
+        return [
+            ["Mar", 2014, new \DateTime("last day of March 2014 23:59:59")],
+            ["Apr", 1988, new \DateTime("last day of April 1988 23:59:59")],
+        ];
     }
 
     public function testGetDateReturnsCurrentlySetObjectIfSet()

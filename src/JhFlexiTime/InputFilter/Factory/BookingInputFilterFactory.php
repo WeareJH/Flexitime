@@ -31,10 +31,10 @@ class BookingInputFilterFactory implements FactoryInterface
         $uniqueValidator = new UniqueObject([
             'object_manager'    => $objectManager,
             'object_repository' => $bookingRepository,
-            'fields' => array(
+            'fields' => [
                 'date',
                 'user',
-            ),
+            ],
             'use_context' => true,
         ]);
 

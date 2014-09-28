@@ -44,7 +44,7 @@ class BalanceRepository implements BalanceRepositoryInterface
      */
     public function findOneByUser(UserInterface $user)
     {
-        return $this->balanceRepository->findOneBy(array('user' => $user));
+        return $this->balanceRepository->findOneBy(['user' => $user]);
     }
 
     /**

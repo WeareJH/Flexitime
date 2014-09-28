@@ -34,7 +34,7 @@ class UserSettingsRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testFindOneByReturnsSettingsIfExists()
     {
         $settings = new SingleSettings();
-        $this->fixtureExecutor->execute(array($settings));
+        $this->fixtureExecutor->execute([$settings]);
         $result = $this->repository->findOneByUser($settings->getSettings()->getUser());
         $this->assertInstanceOf('JhFlexiTime\Entity\UserSettings', $result);
         $this->assertEquals($settings->getSettings()->getUser()->getEmail(), $result->getUser()->getEmail());

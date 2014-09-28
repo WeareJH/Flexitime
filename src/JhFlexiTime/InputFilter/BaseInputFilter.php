@@ -21,15 +21,15 @@ class BaseInputFilter extends ZfBaseInputFilter
      * @param array $data
      * @return bool
      */
-    protected function validateInputs(array $inputs, array $data = array())
+    protected function validateInputs(array $inputs, array $data = [])
     {
         // backwards compatibility
         if (empty($data)) {
             //this is the line changed from base class
             $data = $this->getValues();
         }
-        $this->validInputs = array();
-        $this->invalidInputs = array();
+        $this->validInputs = [];
+        $this->invalidInputs = [];
         $valid = true;
         foreach ($inputs as $name) {
             $input = $this->inputs[$name];

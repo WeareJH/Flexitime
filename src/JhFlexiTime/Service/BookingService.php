@@ -90,9 +90,9 @@ class BookingService
         $this->inputFilter->setData($data);
 
         if (!$this->inputFilter->isValid()) {
-            return array(
+            return [
                 'messages'  => $this->inputFilter->getMessages(),
-            );
+            ];
         }
 
         $booking = new Booking;
@@ -102,7 +102,7 @@ class BookingService
         $totalHours = $this->periodService->calculateHourDiff($booking->getStartTime(), $booking->getEndTime());
         $booking->setTotal($totalHours);
 
-        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, array('booking' => $booking));
+        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, ['booking' => $booking]);
 
         try {
             $this->objectManager->persist($booking);
@@ -111,7 +111,7 @@ class BookingService
            //log
         }
 
-        $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, array('booking' => $booking));
+        $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, ['booking' => $booking]);
 
         return $booking;
     }
@@ -165,10 +165,10 @@ class BookingService
             ];
         }
 
-        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, array('booking' => $booking));
+        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, ['booking' => $booking]);
         $this->objectManager->remove($booking);
         $this->objectManager->flush();
-        $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, array('booking' => $booking));
+        $this->getEventManager()->trigger(__FUNCTION__ . '.post', null, ['booking' => $booking]);
 
         return $booking;
     }
@@ -181,7 +181,7 @@ class BookingService
      */
     public function getBookingByUserAndDate($userId, DateTime $date)
     {
-        return $this->bookingRepository->findOneBy(array('date' => $date, 'user' => $userId));
+        return $this->bookingRepository->findOneBy(['date' => $date, 'user' => $userId]);
     }
 
     /**
@@ -199,16 +199,16 @@ class BookingService
 
         $bookedDays = $this->bookingRepository->findByUserAndMonth($user, $date);
 
-        $dates = array();
+        $dates = [];
         foreach ($period as $day) {
             $dayNum = $day->format('N');
 
             /* Excluding days 6 & 7 (Saturday & Sunday). */
             if ($dayNum < 6) {
-                $dates[$day->format('d-m-y')] = array(
+                $dates[$day->format('d-m-y')] = [
                     'date'      => $day,
                     'day_num'   => $dayNum
-                );
+                ];
             }
         }
 
@@ -221,15 +221,15 @@ class BookingService
 
         }
 
-        $weeks = array();
+        $weeks = [];
         $weekCounter = 0;
         $monthWorked = 0;
         foreach ($dates as $date) {
             if (!isset($weeks[$weekCounter])) {
-                $weeks[$weekCounter] = array(
-                    'dates'  => array($date),
+                $weeks[$weekCounter] = [
+                    'dates'  => [$date],
                     'workedHours'  => 0,
-                );
+                ];
 
             } else {
                 $weeks[$weekCounter]['dates'][] = $date;
@@ -258,14 +258,14 @@ class BookingService
             $monthBalance += ($weeks[$key]['workedHours'] - $totalHours);
         }
 
-        return array(
+        return [
             'weeks'             => $weeks,
-            'workedMonth'       => array(
+            'workedMonth'       => [
                 'availableHours'    => $monthAvailable,
                 'monthBalance'      => $monthBalance,
                 'hoursWorked'       => $monthWorked
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -296,9 +296,9 @@ class BookingService
      */
     public function setEventManager(EventManagerInterface $eventManager)
     {
-        $eventManager->addIdentifiers(array(
+        $eventManager->addIdentifiers([
             get_called_class()
-        ));
+        ]);
 
         $this->eventManager = $eventManager;
     }

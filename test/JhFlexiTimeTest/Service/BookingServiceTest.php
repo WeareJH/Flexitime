@@ -491,11 +491,11 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
                     'workedHours'   => 7.5
                 ],
             ],
-            'workedMonth'       => array(
+            'workedMonth'       => [
                 'availableHours'    => 165,
                 'monthBalance'      => -120,
                 'hoursWorked'       => 45
-            ),
+            ],
         ];
 
         $this->assertEquals($expected, $ret);

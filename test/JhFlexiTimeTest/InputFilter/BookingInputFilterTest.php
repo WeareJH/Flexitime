@@ -50,7 +50,7 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
         if (!$validates) {
             $validator->expects($this->any())
                 ->method('getMessages')
-                ->will($this->returnValue(array()));
+                ->will($this->returnValue([]));
         }
 
         return $validator;
@@ -86,55 +86,55 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
 
     public function optionsProvider()
     {
-        $input = array(
+        $input = [
             'user'      => 2,
             'date'      => '12-04-1988',
             'startTime' => '08:00',
             'endTime'   => '17:00',
             'notes'     => 'Some notes',
-        );
-        return array(
-            'less-than-min-start-time' => array(
+        ];
+        return [
+            'less-than-min-start-time' => [
                 $input,
-                array(
-                    'startTime' => array (
+                [
+                    'startTime' => [
                         'notGreaterThanInclusive' => 'The input is not greater or equal than \'10:00\'',
-                    ),
-                ),
+                    ],
+                ],
                 'getMinStartTime',
                 '10:00',
-            ),
-            'greater-than-max-start-time' =>array(
+            ],
+            'greater-than-max-start-time' =>[
                 $input,
-                array(
-                    'startTime' => array (
+                [
+                    'startTime' => [
                         'notLessThanInclusive' => 'The input is not less or equal than \'07:00\'',
-                    ),
-                ),
+                    ],
+                ],
                 'getMaxStartTime',
                 '07:00',
-            ),
-            'less-than-min-end-time' => array(
+            ],
+            'less-than-min-end-time' => [
                 $input,
-                array(
-                    'endTime' => array (
+                [
+                    'endTime' => [
                         'notGreaterThanInclusive' => 'The input is not greater or equal than \'17:15\'',
-                    ),
-                ),
+                    ],
+                ],
                 'getMinEndTime',
                 '17:15',
-            ),
-            'greater-than-max-end-time' =>array(
+            ],
+            'greater-than-max-end-time' =>[
                 $input,
-                array(
-                    'endTime' => array (
+                [
+                    'endTime' => [
                         'notLessThanInclusive' => 'The input is not less or equal than \'16:45\'',
-                    ),
-                ),
+                    ],
+                ],
                 'getMaxEndTime',
                 '16:45',
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -161,35 +161,35 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
 
     public function optionsValidProvider()
     {
-        $input = array(
+        $input = [
             'user'      => 2,
             'date'      => '12-04-1988',
             'startTime' => '08:00',
             'endTime'   => '17:00',
             'notes'     => 'Some notes',
-        );
-        return array(
-            'less-than-min-start-time' => array(
+        ];
+        return [
+            'less-than-min-start-time' => [
                 $input,
                 'getMinStartTime',
                 '08:00',
-            ),
-            'greater-than-max-start-time' =>array(
+            ],
+            'greater-than-max-start-time' =>[
                 $input,
                 'getMaxStartTime',
                 '08:00',
-            ),
-            'less-than-min-end-time' => array(
+            ],
+            'less-than-min-end-time' => [
                 $input,
                 'getMinEndTime',
                 '17:00',
-            ),
-            'greater-than-max-end-time' =>array(
+            ],
+            'greater-than-max-end-time' =>[
                 $input,
                 'getMaxEndTime',
                 '17:00',
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -199,194 +199,194 @@ class BookingInputFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function formDataProvider()
     {
-        return array(
-            'completely-valid-input' => array(
-                array(
+        return [
+            'completely-valid-input' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '08:00',
                     'endTime'   => '17:00',
                     'notes'     => 'Some notes',
-                ),
-                array(
+                ],
+                [
                     'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '08:00',
                     'endTime'   => '17:00',
                     'notes'     => 'Some notes',
-                ),
+                ],
                 null,
-            ),
-            'valid-time-low-boundary' => array(
-                array(
+            ],
+            'valid-time-low-boundary' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '07:00',
                     'endTime'   => '16:00',
                     'notes'     => 'Some notes',
-                ),
-                array(
+                ],
+                [
                     'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '07:00',
                     'endTime'   => '16:00',
                     'notes'     => 'Some notes',
-                ),
+                ],
                 null,
-            ),
-            'valid-time-high-boundary' => array(
-                array(
+            ],
+            'valid-time-high-boundary' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '10:00',
                     'endTime'   => '19:00',
                     'notes'     => 'Some notes',
-                ),
-                array(
+                ],
+                [
                     'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '10:00',
                     'endTime'   => '19:00',
                     'notes'     => 'Some notes',
-                ),
+                ],
                 null,
-            ),
-            'space-padded-valid-input' => array(
-                array(
+            ],
+            'space-padded-valid-input' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
                     'notes'     => '    Some notes   ',
-                ),
-                array(
+                ],
+                [
                     'user'      => 2,
                     'date'      => new \DateTime('12-04-1988'),
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
                     'notes'     => 'Some notes',
-                ),
+                ],
                 null,
-            ),
-            'invalid-date-format' => array(
-                array(
+            ],
+            'invalid-date-format' => [
+                [
                     'user'      => 2,
                     'date'      => '12-not-a-month-2014',
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
-                ),
+                ],
                 null,
-                array(
-                    'date' => array (
+                [
+                    'date' => [
                         'dateInvalidDate' => 'The input does not appear to be a valid date',
                         'dateFalseFormat' => 'The input does not fit the date format \'d-m-Y\'',
-                    ),
-                ),
-            ),
-            'invalid-date' => array(
-                array(
+                    ],
+                ],
+            ],
+            'invalid-date' => [
+                [
                     'user'      => 2,
                     'date'      => 'not-a-date',
                     'startTime' => '07:00',
                     'endTime'   => '17:00',
-                ),
+                ],
                 null,
-                array(
-                    'date' => array (
+                [
+                    'date' => [
                         'dateInvalidDate' => 'The input does not appear to be a valid date',
-                    ),
-                ),
-            ),
-            'greater-than-time' => array(
-                array(
+                    ],
+                ],
+            ],
+            'greater-than-time' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '10:01',
                     'endTime'   => '19:01',
-                ),
+                ],
                 null,
-                array(
-                    'startTime' => array (
+                [
+                    'startTime' => [
                         //'notLessThanInclusive' => 'The input is not less or equal than \'10:00\'',
                         'dateStepNotStep' => 'The input is not a valid step',
-                    ),
-                    'endTime' => array (
+                    ],
+                    'endTime' => [
                         //'notLessThanInclusive' => 'The input is not less or equal than \'19:00\'',
                         'dateStepNotStep' => 'The input is not a valid step',
-                    ),
-                ),
-            ),
-            'invalid-time' => array(
-                array(
+                    ],
+                ],
+            ],
+            'invalid-time' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => 'not-a-time',
                     'endTime'   => 'not-a-time',
-                ),
+                ],
                 null,
-                array(
-                    'startTime' => array(
+                [
+                    'startTime' => [
                         'dateInvalidDate' => 'The input does not appear to be a valid date',
                         //'notLessThanInclusive' => 'The input is not less or equal than \'10:00\'',
-                    ),
-                    'endTime' => array(
+                    ],
+                    'endTime' => [
                         'dateInvalidDate' => 'The input does not appear to be a valid date',
                         //'notLessThanInclusive' => 'The input is not less or equal than \'19:00\'',
-                    ),
-                ),
-            ),
-            'message-to-long' => array(
-                array(
+                    ],
+                ],
+            ],
+            'message-to-long' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '09:00',
                     'endTime'   => '17:00',
                     'notes'     => $this->getLongString()
-                ),
+                ],
                 null,
-                array(
-                    'notes' => array(
+                [
+                    'notes' => [
                         'stringLengthTooLong' => 'The input is more than 512 characters long',
-                    ),
-                ),
-            ),
-            'invalid-time-step' => array(
-                array(
+                    ],
+                ],
+            ],
+            'invalid-time-step' => [
+                [
                     'user'      => 2,
                     'date'      => '12-04-1988',
                     'startTime' => '09:04',
                     'endTime'   => '17:07',
-                ),
+                ],
                 null,
-                array(
-                    'startTime' => array(
+                [
+                    'startTime' => [
                         'dateStepNotStep' => 'The input is not a valid step',
-                    ),
-                    'endTime' => array(
+                    ],
+                    'endTime' => [
                         'dateStepNotStep' => 'The input is not a valid step',
-                    ),
-                ),
-            ),
-            'required-fields' => array(
-                array(
-                ),
+                    ],
+                ],
+            ],
+            'required-fields' => [
+                [
+                ],
                 null,
-                array(
-                    'user' => array(
+                [
+                    'user' => [
                         'isEmpty' => 'Value is required and can\'t be empty',
-                    ),
-                    'date' => array(
+                    ],
+                    'date' => [
                         'isEmpty' => 'Value is required and can\'t be empty',
-                    ),
-                    'startTime' => array(
+                    ],
+                    'startTime' => [
                         'isEmpty' => 'Value is required and can\'t be empty',
-                    ),
-                    'endTime' => array(
+                    ],
+                    'endTime' => [
                         'isEmpty' => 'Value is required and can\'t be empty',
-                    ),
-                ),
-            ),
-        );
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function testStartTimeEndTimeSameTime()

@@ -77,13 +77,13 @@ class RunningBalanceTest extends \PHPUnit_Framework_TestCase
      */
     public function addBalanceProvider()
     {
-        return array(
-            array(0,    2,      2),
-            array(100,  10,     110),
-            array(230,  -10,    220),
-            array(-20,  20,     0),
-            array(-20,  -20,    -40),
-        );
+        return [
+            [0,    2,      2],
+            [100,  10,     110],
+            [230,  -10,    220],
+            [-20,  20,     0],
+            [-20,  -20,    -40],
+        ];
     }
 
     /**
@@ -105,13 +105,13 @@ class RunningBalanceTest extends \PHPUnit_Framework_TestCase
      */
     public function subtractBalanceProvider()
     {
-        return array(
-            array(0,    2,      -2),
-            array(100,  10,     90),
-            array(230,  -10,    240),
-            array(-20,  20,     -40),
-            array(-20,  -20,    0),
-        );
+        return [
+            [0,    2,      -2],
+            [100,  10,     90],
+            [230,  -10,    240],
+            [-20,  20,     -40],
+            [-20,  -20,    0],
+        ];
     }
 
 
@@ -128,11 +128,11 @@ class RunningBalanceTest extends \PHPUnit_Framework_TestCase
              ->method('getId')
              ->will($this->returnValue(1));
 
-        $expected = array(
+        $expected = [
             'id'        => 1,
             'user'      => 1,
             'balance'   => 2,
-        );
+        ];
 
         $this->setId($this->runningBalance, 1);
         $this->runningBalance

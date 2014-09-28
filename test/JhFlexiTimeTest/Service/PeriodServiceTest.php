@@ -31,7 +31,7 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
 
     /**
      * Create Service
@@ -105,20 +105,20 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         /**
          *  Start Time | End Time | Expected Hour Diff
          */
-        return array(
-            array(new DateTime("09:00"),   new DateTime("10:00"), 0),
-            array(new DateTime("09:00"),   new DateTime("9:30"), -0.5),
-            array(new DateTime("09:00"),   new DateTime("17:30"), 7.5),
-            array(new DateTime("07:00"),   new DateTime("17:30"), 9.5),
+        return [
+            [new DateTime("09:00"),   new DateTime("10:00"), 0],
+            [new DateTime("09:00"),   new DateTime("9:30"), -0.5],
+            [new DateTime("09:00"),   new DateTime("17:30"), 7.5],
+            [new DateTime("07:00"),   new DateTime("17:30"), 9.5],
             //only calculates hours not days
-            array(new DateTime("yesterday 09:00"),   new DateTime("17:30"), 7.5),
-            array(new DateTime("yesterday 09:00"),   new DateTime("tomorrow 17:30"), 7.5),
+            [new DateTime("yesterday 09:00"),   new DateTime("17:30"), 7.5],
+            [new DateTime("yesterday 09:00"),   new DateTime("tomorrow 17:30"), 7.5],
 
-            array(new DateTime("09:15"),   new DateTime("17:30"), 7.25),
-            array(new DateTime("09:00"),   new DateTime("17:45"), 7.75),
-            array(new DateTime("09:20"),   new DateTime("17:00"), 6.67),
-            array(new DateTime("09:25"),   new DateTime("17:00"), 6.58),
-        );
+            [new DateTime("09:15"),   new DateTime("17:30"), 7.25],
+            [new DateTime("09:00"),   new DateTime("17:45"), 7.75],
+            [new DateTime("09:20"),   new DateTime("17:00"), 6.67],
+            [new DateTime("09:25"),   new DateTime("17:00"), 6.58],
+        ];
     }
 
     /**
@@ -141,11 +141,11 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         /**
          *  Date | Expected Remaining Hours
          */
-        return array(
-            array(new DateTime("10 March 2014"),   112.5),
-            array(new DateTime("01 January 2014"), 165.00),
-            array(new DateTime("27 April 2014"),   22.5),
-        );
+        return [
+            [new DateTime("10 March 2014"),   112.5],
+            [new DateTime("01 January 2014"), 165.00],
+            [new DateTime("27 April 2014"),   22.5],
+        ];
     }
 
     /**
@@ -168,13 +168,13 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         /**
          *  Date | Expected Total Month Hours
          */
-        return array(
-            array(new DateTime("10 March 2014"), 157.5),
-            array(new DateTime("01 March 2014 00:00"), 157.5),
-            array(new DateTime("31 March 2014 23:59:59"), 157.5),
-            array(new DateTime("01 April 1988"), 157.5),
-            array(new DateTime("08 February 2011"), 150),
-        );
+        return [
+            [new DateTime("10 March 2014"), 157.5],
+            [new DateTime("01 March 2014 00:00"), 157.5],
+            [new DateTime("31 March 2014 23:59:59"), 157.5],
+            [new DateTime("01 April 1988"), 157.5],
+            [new DateTime("08 February 2011"), 150],
+        ];
     }
 
     /**
@@ -197,13 +197,13 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         /**
          *  Date | Expected Total Month Hours
          */
-        return array(
-            array(new DateTime("10 March 2014"), 45),
-            array(new DateTime("01 March 2014 00:00"), 0),
-            array(new DateTime("31 March 2014 23:59:59"), 157.5),
-            array(new DateTime("01 April 1988"), 7.5),
-            array(new DateTime("08 February 2011"), 45),
-        );
+        return [
+            [new DateTime("10 March 2014"), 45],
+            [new DateTime("01 March 2014 00:00"), 0],
+            [new DateTime("31 March 2014 23:59:59"), 157.5],
+            [new DateTime("01 April 1988"), 7.5],
+            [new DateTime("08 February 2011"), 45],
+        ];
     }
 
     /**

@@ -35,8 +35,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
     public function findAllByUser(UserInterface $user)
     {
         return $this->bookingRepository->findBy(
-            array('user' => $user),
-            array('date' => 'ASC'),
+            ['user' => $user],
+            ['date' => 'ASC'],
             null,
             null
         );
@@ -54,11 +54,11 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
         $firstDay = new DateTime(sprintf('first day of %s', $date->format('F Y')));
         $lastDay = new DateTime(sprintf('last day of %s', $date->format('F Y')));
         
-        $params = array(
+        $params = [
             'user'      => $user,
             'firstDay'  => $firstDay->format('Y-m-d'),
             'lastDay'   => $lastDay->format('Y-m-d')
-        );
+        ];
         
         $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('b')
@@ -84,11 +84,11 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
         $firstDay   = new DateTime(sprintf('first day of %s', $month->format('F Y')));
         $lastDay    = new DateTime(sprintf('last day of %s', $month->format('F Y')));
 
-        $params = array(
+        $params = [
             'user'          => $user,
             'firstDay'      => $firstDay->format('Y-m-d'),
             'lastDay'       => $lastDay->format('Y-m-d')
-        );
+        ];
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('b')
@@ -117,11 +117,11 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
         $firstDay = new DateTime(sprintf('first day of %s', $date->format('F')));
         $currentDay = new DateTime($date->format('Y-m-d'));
 
-        $params = array(
+        $params = [
             'user'          => $user,
             'firstDay'      => $firstDay->format('Y-m-d'),
             'currentDay'    => $currentDay->format('Y-m-d')
-        );
+        ];
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('sum(b.total)')
@@ -153,11 +153,11 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
         $firstDay   = new DateTime(sprintf('first day of %s', $date->format('F')));
         $lastDay    = new DateTime(sprintf('last day of %s', $date->format('F')));
 
-        $params = array(
+        $params = [
             'user'      => $user,
             'firstDay'  => $firstDay->format('Y-m-d'),
             'lastDay'   => $lastDay->format('Y-m-d')
-        );
+        ];
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('sum(b.total)')
@@ -184,11 +184,11 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      */
     public function getTotalBookedBetweenByUser(UserInterface $user, DateTime $startDate, DateTime $endDate)
     {
-        $params = array(
+        $params = [
             'user'      => $user,
             'firstDay'  => $startDate->format('Y-m-d'),
             'lastDay'   => $endDate->format('Y-m-d')
-        );
+        ];
 
         $qb = $this->bookingRepository->createQueryBuilder('b');
         $qb->select('sum(b.total)')

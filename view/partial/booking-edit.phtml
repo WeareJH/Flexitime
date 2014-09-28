@@ -1,28 +1,28 @@
-<tr class="edit-booking hidden" data-date="<?php echo $day['date']->format('d-m-Y');?>">
+<tr class="edit-booking hidden" data-date="<?= $day['date']->format('d-m-Y');?>">
     <td></td>
     <td colspan="5">
         <?php $form = $this->form;
-        $form->setAttribute('action', $this->url('flexi-time', array('action' => 'add')));
+        $form->setAttribute('action', $this->url('flexi-time', ['action' => 'add']));
         $form->prepare();
         echo $this->form()->openTag($form); ?>
         <div class="row">
             <div class="col-sm-6">
-                <?php echo $this->formHidden($form->get('booking')->get('user')); ?>
-                <?php echo $this->formHidden($form->get('booking')->get('id')); ?>
+                <?= $this->formHidden($form->get('booking')->get('user')); ?>
+                <?= $this->formHidden($form->get('booking')->get('id')); ?>
                 <div class="form-group hidden <?php if ($this->formElementErrors($form->get('booking')->get('date'))) echo 'has-error'; ?>">
-                    <?php echo $this->formLabel($form->get('booking')->get('date')); ?>
+                    <?= $this->formLabel($form->get('booking')->get('date')); ?>
                     <div class="col-sm-3">
-                        <?php echo $this->formText($form->get('booking')->get('date')); ?>
+                        <?= $this->formText($form->get('booking')->get('date')); ?>
                     </div>
 
                 </div>
 
                 <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('startTime'))) echo 'has-error'; ?>">
-                    <?php echo $this->formLabel($form->get('booking')->get('startTime')); ?>
+                    <?= $this->formLabel($form->get('booking')->get('startTime')); ?>
                     <div class="col-sm-8">
 
                         <div class='input-group date timepicker' id='start-timepicker'>
-                            <?php echo $this->formTime($form->get('booking')->get('startTime')); ?>
+                            <?= $this->formTime($form->get('booking')->get('startTime')); ?>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                         </div>
                     </div>
@@ -30,11 +30,11 @@
                 </div>
 
                 <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('endTime'))) echo 'has-error'; ?>">
-                    <?php echo $this->formLabel($form->get('booking')->get('endTime')); ?>
+                    <?= $this->formLabel($form->get('booking')->get('endTime')); ?>
                     <div class="col-sm-8">
 
                         <div class='input-group date timepicker' id='end-timepicker'>
-                            <?php echo $this->formTime($form->get('booking')->get('endTime')); ?>
+                            <?= $this->formTime($form->get('booking')->get('endTime')); ?>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                         </div>
                     </div>
@@ -43,9 +43,9 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('notes'))) echo 'has-error'; ?>">
-                    <?php echo $this->formLabel($form->get('booking')->get('notes')); ?>
+                    <?= $this->formLabel($form->get('booking')->get('notes')); ?>
                     <div class="col-sm-8">
-                        <?php echo $this->formTextArea($form->get('booking')->get('notes')); ?>
+                        <?= $this->formTextArea($form->get('booking')->get('notes')); ?>
                     </div>
                 </div>
                 <div class="col-sm-offset-3 btn-group pull-right">
@@ -55,7 +55,7 @@
                 </div>
             </div>
         </div>
-        <?php echo $this->form()->closeTag(); ?>
+        <?= $this->form()->closeTag(); ?>
         <div class="alert alert-danger time-book-errors hidden">
             <ul class="form-errors">
             </ul>

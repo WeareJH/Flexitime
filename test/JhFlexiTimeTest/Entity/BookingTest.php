@@ -47,11 +47,11 @@ class BookingTest extends \PHPUnit_Framework_TestCase
      */
     public function dateSetterGetterProvider()
     {
-        return array(
-            array('date',       new DateTime("today"),          new DateTime("24 March 2014")),
-            array('startTime',  new DateTime("today 09:00"),    new DateTime("24 March 2014 10:00")),
-            array('endTime',    new DateTime("today 17:30"),    new DateTime("24 March 2014 18:30")),
-        );
+        return [
+            ['date',       new DateTime("today"),          new DateTime("24 March 2014")],
+            ['startTime',  new DateTime("today 09:00"),    new DateTime("24 March 2014 10:00")],
+            ['endTime',    new DateTime("today 17:30"),    new DateTime("24 March 2014 18:30")],
+        ];
     }
 
     /**
@@ -79,10 +79,10 @@ class BookingTest extends \PHPUnit_Framework_TestCase
      */
     public function numberSetterGetterProvider()
     {
-        return array(
-            array('total',      0,  7.5),
-            array('balance',    0,  0),
-        );
+        return [
+            ['total',      0,  7.5],
+            ['balance',    0,  0],
+        ];
     }
 
     /**
@@ -108,17 +108,17 @@ class BookingTest extends \PHPUnit_Framework_TestCase
      */
     public function setterGetterProvider()
     {
-        return array(
-            array('user',       $this->getMock('ZfcUser\Entity\UserInterface')),
-            array('notes',      'Why You even Unit Testing bro?'),
-        );
+        return [
+            ['user',       $this->getMock('ZfcUser\Entity\UserInterface')],
+            ['notes',      'Why You even Unit Testing bro?'],
+        ];
     }
 
     public function testJsonSerializeWithModifiedValues()
     {
         $date = new DateTime("24 March 2014");
 
-        $expected = array(
+        $expected = [
             'id'        => $date->getTimestamp() . "-2",
             'date'      => $date->format('d-m-Y'),
             'startTime' => '11:00',
@@ -127,7 +127,7 @@ class BookingTest extends \PHPUnit_Framework_TestCase
             'balance'   => 2.5,
             'notes'     => 'Just point and click and see if it works. deploy?!',
             'user'      => 2
-        );
+        ];
 
         $user = $this->getMock('ZfcUser\Entity\UserInterface');
         $user->expects($this->exactly(2))

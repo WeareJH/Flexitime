@@ -116,10 +116,10 @@ class RunningBalance implements JsonSerializable
             throw new \Exception('User Must be an instance of \ZfcUser\Entity\UserInterface');
         }
 
-        return array(
+        return [
             'id'        => $this->id,
             'user'      => $this->user->getId(),
             'balance'   => $this->balance,
-        );
+        ];
     }
 }
