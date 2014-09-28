@@ -414,21 +414,22 @@ $(function() {
     };
 
     var updateSideTotals = function(totals) {
-
+        
         var sideTotals      = $("#totals");
         var workedToDate    = sideTotals.find(".worked-to-date");
         var balanceMonth    = sideTotals.find(".balance-month span b");
         var runningBalance  = $("#running-balance").find(".balance-running span b");
+        var balanceForward  = $("#running-balance").find(".balance-forward span b");
 
         workedToDate.text(totals.monthTotalWorkedHours + " / " + totals.monthTotalHours);
         signTotal(totals.monthBalance, balanceMonth, true);
         signTotal(totals.runningBalance, runningBalance, true);
+        signTotal(totals.balanceForward, balanceForward, false);
 
         var totalsBrief     = $("#totals-brief");
         var workedToDate    = totalsBrief.find(".worked-to-date");
         var balanceMonth    = totalsBrief.find(".balance-month");
         var runningBalance  = totalsBrief.find(".balance-running");
-
 
         workedToDate.text(totals.monthTotalWorkedHours);
         signTotal(totals.monthBalance, balanceMonth, false);
