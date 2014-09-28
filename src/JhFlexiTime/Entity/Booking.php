@@ -220,7 +220,7 @@ class Booking implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'id'        => $this->getId(),
             'user'      => $this->user->getId(),
             'date'      => $this->date->format('d-m-Y'),
@@ -229,6 +229,6 @@ class Booking implements JsonSerializable
             'total'     => $this->total,
             'balance'   => $this->balance,
             'notes'     => $this->notes,
-        );
+        ];
     }
 }

@@ -48,14 +48,14 @@ class BookingAdminController extends AbstractActionController
      *
      * @var array
      */
-    protected $acceptCriteria = array(
-        'Zend\View\Model\JsonModel' => array(
+    protected $acceptCriteria = [
+        'Zend\View\Model\JsonModel' => [
             'application/json',
-        ),
-        'Zend\View\Model\ViewModel' => array(
+        ],
+        'Zend\View\Model\ViewModel' => [
             'text/html',
-        ),
-    );
+        ],
+    ];
 
     /**
      * Get All Users
@@ -73,10 +73,10 @@ class BookingAdminController extends AbstractActionController
             $gravatarImages[$user->getEmail()] = $url;
         }
 
-        return new JsonModel(array(
+        return new JsonModel([
            'users'  => $users,
            'images' => $gravatarImages,
-        ));
+        ]);
     }
 
     /**
@@ -96,10 +96,10 @@ class BookingAdminController extends AbstractActionController
 
             $user = $this->userRepository->find($userId);
             if (!$user) {
-                return $viewModel->setVariables(array(
+                return $viewModel->setVariables([
                     'success' => false,
                     'message' => 'User does not exist',
-                ));
+                ]);
             }
 
             $records        = $this->bookingService->getUserBookingsForMonth($user, $period);
@@ -107,16 +107,16 @@ class BookingAdminController extends AbstractActionController
             $totals         = $this->timeCalculatorService->getTotals($user, $period);
 
             $viewModel = $this->acceptableViewModelSelector($this->acceptCriteria);
-            $viewModel->setVariables(array(
-                'bookings' => array(
+            $viewModel->setVariables([
+                'bookings' => [
                     'records'       => $records,
                     'totals'        => $totals,
                     'user'          => $user,
-                ),
+                ],
                 'pagination' => $pagination,
                 'date'       => $period,
                 'today'      => new \DateTime("today"),
-            ));
+            ]);
         }
 
         return $viewModel;

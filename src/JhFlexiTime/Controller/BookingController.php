@@ -65,11 +65,11 @@ class BookingController extends AbstractActionController
         $totals         = $this->timeCalculatorService->getTotals($user, $period);
 
         return new ViewModel([
-            'bookings' => array(
+            'bookings' => [
                 'records'       => $records,
                 'totals'        => $totals,
                 'user'          => $user,
-            ),
+            ],
             'pagination' => $pagination,
             'date'       => $period,
             'today'      => new \DateTime("today"),

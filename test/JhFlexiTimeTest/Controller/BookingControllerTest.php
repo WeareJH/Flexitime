@@ -40,12 +40,12 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
         );
 
         $this->request      = new Request();
-        $this->routeMatch   = new RouteMatch(array());
+        $this->routeMatch   = new RouteMatch([]);
         $this->event        = new MvcEvent();
 
         $serviceManager     = ServiceManagerFactory::getServiceManager();
         $config             = $serviceManager->get('Config');
-        $routerConfig       = isset($config['router']) ? $config['router'] : array();
+        $routerConfig       = isset($config['router']) ? $config['router'] : [];
         $router             = HttpRouter::factory($routerConfig);
         $this->event->setRouter($router);
         $this->event->setRouteMatch($this->routeMatch);
@@ -84,7 +84,7 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
             ->method($method)
             ->will($this->returnValue($return));
 
-        call_user_func_array(array($expects, "with"), $params);
+        call_user_func_array([$expects, "with"], $params);
     }
 
     public function configureMockTimeCalculatorService($method, array $params, $return)
@@ -93,7 +93,7 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
             ->method($method)
             ->will($this->returnValue($return));
 
-        call_user_func_array(array($expects, "with"), $params);
+        call_user_func_array([$expects, "with"], $params);
     }
 
     public function getBookingService()
@@ -139,9 +139,9 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
         $date       = new DateTime("25 March 2014");
 
         $this->controller->setDate($date);
-        $this->configureMockBookingService('getUserBookingsForMonth', array($this->user, $date), array($booking));
-        $this->configureMockBookingService('getPagination', array($date), array());
-        $this->configureMockTimeCalculatorService('getTotals', array($this->user, $date), array('some-total', 20));
+        $this->configureMockBookingService('getUserBookingsForMonth', [$this->user, $date], [$booking]);
+        $this->configureMockBookingService('getPagination', [$date], []);
+        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $date], ['some-total', 20]);
 
         $this->routeMatch->setParam('action', 'list');
         $result   = $this->controller->dispatch($this->request);
@@ -153,13 +153,13 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->pagination));
         $this->assertTrue(isset($result->date));
 
-        $expectedTime = array(
-            'records' => array($booking),
-            'totals'  => array('some-total', 20),
+        $expectedTime = [
+            'records' => [$booking],
+            'totals'  => ['some-total', 20],
             'user'    => $this->user,
-        );
+        ];
         $this->assertEquals($expectedTime, $result->getVariable('bookings'));
-        $this->assertEquals(array(), $result->getVariable('pagination'));
+        $this->assertEquals([], $result->getVariable('pagination'));
         $this->assertSame($date, $result->getVariable('date'));
     }
 }

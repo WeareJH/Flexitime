@@ -17,10 +17,10 @@ class BookingOptionsFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryReturnsInjectedOptions()
     {
-        $config = array('min_start_time' => '10:00');
+        $config = ['min_start_time' => '10:00'];
 
         $locator = new ServiceManager();
-        $locator->setService('Config', array('flexi' => array('booking_options' => $config)));
+        $locator->setService('Config', ['flexi' => ['booking_options' => $config]]);
 
         $factory = new BookingOptionsFactory();
         $this->assertEquals('10:00', $factory->createService($locator)->getMinStartTime());
@@ -31,10 +31,10 @@ class BookingOptionsFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryReturnsDefaultOptionsWithEmptyConfig()
     {
-        $config = array();
+        $config = [];
 
         $locator = new ServiceManager();
-        $locator->setService('Config', array('flexi' => array('booking_options' => $config)));
+        $locator->setService('Config', ['flexi' => ['booking_options' => $config]]);
 
         $factory = new BookingOptionsFactory();
         $this->assertFalse($factory->createService($locator)->getMinStartTime());
@@ -45,7 +45,7 @@ class BookingOptionsFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryReturnsDefaultOptionsWithNoConfig()
     {
-        $config = array();
+        $config = [];
 
         $locator = new ServiceManager();
         $locator->setService('Config', $config);

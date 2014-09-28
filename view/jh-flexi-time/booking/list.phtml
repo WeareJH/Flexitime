@@ -10,18 +10,18 @@ $this->headTitle($title); ?>
         <div class="text-center">
 
             <h1>
-                <a class="m-pager" href="<?php echo $this->url('flexi-time', [], ['query' => $this->pagination['prev']]) ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
-                <?php echo strtoupper($this->date->format('F Y')) ?>
-                <a class="m-pager" href="<?php echo $this->url('flexi-time', [], ['query' => $this->pagination['next']]) ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                <a class="m-pager" href="<?= $this->url('flexi-time/list', [], ['query' => $this->pagination['prev']]) ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                <?= strtoupper($this->date->format('F Y')) ?>
+                <a class="m-pager" href="<?= $this->url('flexi-time/list', [], ['query' => $this->pagination['next']]) ?>"><span class="glyphicon glyphicon-chevron-right"></span></a>
             </h1>
 
             <?php $totals = $this->bookings['totals']; ?>
             <div id="totals-brief">
                 <p>
-                    <span class="worked-to-date"><?php echo $totals['monthTotalWorkedHours']; ?></span>&nbsp;&nbsp;/&nbsp;&nbsp;
-                    <span class="month-available"><?php echo $totals['monthTotalHours']; ?></span>&nbsp; &bull; &nbsp;
-                    <span class="balance-month"><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['monthBalance']); ?> </span> &nbsp; &bull; &nbsp;
-                    <span class="balance-running"><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['runningBalance']); ?> </span>
+                    <span class="worked-to-date"><?= $totals['monthTotalWorkedHours']; ?></span>&nbsp;&nbsp;/&nbsp;&nbsp;
+                    <span class="month-available"><?= $totals['monthTotalHours']; ?></span>&nbsp; &bull; &nbsp;
+                    <span class="balance-month"><?= ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $totals['monthBalance']); ?> </span> &nbsp; &bull; &nbsp;
+                    <span class="balance-running"><?= ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $totals['runningBalance']); ?> </span>
                 </p>
             </div>
         </div>
@@ -34,7 +34,7 @@ $this->headTitle($title); ?>
         <div class="col-container">
             <?php $weeks = $this->bookings['records']['weeks']; ?>
             <?php foreach($weeks as $key => $week): ?>
-                <?php echo $this->partial('booking/week', array('week' => $week, 'weekNum' => $key, 'form' => $this->form)); ?>
+                <?= $this->partial('booking/week', ['week' => $week, 'weekNum' => $key, 'form' => $this->form]); ?>
             <?php endforeach; ?>
         </div>
     </div>
@@ -44,19 +44,19 @@ $this->headTitle($title); ?>
             <table class="table" id="totals">
                 <tbody>
                     <tr>
-                        <td><?php echo $this->translate('Hours Worked this Month') ?></td>
-                        <td class="worked-to-date total-right"><?php echo $totals['monthTotalWorkedHours']; ?> / <?php echo $totals['monthTotalHours']; ?></td>
+                        <td><?= $this->translate('Hours Worked this Month') ?></td>
+                        <td class="worked-to-date total-right"><?= $totals['monthTotalWorkedHours']; ?> / <?= $totals['monthTotalHours']; ?></td>
                     </tr>
                     <tr>
-                        <td><?php echo $this->translate('Hours Remaining this Month') ?></td>
-                        <td class="total-right"><?php echo (float) $totals['monthRemainingHours']; ?></td>
+                        <td><?= $this->translate('Hours Remaining this Month') ?></td>
+                        <td class="total-right"><?= (float) $totals['monthRemainingHours']; ?></td>
                     </tr>
 
                     <tr>
-                        <td><?php echo $this->translate('Month Balance') ?></td>
+                        <td><?= $this->translate('Month Balance') ?></td>
                         <td class="balance-month total-right">
-                            <span class="<?php echo ($totals['monthBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                                <b><?php echo ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['monthBalance']); ?></b>
+                            <span class="<?= ($totals['monthBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                                <b><?= ($totals['monthBalance'] >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $totals['monthBalance']); ?></b>
                             </span>
                         </td>
                     </tr>
@@ -65,22 +65,22 @@ $this->headTitle($title); ?>
 
             <table class="table" id="running-balance">
                 <thead>
-                    <tr><th colspan="2"><?php echo $this->today->format('F j, Y'); ?></th></tr>
+                    <tr><th colspan="2"><?= $this->today->format('F j, Y'); ?></th></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><?php echo $this->translate('Running Balance') ?></td>
+                        <td><?= $this->translate('Running Balance') ?></td>
                         <td class="balance-running total-right">
-                            <span class="<?php echo ($totals['runningBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                                <b><?php echo ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['runningBalance']); ?></b>
+                            <span class="<?= ($totals['runningBalance'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                                <b><?= ($totals['runningBalance'] >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $totals['runningBalance']); ?></b>
                             </span>
                         </td>
                     </tr>
                     <tr>
-                        <td><?php echo $this->translate('Balance Forward') ?></td>
+                        <td><?= $this->translate('Balance Forward') ?></td>
                         <td class="balance-forward total-right">
-                            <span class="<?php echo ($totals['balanceForward'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
-                                <b><?php echo ($totals['balanceForward'] >= 0) ? '+ ' : ''; ?><?php echo str_replace("-", "- ", $totals['balanceForward']); ?></b>
+                            <span class="<?= ($totals['balanceForward'] >= 0) ? 'balance-success' : 'balance-danger'; ?>">
+                                <b><?= ($totals['balanceForward'] >= 0) ? '+ ' : ''; ?><?= str_replace("-", "- ", $totals['balanceForward']); ?></b>
                             </span>
                         </td>
                     </tr>
@@ -95,25 +95,25 @@ $this->headTitle($title); ?>
     <div class="row">
         <div class="col-sm-12">
             <?php $form = $this->form;
-            $form->setAttribute('action', $this->url('flexi-time', array('action' => 'add')));
+            $form->setAttribute('action', $this->url('flexi-time', ['action' => 'add']));
             $form->prepare();
             echo $this->form()->openTag($form); ?>
 
-            <?php echo $this->formHidden($form->get('booking')->get('id')); ?>
+            <?= $this->formHidden($form->get('booking')->get('id')); ?>
             <div class="form-group hidden <?php if ($this->formElementErrors($form->get('booking')->get('date'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('booking')->get('date')); ?>
+                <?= $this->formLabel($form->get('booking')->get('date')); ?>
                 <div class="col-sm-3">
-                    <?php echo $this->formText($form->get('booking')->get('date')); ?>
+                    <?= $this->formText($form->get('booking')->get('date')); ?>
                 </div>
 
             </div>
 
             <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('startTime'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('booking')->get('startTime')); ?>
+                <?= $this->formLabel($form->get('booking')->get('startTime')); ?>
                 <div class="col-sm-8">
 
                     <div class='input-group date timepicker' id='start-timepicker'>
-                        <?php echo $this->formText($form->get('booking')->get('startTime')); ?>
+                        <?= $this->formText($form->get('booking')->get('startTime')); ?>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                     </div>
                 </div>
@@ -121,11 +121,11 @@ $this->headTitle($title); ?>
             </div>
 
             <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('endTime'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('booking')->get('endTime')); ?>
+                <?= $this->formLabel($form->get('booking')->get('endTime')); ?>
                 <div class="col-sm-8">
 
                     <div class='input-group date timepicker' id='end-timepicker'>
-                        <?php echo $this->formText($form->get('booking')->get('endTime')); ?>
+                        <?= $this->formText($form->get('booking')->get('endTime')); ?>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                     </div>
                 </div>
@@ -133,9 +133,9 @@ $this->headTitle($title); ?>
             </div>
 
             <div class="form-group <?php if ($this->formElementErrors($form->get('booking')->get('notes'))) echo 'has-error'; ?>">
-                <?php echo $this->formLabel($form->get('booking')->get('notes')); ?>
+                <?= $this->formLabel($form->get('booking')->get('notes')); ?>
                 <div class="col-sm-8">
-                    <?php echo $this->formTextArea($form->get('booking')->get('notes')); ?>
+                    <?= $this->formTextArea($form->get('booking')->get('notes')); ?>
                 </div>
 
             </div>
@@ -146,7 +146,7 @@ $this->headTitle($title); ?>
                 </div>
             </div>
 
-            <?php echo $this->form()->closeTag(); ?>
+            <?= $this->form()->closeTag(); ?>
 
             <div id="time-book-errors" class="alert alert-danger hidden">
                 <ul id="form-errors">

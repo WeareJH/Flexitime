@@ -32,6 +32,6 @@ class UserSettingsRepository implements UserSettingsRepositoryInterface
      */
     public function findOneByUser(UserInterface $user)
     {
-        return $this->userSettingsRepository->findOneBy(array('user' => $user));
+        return $this->userSettingsRepository->findOneBy(['user' => $user]);
     }
 }

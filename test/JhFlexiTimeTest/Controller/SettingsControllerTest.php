@@ -28,21 +28,21 @@ class SettingsControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp()
     {
-        $options = new BookingOptions(array(
+        $options = new BookingOptions([
             'min_start_time'    => '07:00',
             'max_start_time'    => '10:00',
             'min_end_time'      => '16:00',
             'max_end_time'      => '17:00',
-        ));
+        ]);
         $this->controller = new SettingsController($options);
 
         $this->request      = new Request();
-        $this->routeMatch   = new RouteMatch(array('controller' => 'settings'));
+        $this->routeMatch   = new RouteMatch(['controller' => 'settings']);
         $this->event        = new MvcEvent();
 
         $serviceManager     = ServiceManagerFactory::getServiceManager();
         $config             = $serviceManager->get('Config');
-        $routerConfig       = isset($config['router']) ? $config['router'] : array();
+        $routerConfig       = isset($config['router']) ? $config['router'] : [];
         $router             = HttpRouter::factory($routerConfig);
         $this->event->setRouter($router);
         $this->event->setRouteMatch($this->routeMatch);
@@ -86,12 +86,12 @@ class SettingsControllerTest extends AbstractHttpControllerTestCase
         $this->assertTrue(isset($result->success));
         $this->assertTrue(isset($result->settings));
 
-        $expectedSettings = array(
+        $expectedSettings = [
             'min_start_time'    => '07:00',
             'max_start_time'    => '10:00',
             'min_end_time'      => '16:00',
             'max_end_time'      => '17:00',
-        );
+        ];
         $this->assertEquals($result->settings->toArray(), $expectedSettings);
     }
 }

@@ -14,9 +14,9 @@ class PeriodServiceFactoryTest extends \PHPUnit_Framework_TestCase
     public function testFactoryProcessesWithoutErrors()
     {
         $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
-        $services         = array(
+        $services         = [
             'FlexiOptions' => $this->getMock('JhFlexiTime\Options\ModuleOptions'),
-        );
+        ];
 
         $serviceLocator
             ->expects($this->any())

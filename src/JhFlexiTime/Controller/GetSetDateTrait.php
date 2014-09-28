@@ -25,7 +25,7 @@ trait GetSetDateTrait
     {
 
         if (!$this->date) {
-            $validator  = new DateValidator(array('format' => 'M Y'));
+            $validator  = new DateValidator(['format' => 'M Y']);
             if ($validator->isValid(sprintf("%s %s", $month, $year))) {
                 $period = new DateTime(sprintf('last day of %s %s 23:59:59', $month, $year));
             } else {

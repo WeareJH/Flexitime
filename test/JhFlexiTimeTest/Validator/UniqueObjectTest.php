@@ -26,12 +26,12 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
 
     protected function getValidator($fields)
     {
-        return $this->validator = new UniqueObject(array(
+        return $this->validator = new UniqueObject([
             'object_manager'    => $this->objectManager,
             'object_repository' => $this->repository,
             'fields'            => $fields,
             'use_context'       => true,
-        ));
+        ]);
     }
 
     public function testValidatorPassesIfObjectNotExist()
@@ -77,12 +77,12 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
         $classMetadata
             ->expects($this->once())
             ->method('getIdentifierFieldNames')
-            ->will($this->returnValue(array('id')));
+            ->will($this->returnValue(['id']));
         $classMetadata
             ->expects($this->once())
             ->method('getIdentifierValues')
             ->with($match)
-            ->will($this->returnValue(array('id' => 2)));
+            ->will($this->returnValue(['id' => 2]));
 
         $this->objectManager->expects($this->any())
             ->method('getClassMetadata')
@@ -125,12 +125,12 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
         $classMetadata
             ->expects($this->once())
             ->method('getIdentifierFieldNames')
-            ->will($this->returnValue(array('id')));
+            ->will($this->returnValue(['id']));
         $classMetadata
             ->expects($this->once())
             ->method('getIdentifierValues')
             ->with($match)
-            ->will($this->returnValue(array('id' => 1)));
+            ->will($this->returnValue(['id' => 1]));
 
         $this->objectManager->expects($this->any())
             ->method('getClassMetadata')
@@ -169,12 +169,12 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
         $classMetadata
             ->expects($this->once())
             ->method('getIdentifierFieldNames')
-            ->will($this->returnValue(array('user', 'date')));
+            ->will($this->returnValue(['user', 'date']));
         $classMetadata
             ->expects($this->once())
             ->method('getIdentifierValues')
             ->with($object)
-            ->will($this->returnValue(array('user' => $user, 'date' => $date)));
+            ->will($this->returnValue(['user' => $user, 'date' => $date]));
 
         $this->objectManager->expects($this->any())
             ->method('getClassMetadata')

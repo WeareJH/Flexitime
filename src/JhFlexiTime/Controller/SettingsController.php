@@ -35,9 +35,9 @@ class SettingsController extends AbstractActionController
     {
         $user = $this->zfcUserAuthentication()->getIdentity();
 
-        return new JsonModel(array(
+        return new JsonModel([
             'success'   => true,
             'settings'  => $this->bookingOptions,
-        ));
+        ]);
     }
 }

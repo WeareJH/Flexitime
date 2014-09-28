@@ -155,10 +155,10 @@ return [
                             'controller' => 'JhFlexiTime\Controller\RunningBalanceCli',
                             'action'     => 'set-user-starting-balance'
                         ],
-                        'constraints' => array(
+                        'constraints' => [
                             //regex to match decimal and floats
                             'balance' => '/^-?(?:\d+|\d*\.\d+)$/',
-                        ),
+                        ],
 
                     ],
                 ],

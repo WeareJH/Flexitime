@@ -20,10 +20,10 @@ class BookingFormFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('getIdentity')
             ->will($this->returnValue($this->getMock('ZfcUser\Entity\UserInterface')));
 
-        $services = array(
+        $services = [
             'JhFlexiTime\ObjectManager' => $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
             'zfcuser_auth_service'      => $authService,
-        );
+        ];
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
         $serviceLocator

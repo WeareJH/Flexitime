@@ -17,12 +17,12 @@ class BookingClasses extends AbstractHelper
      *
      * @var array
      */
-    protected $classes = array(
+    protected $classes = [
         'noBooking'         => 'no-booking',
         'pastNoBooking'     => 'no-booking-past',
         'futureNoBooking'   => 'no-booking-future',
         'currentDay'        => 'today',
-    );
+    ];
 
     /**
      * @param \DateTime $date
@@ -31,7 +31,7 @@ class BookingClasses extends AbstractHelper
      */
     public function __invoke(\DateTime $date, $bookingExists)
     {
-        $classes = array();
+        $classes = [];
 
         $today = new \DateTime('today');
         if ($today->format('d-m-y') == $date->format('d-m-y')) {

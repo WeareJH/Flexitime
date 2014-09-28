@@ -45,10 +45,10 @@
                         <thead ng-if="weekNum == 0">
                             <tr>
                                 <th style="width: 25%"></th>
-                                <th style="width: 25%"><?php echo $this->translate('Date') ?></th>
-                                <th style="width: 25%"><?php echo $this->translate('Time') ?></th>
-                                <th style="width: 10%"><?php echo $this->translate('Total') ?></th>
-                                <th style="width: 20%"><?php echo $this->translate('Notes') ?></th>
+                                <th style="width: 25%"><?= $this->translate('Date') ?></th>
+                                <th style="width: 25%"><?= $this->translate('Time') ?></th>
+                                <th style="width: 10%"><?= $this->translate('Total') ?></th>
+                                <th style="width: 20%"><?= $this->translate('Notes') ?></th>
 
                             </tr>
                         </thead>
@@ -78,15 +78,15 @@
                     <table class="table" id="totals">
                         <tbody>
                         <tr>
-                            <td><?php echo $this->translate('Hours Worked this Month') ?></td>
+                            <td><?= $this->translate('Hours Worked this Month') ?></td>
                             <td class="worked-to-date total-right">{{ totals.monthTotalWorkedHours }}</td>
                         </tr>
                         <tr>
-                            <td><?php echo $this->translate('Hours Remaining this Month') ?></td>
+                            <td><?= $this->translate('Hours Remaining this Month') ?></td>
                             <td class="total-right">{{ totals.monthRemainingHours }}</td>
                         </tr>
                         <tr>
-                            <td><?php echo $this->translate('Balance') ?></td>
+                            <td><?= $this->translate('Balance') ?></td>
                             <td class="balance-month total-right">
                                 <span ng-class="(totals.monthBalance >= 0) ? 'balance-success' : 'balance-danger'">
                                     <b>{{ totals.monthBalance | signTotal }}</b>
@@ -104,7 +104,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><?php echo $this->translate('Running Balance') ?></td>
+                                <td><?= $this->translate('Running Balance') ?></td>
                                 <td class="balance-running total-right">
                                 <span ng-class="(totals.runningBalance >= 0) ? 'balance-success' : 'balance-danger'">
                                     <b>{{ totals.runningBalance | signTotal }}</b>
@@ -112,7 +112,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><?php echo $this->translate('Balance  Forward') ?></td>
+                                <td><?= $this->translate('Balance  Forward') ?></td>
                                 <td class="balance-running total-right">
                                 <span ng-class="(totals.balanceForward >= 0) ? 'balance-success' : 'balance-danger'">
                                     <b>{{ totals.balanceForward | signTotal }}</b>

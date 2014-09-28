@@ -47,51 +47,51 @@ class BookingFieldset extends Fieldset
         $this->setHydrator(new DoctrineHydrator($this->objectManager, 'JhFlexiTime\Entity\Booking'))
             ->setObject(new Booking());
 
-        $this->add(array(
+        $this->add([
             'type'          => 'Zend\Form\Element\Hidden',
             'name'          => 'user',
             'attributes'    => [
                 'id'    => 'book-user',
                 'value' => $this->user->getId(),
             ]
-        ));
+        ]);
 
-        $this->add(array(
+        $this->add([
             'type' => 'Zend\Form\Element\Hidden',
             'name' => 'id',
-            'attributes' => array(
+            'attributes' => [
                 'id' => 'book-id',
-            )
-        ));
+            ]
+        ]);
 
-        $this->add(array(
+        $this->add([
             'type'    => 'Zend\Form\Element\Text',
             'name'    => 'date',
-            'options' => array(
+            'options' => [
                 'label' => 'Date',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'col-sm-4 control-label',
-                ),
-            ),
-            'attributes' => array(
+                ],
+            ],
+            'attributes' => [
                 'id'        => 'book-date',
                 'step'      => '1',
                 'required'  => 'required',
                 'class'     => 'form-control input-sm',
                 //'value'     => new \DateTime(),
-            ),
-        ));
+            ],
+        ]);
 
-        $this->add(array(
+        $this->add([
             'type'    => 'Zend\Form\Element\Time',
             'name'    => 'startTime',
-            'options' => array(
+            'options' => [
                 'label' => 'Start Time',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'col-sm-4 control-label',
-                ),
-            ),
-            'attributes' => array(
+                ],
+            ],
+            'attributes' => [
                 'id'    => 'book-starttime',
                 //TODO: Inject From options
                 //'min'   => '07:00:00',
@@ -99,19 +99,19 @@ class BookingFieldset extends Fieldset
                 'step'  => '900',   //15 mins, 60 x 15
                 'class' => 'form-control input-sm',
                 'value' => '07:00',
-            ),
-        ));
+            ],
+        ]);
 
-        $this->add(array(
+        $this->add([
             'type'    => 'Zend\Form\Element\Time',
             'name'    => 'endTime',
-            'options' => array(
+            'options' => [
                 'label' => 'End Time',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'col-sm-4 control-label',
-                ),
-            ),
-            'attributes' => array(
+                ],
+            ],
+            'attributes' => [
                 'id'    => 'book-endtime',
                 //TODO: Inject From options
                 //'min'   => '16:00:00',
@@ -119,22 +119,22 @@ class BookingFieldset extends Fieldset
                 'step'  => '900',   //15 mins, 60 x 15
                 'class' => 'form-control input-sm',
                 'value' => '16:00',
-            ),
-        ));
+            ],
+        ]);
 
-        $this->add(array(
+        $this->add([
             'type'    => 'Zend\Form\Element\Textarea',
             'name'    => 'notes',
-            'options' => array(
+            'options' => [
                 'label' => 'Notes',
-                'label_attributes' => array(
+                'label_attributes' => [
                     'class' => 'col-sm-4 control-label',
-                ),
-            ),
-            'attributes' => array(
+                ],
+            ],
+            'attributes' => [
                 'id'    => 'book-notes',
                 'class' => 'form-control input-sm',
-            )
-        ));
+            ]
+        ]);
     }
 }

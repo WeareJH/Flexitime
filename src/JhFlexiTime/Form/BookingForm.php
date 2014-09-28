@@ -34,15 +34,15 @@ class BookingForm extends Form
         $bookingFieldset->setUseAsBaseFieldset(true);
         $this->add($bookingFieldset);
 
-        $this->add(array(
+        $this->add([
             'name' => 'submit',
-            'attributes' => array(
+            'attributes' => [
                 'type' => 'submit',
                 'value' => 'Submit',
                 'id' => 'submitbutton',
                 'class' => 'btn btn-danger',
-            )
-        ));
+            ]
+        ]);
 
     }
 }

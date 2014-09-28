@@ -25,11 +25,11 @@ class ModuleOptionsTest extends \PHPUnit_Framework_TestCase
 
     public function testSetValues()
     {
-        $options = new ModuleOptions(array(
+        $options = new ModuleOptions([
             'skip_weekends'     => false,
             'hours_in_day'      => 10,
             'lunch_duration'    => 0.5,
-        ));
+        ]);
 
         $this->assertFalse($options->getSkipWeekends(), 'skip_weekends must be false');
         $this->assertFalse($options->skipWeekends(), 'skip_weekends must be false');

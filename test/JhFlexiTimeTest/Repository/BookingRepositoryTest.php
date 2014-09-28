@@ -80,7 +80,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testIsUsersFirstBookingForMonthReturnsTrueIfNoBookingsExist()
     {
         $userFixture = new SingleUser;
-        $this->fixtureExecutor->execute(array($userFixture));
+        $this->fixtureExecutor->execute([$userFixture]);
 
         $date = new DateTime("10 May 2014");
         $this->assertTrue($this->repository->isUsersFirstBookingForMonth($userFixture->getUser(), $date));
@@ -94,7 +94,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setPassword("password");
 
         $bookingFixture = new BookingsNotInMonth($user);
-        $this->fixtureExecutor->execute(array($bookingFixture));
+        $this->fixtureExecutor->execute([$bookingFixture]);
 
         $this->assertTrue(
             $this->repository->isUsersFirstBookingForMonth($user, $bookingFixture->getMonthWithNoBookings())
@@ -111,7 +111,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
         $date = new DateTime("10 May 2014");
 
         $bookingFixture = new SingleBookingInMonth($user, $date);
-        $this->fixtureExecutor->execute(array($bookingFixture));
+        $this->fixtureExecutor->execute([$bookingFixture]);
 
         $this->assertFalse($this->repository->isUsersFirstBookingForMonth($user, $date));
     }
@@ -124,7 +124,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setPassword("password");
 
         $bookingFixture = new FullMonthBookings($user);
-        $this->fixtureExecutor->execute(array($bookingFixture));
+        $this->fixtureExecutor->execute([$bookingFixture]);
 
         $date = clone $bookingFixture->getMonth();
         $date->modify("+3 days");
@@ -143,7 +143,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthBookedToDateTotalByUserReturnsZeroIfNoBookings()
     {
         $userFixture = new SingleUser;
-        $this->fixtureExecutor->execute(array($userFixture));
+        $this->fixtureExecutor->execute([$userFixture]);
 
         $date = new DateTime;
         $bookingsTotal = $this->repository->getMonthBookedToDateTotalByUser($userFixture->getUser(), $date);
@@ -158,7 +158,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setPassword("password");
 
         $bookingFixture = new FullMonthBookings($user);
-        $this->fixtureExecutor->execute(array($bookingFixture));
+        $this->fixtureExecutor->execute([$bookingFixture]);
 
         $date = clone $bookingFixture->getMonth();
         $date->modify("+3 days");
@@ -174,7 +174,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testGetMonthBookedTotalByUserReturnsZeroIfNoBookings()
     {
         $userFixture = new SingleUser;
-        $this->fixtureExecutor->execute(array($userFixture));
+        $this->fixtureExecutor->execute([$userFixture]);
 
         $date = new DateTime;
         $bookingsTotal = $this->repository->getMonthBookedTotalByUser($userFixture->getUser(), $date);
@@ -189,7 +189,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setPassword("password");
 
         $bookingFixture = new FullMonthBookings($user);
-        $this->fixtureExecutor->execute(array($bookingFixture));
+        $this->fixtureExecutor->execute([$bookingFixture]);
 
         $startDate = clone $bookingFixture->getMonth();
         $startDate->modify("+3 days");
@@ -215,7 +215,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testGetTotalBookedBetweenByUserReturnsZeroIfNoBookings()
     {
         $userFixture = new SingleUser;
-        $this->fixtureExecutor->execute(array($userFixture));
+        $this->fixtureExecutor->execute([$userFixture]);
 
         $dateA = new DateTime;
         $dateB = new DateTime;
@@ -230,7 +230,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
             ->setEmail("aydin@hotmail.co.uk")
             ->setPassword("password");
         $bookingFixture = new SingleBookingInMonth($user, new DateTime);
-        $this->fixtureExecutor->execute(array($bookingFixture));
+        $this->fixtureExecutor->execute([$bookingFixture]);
 
         $this->setExpectedException(
             'Doctrine\ORM\ORMException',
@@ -241,7 +241,7 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testFindByReturnsEmptyIfNonExist()
     {
-        $this->assertEmpty($this->repository->findBy(array('user' => 1)));
+        $this->assertEmpty($this->repository->findBy(['user' => 1]));
     }
 
     public function testFindAll()
