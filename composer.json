@@ -8,7 +8,6 @@
             "email": "aydin@hotmail.co.uk"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": ">=5.4",
         "doctrine/doctrine-module": "dev-master as 0.8.0",
