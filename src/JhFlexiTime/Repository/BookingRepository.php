@@ -114,7 +114,7 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      */
     public function getMonthBookedToDateTotalByUser(UserInterface $user, DateTime $date)
     {
-        $firstDay = new DateTime(sprintf('first day of %s', $date->format('F')));
+        $firstDay = new DateTime(sprintf('first day of %s', $date->format('F Y')));
         $currentDay = new DateTime($date->format('Y-m-d'));
 
         $params = [
@@ -150,8 +150,8 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
      */
     public function getMonthBookedTotalByUser(UserInterface $user, DateTime $date)
     {
-        $firstDay   = new DateTime(sprintf('first day of %s', $date->format('F')));
-        $lastDay    = new DateTime(sprintf('last day of %s', $date->format('F')));
+        $firstDay   = new DateTime(sprintf('first day of %s', $date->format('F Y')));
+        $lastDay    = new DateTime(sprintf('last day of %s', $date->format('F Y')));
 
         $params = [
             'user'      => $user,
