@@ -13,7 +13,7 @@
         "doctrine/doctrine-module": "dev-master as 0.8.0",
         "doctrine/doctrine-orm-module": "0.*",
         "zendframework/zendframework": "2.3.*",
-        "wearejh/jh-user": "dev-master",
+        "wearejh/jh-user": "~1.0",
         "wearejh/installer": "dev-master"
     },
     "require-dev": {
