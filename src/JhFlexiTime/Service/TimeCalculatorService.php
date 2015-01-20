@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Service;
 
+use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use ZfcUser\Entity\UserInterface;
 use JhFlexiTime\DateTime\DateTime;
@@ -64,28 +65,42 @@ class TimeCalculatorService
     }
 
     /**
+     * PRIVATE
+     *
      * @param UserInterface $user
+     * @param DateTime $userStartDate
      * @param DateTime $period
      * @return float
      */
-    public function getMonthBalance(UserInterface $user, DateTime $period)
+    public function getMonthBalance(UserInterface $user, DateTime $userStartDate, DateTime $period)
     {
         $firstDayOfMonth = clone $this->referenceDate;
         $firstDayOfMonth->modify('first day of this month');
+
+        //if this is the month the user joined, calculate from the day they joined
+        if ($period->isSameMonthAndYear($userStartDate)) {
+            $endOfMonth = clone $userStartDate;
+            $endOfMonth->modify('last day of this month 23:59:59');
+
+            $tWorkedHours   = $this->bookingRepository->getTotalBookedBetweenByUser($user, $userStartDate, $endOfMonth);
+            $hoursFromDate  = $this->periodService->getTotalHoursFromDateToEndOfMonth($userStartDate);
+            $balance        = $tWorkedHours - $hoursFromDate;
+            return $balance;
+        }
 
         if ($period < $firstDayOfMonth) {
 
             $tWorkedHours   = $this->bookingRepository->getMonthBookedTotalByUser($user, $period);
             $hoursToDate    = $this->periodService->getTotalHoursInMonth($period);
-            $balance        = ($tWorkedHours - $hoursToDate);
+            $balance        = $tWorkedHours - $hoursToDate;
 
         } elseif ($period->format('m-Y') === $firstDayOfMonth->format('m-Y')) {
 
             //get the amount of hours booked between the first day of the month
             //and the current date
             $tWorkedHours   = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
-            $hoursToDate    = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
-            $balance        = ($tWorkedHours - $hoursToDate);
+            $hoursToDate    = $this->periodService->getTotalHoursFromBeginningOfMonthToDate($this->referenceDate);
+            $balance        = $tWorkedHours - $hoursToDate;
         } else {
             $balance = 0;
         }
@@ -94,25 +109,36 @@ class TimeCalculatorService
     }
 
     /**
+     * PRIVATE
+     *
      * @param UserInterface $user
+     * @param DateTime $userStartDate
      * @param DateTime $period
      * @return float
      */
-    public function getMonthTotalWorked(UserInterface $user, DateTime $period)
+    public function getMonthTotalWorked(UserInterface $user, DateTime $userStartDate, DateTime $period)
     {
         $firstDayOfMonth = clone $this->referenceDate;
         $firstDayOfMonth->modify('first day of this month');
 
+        //if this is the month the user joined, calculate from the day they joined
+        if ($period->isSameMonthAndYear($userStartDate)) {
+            $endOfMonth = clone $userStartDate;
+            $endOfMonth->modify('last day of this month 23:59:59');
+            return $this->bookingRepository->getTotalBookedBetweenByUser($user, $userStartDate, $endOfMonth);
+        }
+
         if ($period < $firstDayOfMonth) {
             $totalWorkedHours = $this->bookingRepository->getMonthBookedTotalByUser($user, $period);
         } else {
-            $totalWorkedHours = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $period);
+            $totalWorkedHours = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
         }
 
         return $totalWorkedHours;
     }
 
     /**
+     * PUBLIC
      * @param UserInterface $user
      * @param DateTime $period
      * @return array
@@ -131,30 +157,59 @@ class TimeCalculatorService
     }
 
     /**
+     * PUBLIC
+     *
      * @param UserInterface $user
+     * @param DateTime $userStartDate
      * @param DateTime $period
      * @return array
      */
-    public function getTotals(UserInterface $user, DateTime $period)
+    public function getTotals(UserInterface $user, DateTime $userStartDate, DateTime $period)
     {
+        $firstDayOfMonth = clone $this->referenceDate;
+        $firstDayOfMonth->modify('first day of this month');
+
+        if ($period < $firstDayOfMonth) {
+            $remainingHours = 0;
+        } else {
+            $remainingHours = $this->periodService->getRemainingHoursInMonth($period);
+        }
+
+
+        if ($period->isSameMonthAndYear($userStartDate)) {
+            $balance = $this->getMonthBalance($user, $userStartDate, $period);
+            return [
+                'monthTotalWorkedHours' => $this->getMonthTotalWorked($user, $userStartDate, $period),
+                'monthTotalHours'       => $this->periodService->getTotalHoursFromDateToEndOfMonth($userStartDate),
+                'monthBalance'          => $balance,
+                'runningBalance'        => $balance,
+                'monthRemainingHours'   => $remainingHours,
+                'balanceForward'        => 0,
+            ];
+        }
+
+
+
         return [
-            'monthTotalWorkedHours' => $this->getMonthTotalWorked($user, $period),
+            'monthTotalWorkedHours' => $this->getMonthTotalWorked($user, $userStartDate, $period),
             'monthTotalHours'       => $this->periodService->getTotalHoursInMonth($period),
-            'monthBalance'          => $this->getMonthBalance($user, $period),
+            'monthBalance'          => $this->getMonthBalance($user, $userStartDate, $period),
             'runningBalance'        => $this->getRunningBalance($user),
-            'monthRemainingHours'   => $this->periodService->getRemainingHoursInMonth($this->referenceDate),
+            'monthRemainingHours'   => $remainingHours,
             'balanceForward'        => $this->getBalanceForward($user),
         ];
     }
 
     /**
+     * PRIVATE
+     *
      * @param UserInterface $user
      * @return float
      */
     public function getRunningBalance(UserInterface $user)
     {
         $balance             = $this->getBalanceForward($user);
-        $totalHoursThisMonth = $this->periodService->getTotalHoursToDateInMonth($this->referenceDate);
+        $totalHoursThisMonth = $this->periodService->getTotalHoursFromBeginningOfMonthToDate($this->referenceDate);
         $bookedThisMonth     = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->referenceDate);
         $monthBalance        = $bookedThisMonth - $totalHoursThisMonth;
         $balance             += $monthBalance;
@@ -163,6 +218,8 @@ class TimeCalculatorService
     }
 
     /**
+     * PRIVATE
+     *
      * @param UserInterface $user
      * @return float
      */

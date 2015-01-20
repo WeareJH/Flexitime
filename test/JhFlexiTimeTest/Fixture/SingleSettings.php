@@ -6,6 +6,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class SingleSettings
@@ -31,9 +32,9 @@ class SingleSettings extends AbstractFixture
              ->setPassword('password');
 
         $this->settings
-            ->setFlexStartDate(new \DateTime("today"))
-            ->setDefaultStartTime(new \DateTime("9:00"))
-            ->setDefaultEndTime(new \DateTime("17:00"))
+            ->setFlexStartDate(new DateTime("today"))
+            ->setDefaultStartTime(new DateTime("9:00"))
+            ->setDefaultEndTime(new DateTime("17:00"))
             ->setUser($user);
 
         $manager->persist($user);

@@ -25,7 +25,8 @@ class BookingControllerFactory implements FactoryInterface
         return new BookingController(
             $serviceLocator->get('JhFlexiTime\Service\BookingService'),
             $serviceLocator->get('JhFlexiTime\Service\TimeCalculatorService'),
-            $serviceLocator->get('FormElementManager')->get('JhFlexiTime\Form\BookingForm')
+            $serviceLocator->get('FormElementManager')->get('JhFlexiTime\Form\BookingForm'),
+            $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository')
         );
     }
 }

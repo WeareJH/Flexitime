@@ -213,7 +213,7 @@ class BookingService
         }
 
         foreach ($bookedDays as $booking) {
-            //only ass booking is it is on an allowed day
+            //only add booking is it is on an allowed day
             //eg do not process any weekend bookings
             if (isset($dates[$booking->getDate()->format('d-m-y')])) {
                 $dates[$booking->getDate()->format('d-m-y')]['booking'] = $booking;

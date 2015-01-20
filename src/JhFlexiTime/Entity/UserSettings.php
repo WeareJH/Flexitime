@@ -4,7 +4,7 @@ namespace JhFlexiTime\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
-use DateTime;
+use JhFlexiTime\DateTime\DateTime;
 use JsonSerializable;
 
 /**
@@ -25,7 +25,7 @@ class UserSettings implements JsonSerializable
     protected $user = null;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="date", name="flex_start_date", nullable=false)
      */

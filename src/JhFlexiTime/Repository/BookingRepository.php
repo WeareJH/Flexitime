@@ -99,13 +99,13 @@ class BookingRepository implements BookingRepositoryInterface, ObjectRepository
             ->setMaxResults(1);
 
         $result = $qb->getQuery()->getOneOrNullResult();
-        //if result not an instance of time then
+        //if result not an instance of Booking then
         //this is the first booking of the month
         return !$result instanceof Booking;
     }
 
     /**
-     * Get the sum of all all hours booked between the first day of the given month,
+     * Get the sum of all hours booked between the first day of the given month,
      * and the current day of the passed in DateTime object
      *
      * @param UserInterface $user

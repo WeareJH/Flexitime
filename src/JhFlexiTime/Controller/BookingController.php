@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Controller;
 
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
 use JhFlexiTime\Service\BookingService;
 use JhFlexiTime\Service\TimeCalculatorService;
 use JhFlexiTime\Validator\UniqueBooking;
@@ -35,6 +36,11 @@ class BookingController extends AbstractActionController
     protected $timeCalculatorService;
 
     /**
+     * @var UserSettingsRepositoryInterface
+     */
+    protected $userSettingsRepository;
+
+    /**
      * @param BookingService $bookingService
      * @param TimeCalculatorService $timeCalculatorService
      * @param FormInterface $bookingForm
@@ -42,11 +48,13 @@ class BookingController extends AbstractActionController
     public function __construct(
         BookingService $bookingService,
         TimeCalculatorService $timeCalculatorService,
-        FormInterface $bookingForm
+        FormInterface $bookingForm,
+        UserSettingsRepositoryInterface $userSettingsRepository
     ) {
         $this->bookingService           = $bookingService;
         $this->bookingForm              = $bookingForm;
         $this->timeCalculatorService    = $timeCalculatorService;
+        $this->userSettingsRepository   = $userSettingsRepository;
     }
 
     /**
@@ -60,9 +68,10 @@ class BookingController extends AbstractActionController
         $period = $this->getDate($month, $year);
 
         $user           = $this->zfcUserAuthentication()->getIdentity();
+        $userSettings   = $this->userSettingsRepository->findOneByUser($user);
         $records        = $this->bookingService->getUserBookingsForMonth($user, $period);
         $pagination     = $this->bookingService->getPagination($period);
-        $totals         = $this->timeCalculatorService->getTotals($user, $period);
+        $totals         = $this->timeCalculatorService->getTotals($user, $userSettings->getFlexStartDate(), $period);
 
         return new ViewModel([
             'bookings' => [

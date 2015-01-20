@@ -29,11 +29,12 @@ class BookingControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
         $formElementManager = new ServiceManager();
         $formElementManager->setService('JhFlexiTime\Form\BookingForm', $this->getMock('Zend\Form\FormInterface'));
-
+        $userSettingsRepository = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
         $services = [
             'JhFlexiTime\Service\BookingService'        => $bookingService,
             'JhFlexiTime\Service\TimeCalculatorService' => $timeCalculatorService,
             'FormElementManager'                        => $formElementManager,
+            'JhFlexiTime\Repository\UserSettingsRepository' => $userSettingsRepository,
         ];
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');

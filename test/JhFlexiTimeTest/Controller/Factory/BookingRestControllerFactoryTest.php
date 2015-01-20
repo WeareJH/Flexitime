@@ -25,12 +25,14 @@ class BookingRestControllerFactoryTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $userRepository = $this->getMock('JhUser\Repository\UserRepositoryInterface');
+        $userRepository         = $this->getMock('JhUser\Repository\UserRepositoryInterface');
+        $userSettingsRepository = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
 
         $services = [
-            'JhFlexiTime\Service\BookingService'        => $bookingService,
-            'JhFlexiTime\Service\TimeCalculatorService' => $timecalculatorService,
-            'JhUser\Repository\UserRepository'          => $userRepository,
+            'JhFlexiTime\Service\BookingService'            => $bookingService,
+            'JhFlexiTime\Service\TimeCalculatorService'     => $timecalculatorService,
+            'JhUser\Repository\UserRepository'              => $userRepository,
+            'JhFlexiTime\Repository\UserSettingsRepository' => $userSettingsRepository,
         ];
 
         $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');

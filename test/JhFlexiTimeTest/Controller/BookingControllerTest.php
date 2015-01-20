@@ -5,6 +5,8 @@ namespace JhFlexiTimeTest\Controller;
 use JhFlexiTime\Controller\BookingController;
 
 use JhFlexiTime\DateTime\DateTime;
+use JhFlexiTime\Entity\UserSettings;
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -31,12 +33,21 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
     protected $bookingService;
     protected $timeCalculatorService;
 
+    /**
+     * @var UserSettingsRepositoryInterface
+     */
+    protected $userSettingsRepository;
+
     public function setUp()
     {
+        $this->userSettingsRepository
+            = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
+
         $this->controller = new BookingController(
             $this->getBookingService(),
             $this->getTimeCalculatorService(),
-            $this->getForm()
+            $this->getForm(),
+            $this->userSettingsRepository
         );
 
         $this->request      = new Request();
@@ -137,13 +148,25 @@ class BookingControllerTest extends AbstractHttpControllerTestCase
     {
         $booking    = $this->getMockBooking();
         $date       = new DateTime("25 March 2014");
+        $startDate  = new DateTime("21 April 2014");
+
 
         $this->controller->setDate($date);
         $this->configureMockBookingService('getUserBookingsForMonth', [$this->user, $date], [$booking]);
         $this->configureMockBookingService('getPagination', [$date], []);
-        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $date], ['some-total', 20]);
+        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $startDate, $date], ['some-total', 20]);
 
         $this->routeMatch->setParam('action', 'list');
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($this->user)
+            ->will($this->returnValue($userSettings));
+
         $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
 

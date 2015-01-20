@@ -4,8 +4,7 @@ namespace JhFlexiTimeTest\Entity;
 
 use JhFlexiTime\Entity\UserSettings;
 use JhUser\Entity\User;
-use ReflectionClass;
-use DateTime;
+use JhFlexiTime\DateTime\DateTime;
 
 class UserSettingsTest extends \PHPUnit_Framework_TestCase
 {

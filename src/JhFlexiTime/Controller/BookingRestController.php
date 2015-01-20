@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Controller;
 
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
 use JhUser\Repository\UserRepositoryInterface;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\Validator\Date as DateValidator;
@@ -34,18 +35,26 @@ class BookingRestController extends AbstractRestfulController
     protected $userRepository;
 
     /**
+     * @var UserSettingsRepositoryInterface
+     */
+    protected $userSettingsRepository;
+
+    /**
      * @param BookingService $bookingService
      * @param TimeCalculatorService $timeCalculatorService
      * @param UserRepositoryInterface $userRepository
+     * @param UserSettingsRepositoryInterface $userSettingsRepository
      */
     public function __construct(
         BookingService $bookingService,
         TimeCalculatorService $timeCalculatorService,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        UserSettingsRepositoryInterface $userSettingsRepository
     ) {
         $this->bookingService           = $bookingService;
         $this->timeCalculatorService    = $timeCalculatorService;
         $this->userRepository           = $userRepository;
+        $this->userSettingsRepository   = $userSettingsRepository;
     }
 
     /**
@@ -71,9 +80,10 @@ class BookingRestController extends AbstractRestfulController
             $user = $this->zfcUserAuthentication()->getIdentity();
         }
 
+        $userSettings   = $this->userSettingsRepository->findOneByUser($user);
         $records        = $this->bookingService->getUserBookingsForMonth($user, $period);
         $pagination     = $this->bookingService->getPagination($period);
-        $totals         = $this->timeCalculatorService->getTotals($user, $period);
+        $totals         = $this->timeCalculatorService->getTotals($user, $userSettings->getFlexStartDate(), $period);
 
         return new JsonModel([
             'bookings' => [
@@ -105,18 +115,24 @@ class BookingRestController extends AbstractRestfulController
      */
     public function create($data)
     {
-        $return = $this->bookingService->create($data);
+        $booking = $this->bookingService->create($data);
 
-        if (is_array($return)) {
-            $return['success'] = false;
-            return new JsonModel($return);
+        if (is_array($booking)) {
+            $booking['success'] = false;
+            return new JsonModel($booking);
         }
 
+        $userSettings = $this->userSettingsRepository->findOneByUser($booking->getUser());
+        $monthTotals  = $this->timeCalculatorService->getTotals(
+            $booking->getUser(),
+            $userSettings->getFlexStartDate(),
+            $booking->getDate()
+        );
         return new JsonModel([
             'success'       => true,
-            'booking'       => $return,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
+            'booking'       => $booking,
+            'monthTotals'   => $monthTotals,
+            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($booking->getUser(), $booking->getDate())
         ]);
     }
 
@@ -127,19 +143,25 @@ class BookingRestController extends AbstractRestfulController
      */
     public function update($id, $data)
     {
-        $id     = $this->parseIdCriteria($id);
-        $return = $this->bookingService->update($id['user'], $id['date'], $data);
+        $id         = $this->parseIdCriteria($id);
+        $booking    = $this->bookingService->update($id['user'], $id['date'], $data);
 
-        if (is_array($return)) {
-            $return['success'] = false;
-            return new JsonModel($return);
+        if (is_array($booking)) {
+            $booking['success'] = false;
+            return new JsonModel($booking);
         }
 
+        $userSettings = $this->userSettingsRepository->findOneByUser($booking->getUser());
+        $monthTotals  = $this->timeCalculatorService->getTotals(
+            $booking->getUser(),
+            $userSettings->getFlexStartDate(),
+            $booking->getDate()
+        );
         return new JsonModel([
-            'booking'       => $return,
             'success'       => true,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
+            'booking'       => $booking,
+            'monthTotals'   => $monthTotals,
+            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($booking->getUser(), $booking->getDate())
         ]);
     }
 
@@ -149,17 +171,23 @@ class BookingRestController extends AbstractRestfulController
      */
     public function delete($id)
     {
-        $id     = $this->parseIdCriteria($id);
-        $return = $this->bookingService->delete($id['user'], $id['date']);
-        if (is_array($return)) {
-            $return['success'] = false;
-            return new JsonModel($return);
+        $id         = $this->parseIdCriteria($id);
+        $booking    = $this->bookingService->delete($id['user'], $id['date']);
+        if (is_array($booking)) {
+            $booking['success'] = false;
+            return new JsonModel($booking);
         }
 
+        $userSettings = $this->userSettingsRepository->findOneByUser($booking->getUser());
+        $monthTotals  = $this->timeCalculatorService->getTotals(
+            $booking->getUser(),
+            $userSettings->getFlexStartDate(),
+            $booking->getDate()
+        );
         return new JsonModel([
             'success'       => true,
-            'monthTotals'   => $this->timeCalculatorService->getTotals($return->getUser(), $return->getDate()),
-            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($return->getUser(), $return->getDate())
+            'monthTotals'   => $monthTotals,
+            'weekTotals'    => $this->timeCalculatorService->getWeekTotals($booking->getUser(), $booking->getDate())
         ]);
     }
 

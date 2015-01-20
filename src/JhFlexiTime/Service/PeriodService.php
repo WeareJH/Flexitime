@@ -23,7 +23,12 @@ class PeriodService implements PeriodServiceInterface
     /**
      * Partial Month - When wanting to count every day up to given day
      */
-    const MONTH_TO_DATE = 'monthToDate';
+    const MONTH_START_TO_DATE = 'monthStartToDate';
+
+    /**
+     * Partial Month - When wanting to count every day from a given date until the end of the month
+     */
+    const DATE_TO_MONTH_END = 'dateToMonthEnd';
 
     /**
      * @var \JhFlexiTime\Options\ModuleOptions
@@ -49,9 +54,16 @@ class PeriodService implements PeriodServiceInterface
     public function getPeriod(DateTime $date, $type)
     {
         switch ($type) {
-            case self::MONTH_TO_DATE:
+            case self::DATE_TO_MONTH_END:
                 return new \DatePeriod(
-                    new DateTime(sprintf('first day of %s', $date->format('F Y'))),
+                    new DateTime(sprintf('%s 00:00:00', $date->format('d-m-Y'))),
+                    new \DateInterval('P1D'),
+                    new DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
+                );
+                break;
+            case self::MONTH_START_TO_DATE:
+                return new \DatePeriod(
+                    new DateTime(sprintf('first day of %s 00:00:00', $date->format('F Y'))),
                     new \DateInterval('P1D'),
                     new DateTime(sprintf('%s 23:59:59', $date->format('d M Y')))
                 );
@@ -92,8 +104,21 @@ class PeriodService implements PeriodServiceInterface
     }
 
     /**
+     * Get total hours from a given date until the end of the month
+     *
      * @param DateTime $month
-     * @return int
+     * @return float
+     */
+    public function getTotalHoursFromDateToEndOfMonth(DateTime $month)
+    {
+        return $this->getTotalHoursInPeriod($this->getPeriod($month, self::DATE_TO_MONTH_END));
+    }
+
+    /**
+     * Get total hours in a given month
+     *
+     * @param DateTime $month
+     * @return float
      */
     public function getTotalHoursInMonth(DateTime $month)
     {
@@ -101,12 +126,14 @@ class PeriodService implements PeriodServiceInterface
     }
 
     /**
+     * Get total hours from beginning of a given month until the day of the specified month
+     *
      * @param DateTime $month
-     * @return int
+     * @return float
      */
-    public function getTotalHoursToDateInMonth(DateTime $month)
+    public function getTotalHoursFromBeginningOfMonthToDate(DateTime $month)
     {
-        return $this->getTotalHoursInPeriod($this->getPeriod($month, self::MONTH_TO_DATE));
+        return $this->getTotalHoursInPeriod($this->getPeriod($month, self::MONTH_START_TO_DATE));
     }
 
     /**
