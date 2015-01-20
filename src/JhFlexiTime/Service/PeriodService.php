@@ -31,6 +31,11 @@ class PeriodService implements PeriodServiceInterface
     const DATE_TO_MONTH_END = 'dateToMonthEnd';
 
     /**
+     * Partial Month - When wanting to count every day from a given date until a given end date
+     */
+    const DATE_TO_DATE = 'dateToDate';
+
+    /**
      * @var \JhFlexiTime\Options\ModuleOptions
      */
     protected $options;
@@ -51,9 +56,16 @@ class PeriodService implements PeriodServiceInterface
      * @return \DatePeriod
      * @throws \InvalidArgumentException
      */
-    public function getPeriod(DateTime $date, $type)
+    public function getPeriod(DateTime $date, $type, DateTime $dateEnd = null)
     {
         switch ($type) {
+            case self::DATE_TO_DATE:
+                return new \DatePeriod(
+                    new DateTime(sprintf('%s 00:00:00', $date->format('d-m-Y'))),
+                    new \DateInterval('P1D'),
+                    new DateTime(sprintf('%s 23:59:59', $dateEnd->format('d-m-Y')))
+                );
+                break;
             case self::DATE_TO_MONTH_END:
                 return new \DatePeriod(
                     new DateTime(sprintf('%s 00:00:00', $date->format('d-m-Y'))),
@@ -101,6 +113,17 @@ class PeriodService implements PeriodServiceInterface
         $monthTotalHours = $count * $this->options->getHoursInDay();
         //round to 2 decimal places
         return (float) number_format($monthTotalHours, 2, '.', '');
+    }
+
+    /**
+     * @param DateTime $start
+     * @param DateTime $end
+     *
+     * @return int
+     */
+    public function getTotalHoursBetweenDates(DateTime $start, DateTime $end)
+    {
+        return $this->getTotalHoursInPeriod($this->getPeriod($start, self::DATE_TO_DATE, $end));
     }
 
     /**
