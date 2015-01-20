@@ -279,10 +279,11 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $service    = $this->getService($today);
 
         $this->bookingRepository
-            ->expects($this->exactly(3))
-            ->method('getMonthBookedToDateTotalByUser')
+            ->expects($this->exactly(1))
+            ->method('getTotalBookedBetweenByUser')
             ->with(
                 $user,
+                $this->equalTo(new DateTime('1 March 2014 00:00:00')),
                 $this->equalTo(new DateTime('2 March 2014 00:00:00'))
             )
             ->will($this->returnValue(75));
@@ -294,13 +295,56 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             'monthTotalWorkedHours' => 75,
             'monthTotalHours'       => 157.5,
             'monthBalance'          => 75.0,
-            'runningBalance'        => 75.0,
+            'runningBalance'        => 0.0,
             'monthRemainingHours'   => 157.5,
             'balanceForward'        => 0,
         ];
 
-        $this->assertSame($expected, $result);
+        $this->assertEquals($expected, $result);
     }
+
+    public function testGetTotalsForCurrentMonthWhereStartDateWasInAPreviousMonthWithRunningBalance()
+    {
+        $user       = new User;
+        $startDate  = new DateTime("1 January 2014");
+        $today      = new DateTime("2 March 2014");
+        $service    = $this->getService($today);
+
+        $this->bookingRepository
+            ->expects($this->exactly(1))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user,
+                $this->equalTo(new DateTime('1 March 2014 00:00:00')),
+                $this->equalTo(new DateTime('2 March 2014 00:00:00'))
+            )
+            ->will($this->returnValue(75));
+
+        $balance = new RunningBalance;
+        $balance->setBalance(10);
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->returnValue($balance));
+
+        $result = $service->getTotals($user, $startDate, new DateTime("1 March 2014"));
+
+        $expected = [
+            'monthTotalWorkedHours' => 75,
+            'monthTotalHours'       => 157.5,
+            'monthBalance'          => 75.0,
+            'runningBalance'        => 10,
+            'monthRemainingHours'   => 157.5,
+            'balanceForward'        => 10,
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+
 
     public function testGetTotalsForCurrentMonthWhereStartDateWasInThisMonth()
     {
@@ -310,7 +354,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $service    = $this->getService($today);
 
         $this->bookingRepository
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getTotalBookedBetweenByUser')
             ->with(
                 $user,
@@ -331,7 +375,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             'balanceForward'        => 0,
         ];
 
-        $this->assertSame($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 
     public function testGetTotalsForAPreviousMonthWhereStartDateWasInAPreviousMonthToThat()
@@ -342,11 +386,12 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $service    = $this->getService($today);
 
         $this->bookingRepository
-            ->expects($this->exactly(2))
-            ->method('getMonthBookedTotalByUser')
+            ->expects($this->exactly(1))
+            ->method('getTotalBookedBetweenByUser')
             ->with(
                 $user,
-                $this->equalTo(new DateTime('1 February 2014 00:00:00'))
+                $this->equalTo(new DateTime('1 February 2014 00:00:00')),
+                $this->equalTo(new DateTime('28 February 2014 23:59:59'))
             )
             ->will($this->returnValue(75));
 
@@ -362,7 +407,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             'balanceForward'        => 0,
         ];
 
-        $this->assertSame($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 
     public function testGetTotalsForAPreviousMonthWhereStartDateWasInThatMonth()
@@ -373,7 +418,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $service    = $this->getService($today);
 
         $this->bookingRepository
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getTotalBookedBetweenByUser')
             ->with(
                 $user,
@@ -394,7 +439,7 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             'balanceForward'        => 0,
         ];
 
-        $this->assertSame($expected, $result);
+        $this->assertEquals($expected, $result);
     }
 
     public function testGetTotalsBalanceIsZeroIfInFutureMonth()
@@ -404,12 +449,35 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
         $today      = new DateTime("10 April 2014");
         $service    = $this->getService($today);
 
-        $this->bookingRepository
-            ->expects($this->exactly(1))
-            ->method('getMonthBookedToDateTotalByUser')
-            ->with($user, $this->equalTo($today))
-            ->will($this->returnValue(60));
+        $result  = $service->getTotals($user, $startDate, new DateTime("1 June 2014"));
 
+        $expected = [
+            'monthTotalWorkedHours' => 0,
+            'monthTotalHours'       => 157.5,
+            'monthBalance'          => 0,
+            'runningBalance'        => -60.0, //because 8 days have not been booked in april
+            'monthRemainingHours'   => 157.5,
+            'balanceForward'        => 0,
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testGetTotalsBalanceIsZeroIfInFutureMonthWithRunningBalanceAddedOn()
+    {
+        $user       = new User;
+        $startDate  = new DateTime("4 March 2014");
+        $today      = new DateTime("10 April 2014");
+        $service    = $this->getService($today);
+
+        $balance = new RunningBalance;
+        $balance->setBalance(50);
+
+        $this->balanceRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($user)
+            ->will($this->returnValue($balance));
 
         $result  = $service->getTotals($user, $startDate, new DateTime("1 June 2014"));
 
@@ -417,13 +485,11 @@ class TimeCalculatorServiceTest extends \PHPUnit_Framework_TestCase
             'monthTotalWorkedHours' => 0,
             'monthTotalHours'       => 157.5,
             'monthBalance'          => 0,
-            'runningBalance'        => 0.0,
+            'runningBalance'        => -10, //because 8 days have not been booked in april
             'monthRemainingHours'   => 157.5,
-            'balanceForward'        => 0,
+            'balanceForward'        => 50,
         ];
 
-        $this->assertSame($expected, $result);
+        $this->assertEquals($expected, $result);
     }
-
-
 }
