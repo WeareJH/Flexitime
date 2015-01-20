@@ -103,9 +103,11 @@ class TimeCalculatorService
         $userStartedInThisMonth = $userStartDate->isSameMonthAndYear($period);
 
         if ($userStartedInThisMonth) {
-            $startDate  = clone $userStartDate;
+            $startDate          = clone $userStartDate;
+            $monthTotalHours    = $this->periodService->getTotalHoursFromDateToEndOfMonth($userStartDate);
         } else {
-            $startDate = clone $startOfMonth;
+            $startDate          = clone $startOfMonth;
+            $monthTotalHours    = $this->periodService->getTotalHoursInMonth($period);
         }
 
         if ($period < $firstDayOfMonth) {
@@ -114,49 +116,25 @@ class TimeCalculatorService
             $endDate = clone $this->today;
         }
 
-        if ($userStartedInThisMonth) {
-            $monthTotalHours = $this->periodService->getTotalHoursFromDateToEndOfMonth($userStartDate);
-        } else {
-            $monthTotalHours = $this->periodService->getTotalHoursInMonth($period);
-        }
-
-        if ($period < $firstDayOfMonth) {
-            //previous month
-            $remainingHours = 0;
-
-            if ($userStartedInThisMonth) {
-                $elapsedStart = $userStartDate;
-                $hoursElapsed = $this->periodService->getTotalHoursBetweenDates($userStartDate, $endOfMonth);
-            } else {
-                $hoursElapsed = $this->periodService->getTotalHoursBetweenDates($startOfMonth, $endOfMonth);
-            }
-
-        } elseif ($period->isSameMonthAndYear($this->today)) {
-            //current month
-
-            $today = clone $this->today;
-            $today->modify('-1 day');
-            $remainingHours = $this->periodService->getRemainingHoursInMonth($today);
-
-            if ($userStartedInThisMonth) {
-                $hoursElapsed  = $this->periodService->getTotalHoursBetweenDates($userStartDate, $this->today);
-            } else {
-                $hoursElapsed = $this->periodService->getTotalHoursBetweenDates($startOfMonth, $this->today);
-            }
-
-        } else {
-            //future month
-            $remainingHours     = $this->periodService->getTotalHoursInMonth($period);
-            $monthTotalWorked   = 0;
-            $hoursElapsed       = 0;
-        }
-
+        //future month
+        $remainingHours     = $this->periodService->getTotalHoursInMonth($period);
+        $monthTotalWorked   = 0;
+        $hoursElapsed       = 0;
         if ($period < $firstDayOfMonth || $period->isSameMonthAndYear($this->today)) {
-            $monthTotalWorked = $this->bookingRepository->getTotalBookedBetweenByUser(
-                $user,
-                $startDate,
-                $endDate
-            );
+
+            if ($period < $firstDayOfMonth) {
+                //previous month
+                $remainingHours = 0;
+            } elseif ($period->isSameMonthAndYear($this->today)) {
+                //current month
+
+                $today = clone $this->today;
+                $today->modify('-1 day');
+                $remainingHours = $this->periodService->getRemainingHoursInMonth($today);
+            }
+
+            $monthTotalWorked   = $this->bookingRepository->getTotalBookedBetweenByUser($user, $startDate, $endDate);
+            $hoursElapsed       = $this->periodService->getTotalHoursBetweenDates($startDate, $endDate);
         }
 
         $monthBalance = $monthTotalWorked - $hoursElapsed;
