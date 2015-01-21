@@ -20,20 +20,11 @@ interface PeriodServiceInterface
     public function getTotalHoursInMonth(DateTime $month);
 
     /**
-     * Get total hours from a given date until the end of the month
-     *
-     * @param DateTime $month
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function getTotalHoursFromDateToEndOfMonth(DateTime $month);
-
-    /**
-     * Get total hours from beginning of a given month until the day of the specified month
-     *
-     * @param DateTime $month
-     * @return float
-     */
-    public function getTotalHoursFromBeginningOfMonthToDate(DateTime $month);
+    public function getTotalHoursBetweenDates(DateTime $start, DateTime $end);
 
     /**
      * @param DateTime $start

@@ -177,27 +177,21 @@ class RunningBalanceService
      */
     public function getMonthsBetweenUserStartAndLastMonth(DateTime $startDate, DateTime $endDate)
     {
-        $startDate  = clone $startDate;
-        $endDate    = clone $endDate;
-
-        $startDate->modify('first day of this month 00:00:00');
-        $endDate->modify('last day of this month 00:00:00');
-
-        $tmpDatePeriod = new \DatePeriod(
-            $startDate,
-            new \DateInterval("P1M"),
-            $endDate
-        );
-
         //convert DateTime to JhDateTime
-        $datePeriod = [];
-        foreach ($tmpDatePeriod as $date) {
-            $jhDate = new DateTime();
-            $jhDate->setTimestamp($date->getTimestamp());
-            $datePeriod[] = $jhDate;
-        }
-
-        return $datePeriod;
+        return array_map(
+            function (\DateTime $date) {
+                $jhDate = new DateTime();
+                $jhDate->setTimestamp($date->getTimestamp());
+                return $jhDate;
+            },
+            iterator_to_array(
+                new \DatePeriod(
+                    $startDate->startOfMonth(),
+                    new \DateInterval("P1M"),
+                    $endDate->endOfMonth()
+                )
+            )
+        );
     }
 
     /**

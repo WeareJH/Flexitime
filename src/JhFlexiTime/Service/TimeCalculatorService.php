@@ -104,7 +104,7 @@ class TimeCalculatorService
             $runningBalance = $this->getRunningBalance($user, $balanceForward);
         }
 
-        $monthTotalHours    = $this->periodService->getTotalHoursFromDateToEndOfMonth($startDate);
+        $monthTotalHours    = $this->periodService->getTotalHoursBetweenDates($startDate, $startDate->endOfMonth());
         $remainingHours     = $this->getRemainingHours($period, $this->today);
 
         $totals = [
@@ -132,7 +132,10 @@ class TimeCalculatorService
      */
     private function getRunningBalance(UserInterface $user, $balanceForward)
     {
-        $totalHoursThisMonth = $this->periodService->getTotalHoursFromBeginningOfMonthToDate($this->today);
+        $totalHoursThisMonth = $this->periodService->getTotalHoursBetweenDates(
+            $this->today->startOfMonth(),
+            $this->today
+        );
         $bookedThisMonth     = $this->bookingRepository->getMonthBookedToDateTotalByUser($user, $this->today);
         $monthBalance        = $bookedThisMonth - $totalHoursThisMonth;
         $balanceForward      += $monthBalance;
