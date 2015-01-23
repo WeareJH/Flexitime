@@ -194,14 +194,12 @@ class PeriodService implements PeriodServiceInterface
      */
     public function removeNonWorkingDays(array $dates)
     {
-        $workingDays = [];
-        foreach ($dates as $day) {
-            if ($day->format('N') < 6) {
-                $workingDays[] = $day;
+        return array_filter(
+            $dates,
+            function (DateTime $day) {
+                return $day->format('N') < 6;
             }
-        }
-
-        return $workingDays;
+        );
     }
 
     /**

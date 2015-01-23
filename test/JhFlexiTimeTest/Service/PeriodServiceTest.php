@@ -347,7 +347,14 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         $end->modify('+1 day');
         $period = new \DatePeriod(new DateTime($start), new \DateInterval('P1D'), $end);
 
-        return iterator_to_array($period);
+        return array_map(
+            function (DateTime $date) {
+                $jhDate = new DateTime();
+                $jhDate->setTimestamp($date->getTimestamp());
+                return $jhDate;
+            },
+            iterator_to_array($period)
+        );
     }
 
     public function testRemoveNonWorkingDays()
