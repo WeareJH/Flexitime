@@ -2,11 +2,18 @@
 
 namespace JhFlexiTimeTest\Service;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\Entity\RunningBalance;
 use JhFlexiTime\Entity\UserSettings;
+use JhFlexiTime\Options\ModuleOptions;
+use JhFlexiTime\Repository\BalanceRepositoryInterface;
+use JhFlexiTime\Repository\BookingRepository;
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
+use JhFlexiTime\Service\PeriodService;
 use JhFlexiTime\Service\RunningBalanceService;
 use JhUser\Entity\User;
 use JhFlexiTime\DateTime\DateTime;
+use JhUser\Repository\UserRepositoryInterface;
 
 /**
  * Class RunningBalanceServiceTest
@@ -16,13 +23,44 @@ use JhFlexiTime\DateTime\DateTime;
 class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var UserRepositoryInterface
+     */
     protected $userRepository;
+
+    /**
+     * @var UserSettingsRepositoryInterface
+     */
     protected $userSettingsRepository;
+
+    /**
+     * @var RunningBalanceService
+     */
     protected $runningBalanceService;
+
+    /**
+     * @var PeriodService
+     */
     protected $periodService;
+
+    /**
+     * @var BookingRepository
+     */
     protected $bookingRepository;
+
+    /**
+     * @var BalanceRepositoryInterface
+     */
     protected $balanceRepository;
+
+    /**
+     * @var DateTime
+     */
     protected $date;
+
+    /**
+     * @var ObjectManager
+     */
     protected $objectManager;
 
     public function setUp()
@@ -30,7 +68,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->userRepository           = $this->getMock('JhUser\Repository\UserRepositoryInterface');
         $this->userSettingsRepository   = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
         $this->balanceRepository        = $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface');
-        $this->periodService            = $this->getMock('JhFlexiTime\Service\PeriodServiceInterface');
+        $this->periodService            = new PeriodService(new ModuleOptions());
         $this->bookingRepository        = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
         $this->objectManager            = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $this->date                     = new DateTime("2 May 2014");
@@ -46,222 +84,237 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @param DateTime $start
-     * @param DateTime $end
-     * @param array $expectedMonths
-     * @dataProvider monthRangeProvider
-     */
-    public function testGetMonths(DateTime $start, DateTime $end, array $expectedMonths)
+    public function testCalculatePreviousMonthBalanceWithNoBookedHours()
     {
-        $period = $this->runningBalanceService->getMonthsBetweenUserStartAndLastMonth($start, $end);
-        //$months = iterator_to_array($period);
-        $this->assertEquals($period, $expectedMonths);
-    }
+        list($user1, $userSettings1) = $this->getUser(new DateTime("10 April 2014"));
+        list($user2, $userSettings2) = $this->getUser(new DateTime("1 January 2014"));
 
-    public function monthRangeProvider()
-    {
-        return [
-            [
-                new DateTime("12 February 2014"),
-                new DateTime("12 May 2014"),
-                [
-                    new DateTime('Feb 2014'),
-                    new DateTime('Mar 2014'),
-                    new DateTime('Apr 2014'),
-                    new DateTime('May 2014')
-                ]
-            ],
-            [
-                new DateTime("01 January 2014"),
-                new DateTime("12 May 2014"),
-                [
-                    new DateTime('Jan 2014'),
-                    new DateTime('Feb 2014'),
-                    new DateTime('Mar 2014'),
-                    new DateTime('Apr 2014'),
-                    new DateTime('May 2014')
-                ]
-            ],
-            [
-                new DateTime("01 March 2014"),
-                new DateTime("1 May 2014 00:00:00"),
-                [
-                    new DateTime('Mar 2014'),
-                    new DateTime('Apr 2014'),
-                    new DateTime('May 2014')
-                ]
-            ],
-        ];
-    }
+        $runningBalance1 = new RunningBalance;
+        $runningBalance1->setBalance(20);
 
-    /**
-     * @param int $initalBalance
-     * @param int $hoursInMonth
-     * @param int $hoursWorked
-     * @param int $expectedBalance
-     * @dataProvider calculateMonthBalanceProvider
-     */
-    public function testCalculateMonthBalanceCorrectlyAddsBalance(
-        $initalBalance,
-        $hoursInMonth,
-        $hoursWorked,
-        $expectedBalance
-    ) {
-        $date           = new DateTime("2 May 2014");
-        $user           = new User();
-        $runningBalance = new RunningBalance();
-        $runningBalance->setBalance($initalBalance);
+        $runningBalance2 = new RunningBalance;
+        $runningBalance2->setBalance(-20);
 
-        $this->periodService
-             ->expects($this->once())
-             ->method('getTotalHoursInMonth')
-             ->with($date)
-             ->will($this->returnValue($hoursInMonth));
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findAll')
+            ->with(false)
+            ->will($this->returnValue([$user1, $user2]));
 
-        $this->bookingRepository
-             ->expects($this->once())
-             ->method('getMonthBookedTotalByUser')
-             ->with($user, $date)
-             ->will($this->returnValue($hoursWorked));
+        $this->balanceRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $runningBalance1),
+                    array($user2, $runningBalance2),
+                )
+            ));
 
-        $this->runningBalanceService->calculateMonthBalance($user, $runningBalance, $date);
-        $this->assertEquals($expectedBalance, $runningBalance->getBalance());
-    }
-
-    public function calculateMonthBalanceProvider()
-    {
-        return [
-            [0,     50, 40, -10],
-            [20,    50, 40, 10],
-            [-20,   50, 70, 0],
-            [-20,   50, 80, 10],
-        ];
-    }
-
-    public function testRecalculateUserRunningBalance()
-    {
-        $user           = new User;
-        $userStartDate  = new DateTime("13 March 2014");
-        $startBalance   = 10;
-
-        $lastMonth = new DateTime("1 April 2014");
-
-        $period = new \DatePeriod(
-            new DateTime("1 March 2014"),
-            new \DateInterval("P1M"),
-            new DateTime("1 May 2014")
-        );
-
-        //convert DateTime to JhDateTime
-        $dates = [];
-        foreach ($period as $date) {
-            $jhDate = new DateTime();
-            $jhDate->setTimestamp($date->getTimestamp());
-            $dates[] = $jhDate;
-        }
-
-        $service = $this->getMock(
-            'JhFlexiTime\Service\RunningBalanceService',
-            [
-                'getMonthsBetweenUserStartAndLastMonth',
-                'calculateMonthBalance'
-            ],
-            [
-                $this->userRepository,
-                $this->userSettingsRepository,
-                $this->bookingRepository,
-                $this->balanceRepository,
-                $this->periodService,
-                $this->objectManager,
-                $this->date,
-            ]
-        );
-
-        $service
-             ->expects($this->once())
-             ->method('getMonthsBetweenUserStartAndLastMonth')
-             ->with($this->equalTo($userStartDate), $this->equalTo($lastMonth))
-             ->will($this->returnValue($dates));
-
-        $runningBalance = new RunningBalance();
-
-        $service
-            ->expects($this->at(1))
-            ->method('calculateMonthBalance')
-            ->with($user, $runningBalance, $dates[0]);
-
-        $service
-            ->expects($this->at(2))
-            ->method('calculateMonthBalance')
-            ->with($user, $runningBalance, $dates[1]);
+        $this->userSettingsRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $userSettings1),
+                    array($user2, $userSettings2),
+                )
+            ));
 
         $this->objectManager->expects($this->once())->method('flush');
-        $service->recalculateRunningBalance($user, $runningBalance, $userStartDate, $startBalance);
+
+        $this->runningBalanceService->calculatePreviousMonthBalance();
+        $this->assertEquals(-92.5, $runningBalance1->getBalance());
+        $this->assertEquals(-185, $runningBalance2->getBalance());
     }
 
-    public function testRecalculateIsCalledForEachUser()
+    public function testCalculatePreviousMonthBalanceWithBookedHours()
     {
+        list($user1, $userSettings1) = $this->getUser(new DateTime("10 April 2014"));
+        list($user2, $userSettings2) = $this->getUser(new DateTime("1 January 2014"));
 
-        $service = $this->getMock(
-            'JhFlexiTime\Service\RunningBalanceService',
-            ['calculateMonthBalance'],
-            [
-                $this->userRepository,
-                $this->userSettingsRepository,
-                $this->bookingRepository,
-                $this->balanceRepository,
-                $this->periodService,
-                $this->objectManager,
-                $this->date,
-            ]
-        );
+        $runningBalance1 = new RunningBalance;
+        $runningBalance1->setBalance(20);
 
-        $user1 = new User;
-        $user2 = new User;
+        $runningBalance2 = new RunningBalance;
+        $runningBalance2->setBalance(-20);
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findAll')
+            ->with(false)
+            ->will($this->returnValue([$user1, $user2]));
+
+        $this->balanceRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $runningBalance1),
+                    array($user2, $runningBalance2),
+                )
+            ));
+
+        $this->userSettingsRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $userSettings1),
+                    array($user2, $userSettings2),
+                )
+            ));
+
+        $end   = new DateTime("30 April 2014 23:59:59");
+        $this->bookingRepository
+            ->expects($this->at(0))
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user1, $this->equalTo(new DateTime("10 April 2014 00:00:00")), $this->equalTo($end))
+            ->will($this->returnValue(100));
+
+        $this->bookingRepository
+            ->expects($this->at(1))
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user1, $this->equalTo(new DateTime("1 April 2014 00:00:00")), $this->equalTo($end))
+            ->will($this->returnValue(100));
+
+        $this->objectManager->expects($this->once())->method('flush');
+
+        $this->runningBalanceService->calculatePreviousMonthBalance();
+        $this->assertEquals(7.5, $runningBalance1->getBalance());
+        $this->assertEquals(-85, $runningBalance2->getBalance());
+    }
+
+    public function testCalculateRecalculateAllUsersRunningBalance()
+    {
+        $user1Start = new DateTime("10 April 2014");
+        $user2Start = new DateTime("1 January 2014");
+        list($user1, $userSettings1) = $this->getUser($user1Start);
+        list($user2, $userSettings2) = $this->getUser($user2Start);
+
         $runningBalance1 = new RunningBalance;
         $runningBalance2 = new RunningBalance;
 
-        $users = [$user1, $user2];
-
-        $lastMonth = new DateTime("1 April 2014");
-
         $this->userRepository
-             ->expects($this->once())
-             ->method('findAll')
-             ->with(false)
-             ->will($this->returnValue($users));
+            ->expects($this->once())
+            ->method('findAll')
+            ->with(false)
+            ->will($this->returnValue([$user1, $user2]));
 
         $this->balanceRepository
-              ->expects($this->at(0))
-              ->method('findOneByUser')
-              ->with($user1)
-              ->will($this->returnValue($runningBalance1));
-
-        $this->balanceRepository
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('findOneByUser')
-            ->with($user2)
-            ->will($this->returnValue($runningBalance2));
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $runningBalance1),
+                    array($user2, $runningBalance2),
+                )
+            ));
 
-        $service->expects($this->at(0))
-                ->method('calculateMonthBalance')
-                ->with($user1, $runningBalance1, $lastMonth);
-
-        $service->expects($this->at(1))
-            ->method('calculateMonthBalance')
-            ->with($user2, $runningBalance2, $lastMonth);
+        $this->userSettingsRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $userSettings1),
+                    array($user2, $userSettings2),
+                )
+            ));
 
         $this->objectManager->expects($this->once())->method('flush');
-        $service->calculatePreviousMonthBalance();
+
+        $end   = new DateTime("30 April 2014 23:59:59");
+        $this->bookingRepository
+            ->expects($this->at(0))
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user1, $user1Start, $this->equalTo($end))
+            ->will($this->returnValue(0));
+
+        $this->bookingRepository
+            ->expects($this->at(1))
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user1, $user2Start, $this->equalTo($end))
+            ->will($this->returnValue(0));
+
+        $this->runningBalanceService->recalculateAllUsersRunningBalance();
+        $this->assertEquals(-112.5, $runningBalance1->getBalance());
+        $this->assertEquals(-645, $runningBalance2->getBalance());
     }
 
-    public function testRecalculateSingleUserRunningBalance()
+    public function testCalculateRecalculateAllUsersRunningBalanceWithBookedHours()
     {
+        $user1Start = new DateTime("10 April 2014");
+        $user2Start = new DateTime("1 January 2014");
+        list($user1, $userSettings1) = $this->getUser($user1Start);
+        list($user2, $userSettings2) = $this->getUser($user2Start);
+
+        $runningBalance1 = new RunningBalance;
+        $runningBalance2 = new RunningBalance;
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findAll')
+            ->with(false)
+            ->will($this->returnValue([$user1, $user2]));
+
+        $this->balanceRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $runningBalance1),
+                    array($user2, $runningBalance2),
+                )
+            ));
+
+        $this->userSettingsRepository
+            ->expects($this->exactly(2))
+            ->method('findOneByUser')
+            ->will($this->returnValueMap(
+                array(
+                    array($user1, $userSettings1),
+                    array($user2, $userSettings2),
+                )
+            ));
+
+        $this->objectManager->expects($this->once())->method('flush');
+
+        $end   = new DateTime("30 April 2014 23:59:59");
+        $this->bookingRepository
+            ->expects($this->at(0))
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user1, $user1Start, $this->equalTo($end))
+            ->will($this->returnValue(100));
+
+        $this->bookingRepository
+            ->expects($this->at(1))
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user1, $user2Start, $this->equalTo($end))
+            ->will($this->returnValue(200));
+
+        $this->runningBalanceService->recalculateAllUsersRunningBalance();
+        $this->assertEquals(-12.5, $runningBalance1->getBalance());
+        $this->assertEquals(-445, $runningBalance2->getBalance());
+    }
+
+    /**
+     * @param float $startBalance
+     * @param DateTime $startDate
+     * @param float $expectedBalance
+     * @param float $bookedHours
+     * @dataProvider singleUserStartDateProvider
+     */
+    public function testRecalculateSingleUserRunningBalanceConsidersUsersStartDate(
+        $startBalance,
+        DateTime $startDate,
+        $expectedBalance,
+        $bookedHours
+    ) {
         $user = new User;
         $runningBalance = new RunningBalance;
         $userSettings = new UserSettings;
-        $userSettings->setFlexStartDate(new DateTime("12 March 2014"));
+        $userSettings->setFlexStartDate($startDate);
+        $userSettings->setStartingBalance($startBalance);
 
         $this->balanceRepository
             ->expects($this->once())
@@ -275,76 +328,37 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->With($user)
             ->will($this->returnValue($userSettings));
 
+        $this->bookingRepository
+            ->expects($this->once())
+            ->method('getTotalBookedBetweenByUser')
+            ->with($user, $startDate, $this->equalTo(new DateTime("30 April 2014 23:59:59")))
+            ->will($this->returnValue($bookedHours));
+
         $this->runningBalanceService->recalculateUserRunningBalance($user);
+        $this->assertEquals($expectedBalance, $runningBalance->getBalance());
     }
 
-    public function testRecalculateAllUsersRunningBalance()
+    /**
+     * @return array
+     */
+    public function singleUserStartDateProvider()
     {
-        $service = $this->getMock(
-            'JhFlexiTime\Service\RunningBalanceService',
-            ['recalculateRunningBalance'],
+        return [
             [
-                $this->userRepository,
-                $this->userSettingsRepository,
-                $this->bookingRepository,
-                $this->balanceRepository,
-                $this->periodService,
-                $this->objectManager,
-                $this->date,
-            ]
-        );
-
-        $user1 = new User;
-        $user2 = new User;
-        $runningBalance1 = new RunningBalance;
-        $runningBalance2 = new RunningBalance;
-        $userSettings1 = new UserSettings;
-        $userSettings2 = new UserSettings;
-        $userSettings1->setFlexStartDate(new DateTime("12 March 2014"));
-        $userSettings2->setFlexStartDate(new DateTime("12 March 2014"));
-
-        $users = [$user1, $user2];
-
-        $this->userRepository
-             ->expects($this->once())
-             ->method('findAll')
-             ->with(false)
-             ->will($this->returnValue($users));
-
-        $this->balanceRepository
-            ->expects($this->at(0))
-            ->method('findOneByUser')
-            ->with($user1)
-            ->will($this->returnValue($runningBalance1));
-
-        $this->balanceRepository
-            ->expects($this->at(1))
-            ->method('findOneByUser')
-            ->with($user2)
-            ->will($this->returnValue($runningBalance2));
-
-        $this->userSettingsRepository
-             ->expects($this->at(0))
-             ->method('findOneByUser')
-             ->With($user1)
-             ->will($this->returnValue($userSettings1));
-
-        $this->userSettingsRepository
-            ->expects($this->at(1))
-            ->method('findOneByUser')
-            ->With($user2)
-            ->will($this->returnValue($userSettings2));
-
-        $service->expects($this->at(0))
-            ->method('recalculateRunningBalance')
-            ->with($user1, $runningBalance1, $userSettings1->getFlexStartDate(), 0);
-
-        $service->expects($this->at(1))
-            ->method('recalculateRunningBalance')
-            ->with($user2, $runningBalance2, $userSettings1->getFlexStartDate(), 0);
-
-        $service->recalculateAllUsersRunningBalance();
+                'startingBalance'   => 0,
+                'startDate'         => new DateTime("12-03-2014"),
+                'expectedBalance'   => -270,
+                'bookedHours'       => 0
+            ],
+            [
+                'startingBalance'   => 10,
+                'startDate'         => new DateTime("12-03-2014"),
+                'expectedBalance'   => -260,
+                'bookedHours'       => 0
+            ],
+        ];
     }
+
 
     public function testSetUserBalance()
     {
@@ -361,5 +375,17 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->objectManager->expects($this->once())->method('flush');
         $this->runningBalanceService->setUserStartingBalance($user, $balance);
         $this->assertEquals(10, $userSettings->getStartingBalance());
+    }
+
+    /**
+     * @param DateTime $userStartDate
+     * @return array
+     */
+    private function getUser(DateTime $userStartDate)
+    {
+        $user = new User;
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($userStartDate);
+        return [$user, $userSettings];
     }
 }

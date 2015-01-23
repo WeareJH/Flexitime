@@ -92,7 +92,17 @@ class RunningBalanceService
     {
         foreach ($this->userRepository->findAll(false) as $user) {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
-            $this->calculateMonthBalance($user, $runningBalance, $this->lastMonth);
+            $userSettings   = $this->userSettingsRepository->findOneByUser($user);
+
+            $date = $this->lastMonth;
+            //if user started this month use that as from date instead
+            if ($userSettings->getFlexStartDate() > $date) {
+                $date = $userSettings->getFlexStartDate();
+            }
+
+            $runningBalance->addBalance(
+                $this->calculateBalance($user, $date, $this->lastMonth->endOfMonth())
+            );
         }
 
         $this->objectManager->flush();
@@ -114,6 +124,8 @@ class RunningBalanceService
                 $userSettings->getStartingBalance()
             );
         }
+
+        $this->objectManager->flush();
     }
 
     /**
@@ -131,6 +143,8 @@ class RunningBalanceService
             $userSettings->getFlexStartDate(),
             $userSettings->getStartingBalance()
         );
+
+        $this->objectManager->flush();
     }
 
     /**
@@ -139,59 +153,32 @@ class RunningBalanceService
      * @param DateTime $startDate
      * @param int $initialBalance
      */
-    public function recalculateRunningBalance(
+    private function recalculateRunningBalance(
         UserInterface $user,
         RunningBalance $runningBalance,
         DateTime $startDate,
         $initialBalance
     ) {
-        $period = $this->getMonthsBetweenUserStartAndLastMonth($startDate, $this->lastMonth);
         $runningBalance->setBalance($initialBalance);
-
-        foreach ($period as $date) {
-            $this->calculateMonthBalance($user, $runningBalance, $date);
-        }
-
-        $this->objectManager->flush();
+        $runningBalance->addBalance(
+            $this->calculateBalance($user, $startDate, $this->lastMonth->endOfMonth())
+        );
     }
 
     /**
-     * Calculate the month balance and add it to the running balance
+     * Calculate the balance between the two dates
      *
      * @param UserInterface $user
-     * @param RunningBalance $runningBalance
-     * @param DateTime $date
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return float
      */
-    public function calculateMonthBalance(UserInterface $user, RunningBalance $runningBalance, DateTime $date)
+    private function calculateBalance(UserInterface $user, DateTime $start, DateTime $end)
     {
-        $monthTotalHours    = $this->periodService->getTotalHoursInMonth($date);
-        $totalBookedHours   = $this->bookingRepository->getMonthBookedTotalByUser($user, $date);
+        $monthTotalHours    = $this->periodService->getTotalHoursBetweenDates($start, $end);
+        $totalBookedHours   = $this->bookingRepository->getTotalBookedBetweenByUser($user, $start, $end);
         $balance            = $totalBookedHours - $monthTotalHours;
-        $runningBalance->addBalance($balance);
-    }
-
-    /**
-     * @param DateTime $startDate
-     * @param DateTime $endDate
-     * @return \DatePeriod
-     */
-    public function getMonthsBetweenUserStartAndLastMonth(DateTime $startDate, DateTime $endDate)
-    {
-        //convert DateTime to JhDateTime
-        return array_map(
-            function (\DateTime $date) {
-                $jhDate = new DateTime();
-                $jhDate->setTimestamp($date->getTimestamp());
-                return $jhDate;
-            },
-            iterator_to_array(
-                new \DatePeriod(
-                    $startDate->startOfMonth(),
-                    new \DateInterval("P1M"),
-                    $endDate->endOfMonth()
-                )
-            )
-        );
+        return $balance;
     }
 
     /**

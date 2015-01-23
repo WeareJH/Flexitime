@@ -177,64 +177,6 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-//    /**
-//     * @param DateTime $month
-//     * @param $expectedTotal
-//     *
-//     * @dataProvider beginningMonthToDateProvider
-//     */
-//    public function testGetTotalHoursFromBeginningOfMonthToDate(DateTime $month, $expectedTotal)
-//    {
-//        $hours = $this->periodService->getTotalHoursFromBeginningOfMonthToDate($month);
-//        $this->assertEquals($expectedTotal, $hours);
-//    }
-//
-//    /**
-//     * @return array
-//     */
-//    public function beginningMonthToDateProvider()
-//    {
-//        /**
-//         *  Date | Expected Total Month Hours
-//         */
-//        return [
-//            [new DateTime("10 March 2014"), 45],
-//            [new DateTime("01 March 2014 00:00"), 0],
-//            [new DateTime("31 March 2014 23:59:59"), 157.5],
-//            [new DateTime("01 April 1988"), 7.5],
-//            [new DateTime("08 February 2011"), 45],
-//        ];
-//    }
-
-//    /**
-//     * @param DateTime $month
-//     * @param $expectedTotal
-//     *
-//     * @dataProvider dateToEndOfMonthProvider
-//     */
-//    public function testGetTotalHoursFromDateToEndOfMonth(DateTime $month, $expectedTotal)
-//    {
-//        $hours = $this->periodService->getTotalHoursFromDateToEndOfMonth($month);
-//        $this->assertEquals($expectedTotal, $hours);
-//    }
-//
-//    /**
-//     * @return array
-//     */
-//    public function dateToEndOfMonthProvider()
-//    {
-//        /**
-//         *  Date | Expected Total Month Hours
-//         */
-//        return [
-//            [new DateTime("1 March 2014"), 157.5],
-//            [new DateTime("20 March 2014 00:00"), 60],
-//            [new DateTime("20 March 2014 23:59:59"), 60],
-//            [new DateTime("28 April 1988"), 15],
-//            [new DateTime("28 February 2011"), 7.5],
-//        ];
-//    }
-
     /**
      * @param DateTime $date
      * @param array $expected
