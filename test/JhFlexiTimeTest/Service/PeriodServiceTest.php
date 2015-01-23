@@ -348,7 +348,7 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         $period = new \DatePeriod(new DateTime($start), new \DateInterval('P1D'), $end);
 
         return array_map(
-            function (DateTime $date) {
+            function (\DateTime $date) {
                 $jhDate = new DateTime();
                 $jhDate->setTimestamp($date->getTimestamp());
                 return $jhDate;
