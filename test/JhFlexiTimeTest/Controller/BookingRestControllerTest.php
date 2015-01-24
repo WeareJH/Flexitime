@@ -5,6 +5,8 @@ namespace JhFlexiTimeTest\Controller;
 use JhFlexiTime\Controller\BookingRestController;
 
 use JhFlexiTime\DateTime\DateTime;
+use JhFlexiTime\Entity\UserSettings;
+use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -31,15 +33,24 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
     protected $bookingService;
     protected $timeCalculatorService;
 
+    /**
+     * @var UserSettingsRepositoryInterface
+     */
+    protected $userSettingsRepository;
+
     public function setUp()
     {
 
-        $userRepository = $this->getMock('JhUser\Repository\UserRepositoryInterface');
+        $userRepository
+            = $this->getMock('JhUser\Repository\UserRepositoryInterface');
+        $this->userSettingsRepository
+            = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
 
         $this->controller = new BookingRestController(
             $this->getBookingService(),
             $this->getTimeCalculatorService(),
-            $userRepository
+            $userRepository,
+            $this->userSettingsRepository
         );
 
         $this->request      = new Request();
@@ -135,11 +146,21 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
     {
         $booking    = $this->getMockBooking();
         $date       = new DateTime("25 March 2014");
+        $startDate  = new DateTime("21 April 2014");
 
         $this->controller->setDate($date);
         $this->configureMockBookingService('getUserBookingsForMonth', [$this->user, $date], [$booking]);
         $this->configureMockBookingService('getPagination', [$date], []);
-        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $date], ['some-total', 20]);
+        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $startDate, $date], ['some-total', 20]);
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($this->user)
+            ->will($this->returnValue($userSettings));
 
         $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
@@ -181,11 +202,12 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function testCreateCanBeAccessed()
     {
-        $booking = $this->getMockBooking();
+        $startDate  = new DateTime("21 April 2014");
+        $booking    = $this->getMockBooking();
         $this->configureMockBookingService('create', [], $booking);
         $this->configureMockTimeCalculatorService(
             'getTotals',
-            [$this->user, $booking->getDate()],
+            [$this->user, $startDate, $booking->getDate()],
             ['some-total', 20]
         );
 
@@ -194,6 +216,15 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
             [$this->user, $booking->getDate()],
             ['some-total', 20]
         );
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($this->user)
+            ->will($this->returnValue($userSettings));
 
         $this->request->setMethod('POST');
         $this->request->getPost()->set('date', '25-03-2014');
@@ -237,9 +268,10 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function testUpdateCanBeAccessed()
     {
-        $id = "123456789-5";
-        $booking = $this->getMockBooking();
-        $data = ['date' => '25-03-2014', 'startTime' => '09:00'];
+        $id         = "123456789-5";
+        $booking    = $this->getMockBooking();
+        $data       = ['date' => '25-03-2014', 'startTime' => '09:00'];
+        $startDate  = new DateTime("21 April 2014");
 
         $this->bookingService->expects($this->once())
             ->method('update')
@@ -248,7 +280,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
         $this->configureMockTimeCalculatorService(
             'getTotals',
-            [$this->user, $booking->getDate()],
+            [$this->user, $startDate, $booking->getDate()],
             ['some-total', 20]
         );
 
@@ -257,6 +289,15 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
             [$this->user, $booking->getDate()],
             ['some-total', 20]
         );
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($this->user)
+            ->will($this->returnValue($userSettings));
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('PUT');
@@ -306,8 +347,9 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
     public function testDeleteCanBeAccessed()
     {
-        $id      = "123456789-5";
-        $booking = $this->getMockBooking();
+        $id         = "123456789-5";
+        $booking    = $this->getMockBooking();
+        $startDate  = new DateTime("21 April 2014");
 
         $this->bookingService->expects($this->once())
             ->method('delete')
@@ -316,7 +358,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
 
         $this->configureMockTimeCalculatorService(
             'getTotals',
-            [$this->user, $booking->getDate()],
+            [$this->user, $startDate, $booking->getDate()],
             ['some-total', 20]
         );
 
@@ -325,6 +367,15 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
             [$this->user, $booking->getDate()],
             ['some-total', 20]
         );
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($this->user)
+            ->will($this->returnValue($userSettings));
 
         $this->routeMatch->setParam('id', $id);
         $this->request->setMethod('DELETE');

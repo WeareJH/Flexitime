@@ -178,35 +178,6 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param DateTime $month
-     * @param $expectedTotal
-     *
-     * @dataProvider monthToDateProvider
-     */
-    public function testGetTotalHoursToDateInMonth(DateTime $month, $expectedTotal)
-    {
-        $hours = $this->periodService->getTotalHoursToDateInMonth($month);
-        $this->assertEquals($expectedTotal, $hours);
-    }
-
-    /**
-     * @return array
-     */
-    public function monthToDateProvider()
-    {
-        /**
-         *  Date | Expected Total Month Hours
-         */
-        return [
-            [new DateTime("10 March 2014"), 45],
-            [new DateTime("01 March 2014 00:00"), 0],
-            [new DateTime("31 March 2014 23:59:59"), 157.5],
-            [new DateTime("01 April 1988"), 7.5],
-            [new DateTime("08 February 2011"), 45],
-        ];
-    }
-
-    /**
      * @param DateTime $date
      * @param array $expected
      * @dataProvider firstAndLastDayOfWeekProvider
@@ -318,7 +289,14 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
         $end->modify('+1 day');
         $period = new \DatePeriod(new DateTime($start), new \DateInterval('P1D'), $end);
 
-        return iterator_to_array($period);
+        return array_map(
+            function (\DateTime $date) {
+                $jhDate = new DateTime();
+                $jhDate->setTimestamp($date->getTimestamp());
+                return $jhDate;
+            },
+            iterator_to_array($period)
+        );
     }
 
     public function testRemoveNonWorkingDays()
@@ -354,12 +332,6 @@ class PeriodServiceTest extends \PHPUnit_Framework_TestCase
     {
         $date = new DateTime("6 April 2014");
         $this->assertSame(4, $this->periodService->getNumWorkingDaysInWeek($date));
-    }
-
-    public function testGetPeriodThrowsExceptionIfInvalidTypePassedIn()
-    {
-        $this->setExpectedException('InvalidArgumentException', 'Type is invalid');
-        $this->periodService->getPeriod(new DateTime, 'NOTAVALIDTYPE');
     }
 
     public function testGetDaysInWeekThrowsExceptionIfDateNotInAnyWeek()

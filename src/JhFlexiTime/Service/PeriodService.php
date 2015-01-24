@@ -16,16 +16,6 @@ class PeriodService implements PeriodServiceInterface
 {
 
     /**
-     * Full Month - When wanting to count every day in the month
-     */
-    const FULL_MONTH = 'fullMonth';
-
-    /**
-     * Partial Month - When wanting to count every day up to given day
-     */
-    const MONTH_TO_DATE = 'monthToDate';
-
-    /**
      * @var \JhFlexiTime\Options\ModuleOptions
      */
     protected $options;
@@ -36,36 +26,6 @@ class PeriodService implements PeriodServiceInterface
     public function __construct(ModuleOptions $options)
     {
         $this->options = $options;
-    }
-
-    /**
-     * Create a date period, depending on the the type given
-     *
-     * @param DateTime $date
-     * @param string $type
-     * @return \DatePeriod
-     * @throws \InvalidArgumentException
-     */
-    public function getPeriod(DateTime $date, $type)
-    {
-        switch ($type) {
-            case self::MONTH_TO_DATE:
-                return new \DatePeriod(
-                    new DateTime(sprintf('first day of %s', $date->format('F Y'))),
-                    new \DateInterval('P1D'),
-                    new DateTime(sprintf('%s 23:59:59', $date->format('d M Y')))
-                );
-                break;
-            case self::FULL_MONTH:
-                return new \DatePeriod(
-                    new DateTime(sprintf('first day of %s', $date->format('F Y'))),
-                    new \DateInterval('P1D'),
-                    new DateTime(sprintf('last day of %s 23:59:59', $date->format('F Y')))
-                );
-                break;
-        }
-
-        throw new \InvalidArgumentException("Type is invalid");
     }
 
     /**
@@ -92,21 +52,35 @@ class PeriodService implements PeriodServiceInterface
     }
 
     /**
-     * @param DateTime $month
+     * @param DateTime $start
+     * @param DateTime $end
+     *
      * @return int
      */
-    public function getTotalHoursInMonth(DateTime $month)
+    public function getTotalHoursBetweenDates(DateTime $start, DateTime $end)
     {
-        return $this->getTotalHoursInPeriod($this->getPeriod($month, self::FULL_MONTH));
+        $period = new \DatePeriod(
+            new DateTime(sprintf('%s 00:00:00', $start->format('d-m-Y'))),
+            new \DateInterval('P1D'),
+            new DateTime(sprintf('%s 23:59:59', $end->format('d-m-Y')))
+        );
+        return $this->getTotalHoursInPeriod($period);
     }
 
     /**
+     * Get total hours in a given month
+     *
      * @param DateTime $month
-     * @return int
+     * @return float
      */
-    public function getTotalHoursToDateInMonth(DateTime $month)
+    public function getTotalHoursInMonth(DateTime $month)
     {
-        return $this->getTotalHoursInPeriod($this->getPeriod($month, self::MONTH_TO_DATE));
+        $period = new \DatePeriod(
+            new DateTime(sprintf('first day of %s 00:00:00', $month->format('F Y'))),
+            new \DateInterval('P1D'),
+            new DateTime(sprintf('last day of %s 23:59:59', $month->format('F Y')))
+        );
+        return $this->getTotalHoursInPeriod($period);
     }
 
     /**
@@ -220,14 +194,12 @@ class PeriodService implements PeriodServiceInterface
      */
     public function removeNonWorkingDays(array $dates)
     {
-        $workingDays = [];
-        foreach ($dates as $day) {
-            if ($day->format('N') < 6) {
-                $workingDays[] = $day;
+        return array_filter(
+            $dates,
+            function (DateTime $day) {
+                return $day->format('N') < 6;
             }
-        }
-
-        return $workingDays;
+        );
     }
 
     /**

@@ -12,16 +12,19 @@ use JhFlexiTime\DateTime\DateTime;
 interface PeriodServiceInterface
 {
     /**
+     * Get total hours in a given month
+     *
      * @param DateTime $month
      * @return float
      */
     public function getTotalHoursInMonth(DateTime $month);
 
     /**
-     * @param DateTime $month
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function getTotalHoursToDateInMonth(DateTime $month);
+    public function getTotalHoursBetweenDates(DateTime $start, DateTime $end);
 
     /**
      * @param DateTime $start

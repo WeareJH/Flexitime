@@ -25,7 +25,8 @@ class BookingRestControllerFactory implements FactoryInterface
         return new BookingRestController(
             $serviceLocator->get('JhFlexiTime\Service\BookingService'),
             $serviceLocator->get('JhFlexiTime\Service\TimeCalculatorService'),
-            $serviceLocator->get('JhUser\Repository\UserRepository')
+            $serviceLocator->get('JhUser\Repository\UserRepository'),
+            $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository')
         );
     }
 }

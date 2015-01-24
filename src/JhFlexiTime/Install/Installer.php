@@ -14,6 +14,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use JhInstaller\Install\Exception as InstallException;
 use JhInstaller\Install\InstallerInterface;
 use ZfcUser\Entity\UserInterface;
+use JhFlexiTime\DateTime\DateTime;
 
 /**
  * Class Installer
@@ -112,9 +113,9 @@ class Installer implements InstallerInterface
             $userSettings = new UserSettings();
             $userSettings
                 ->setUser($user)
-                ->setDefaultStartTime(new \DateTime("09:00"))
-                ->setDefaultEndTime(new \DateTime("17:00"))
-                ->setFlexStartDate(new \DateTime);
+                ->setDefaultStartTime(new DateTime("09:00"))
+                ->setDefaultEndTime(new DateTime("17:00"))
+                ->setFlexStartDate(new DateTime);
 
             $this->objectManager->persist($userSettings);
 
