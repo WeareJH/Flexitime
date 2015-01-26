@@ -63,6 +63,11 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $objectManager;
 
+    /**
+     * @var \Zend\EventManager\EventManagerInterface
+     */
+    protected $evm;
+
     public function setUp()
     {
         $this->userRepository           = $this->getMock('JhUser\Repository\UserRepositoryInterface');
@@ -72,6 +77,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->bookingRepository        = $this->getMock('JhFlexiTime\Repository\BookingRepositoryInterface');
         $this->objectManager            = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
         $this->date                     = new DateTime("2 May 2014");
+        $this->evm                      = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $this->runningBalanceService = new RunningBalanceService(
             $this->userRepository,
@@ -82,6 +88,8 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             $this->objectManager,
             $this->date
         );
+
+        $this->runningBalanceService->setEventManager($this->evm);
     }
 
     public function testCalculatePreviousMonthBalanceWithNoBookedHours()
@@ -120,6 +128,11 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
                     array($user2, $userSettings2),
                 )
             ));
+
+        $this->evmExpects([
+            ['balance'   => $runningBalance1, 'count' => 1],
+            ['balance'   => $runningBalance2, 'count' => 1]
+        ]);
 
         $this->objectManager->expects($this->once())->method('flush');
 
@@ -178,6 +191,10 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->with($user1, $this->equalTo(new DateTime("1 April 2014 00:00:00")), $this->equalTo($end))
             ->will($this->returnValue(100));
 
+        $this->evmExpects([
+            ['balance'   => $runningBalance1, 'count' => 1],
+            ['balance'   => $runningBalance2, 'count' => 1]
+        ]);
         $this->objectManager->expects($this->once())->method('flush');
 
         $this->runningBalanceService->calculatePreviousMonthBalance();
@@ -221,6 +238,11 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
                 )
             ));
 
+        $this->evmExpects([
+            ['balance'   => $runningBalance1, 'count' => 1],
+            ['balance'   => $runningBalance2, 'count' => 4]
+        ]);
+
         $this->objectManager->expects($this->once())->method('flush');
 
         $end   = new DateTime("30 April 2014 23:59:59");
@@ -233,7 +255,37 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->bookingRepository
             ->expects($this->at(1))
             ->method('getTotalBookedBetweenByUser')
-            ->with($user1, $user2Start, $this->equalTo($end))
+            ->with($user1, $user2Start, $this->equalTo(new DateTime('31 January 2014 23:59:59')))
+            ->will($this->returnValue(0));
+
+        $this->bookingRepository
+            ->expects($this->at(2))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user1,
+                $this->equalTo(new DateTime('1 February 2014 00:00:00')),
+                $this->equalTo(new DateTime('28 February 2014 23:59:59'))
+            )
+            ->will($this->returnValue(0));
+
+        $this->bookingRepository
+            ->expects($this->at(3))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user1,
+                $this->equalTo(new DateTime('1 March 2014 00:00:00')),
+                $this->equalTo(new DateTime('31 March 2014 23:59:59'))
+            )
+            ->will($this->returnValue(0));
+
+        $this->bookingRepository
+            ->expects($this->at(4))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user1,
+                $this->equalTo(new DateTime('1 April 2014 00:00:00')),
+                $this->equalTo(new DateTime('30 April 2014 23:59:59'))
+            )
             ->will($this->returnValue(0));
 
         $this->runningBalanceService->recalculateAllUsersRunningBalance();
@@ -277,6 +329,11 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
                 )
             ));
 
+        $this->evmExpects([
+            ['balance'   => $runningBalance1, 'count' => 1],
+            ['balance'   => $runningBalance2, 'count' => 4]
+        ]);
+
         $this->objectManager->expects($this->once())->method('flush');
 
         $end   = new DateTime("30 April 2014 23:59:59");
@@ -289,8 +346,38 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->bookingRepository
             ->expects($this->at(1))
             ->method('getTotalBookedBetweenByUser')
-            ->with($user1, $user2Start, $this->equalTo($end))
-            ->will($this->returnValue(200));
+            ->with($user1, $user2Start, $this->equalTo(new DateTime('31 January 2014 23:59:59')))
+            ->will($this->returnValue(50));
+
+        $this->bookingRepository
+            ->expects($this->at(2))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user1,
+                $this->equalTo(new DateTime('1 February 2014 00:00:00')),
+                $this->equalTo(new DateTime('28 February 2014 23:59:59'))
+            )
+            ->will($this->returnValue(50));
+
+        $this->bookingRepository
+            ->expects($this->at(3))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user1,
+                $this->equalTo(new DateTime('1 March 2014 00:00:00')),
+                $this->equalTo(new DateTime('31 March 2014 23:59:59'))
+            )
+            ->will($this->returnValue(50));
+
+        $this->bookingRepository
+            ->expects($this->at(4))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user1,
+                $this->equalTo(new DateTime('1 April 2014 00:00:00')),
+                $this->equalTo(new DateTime('30 April 2014 23:59:59'))
+            )
+            ->will($this->returnValue(50));
 
         $this->runningBalanceService->recalculateAllUsersRunningBalance();
         $this->assertEquals(-12.5, $runningBalance1->getBalance());
@@ -328,10 +415,27 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->With($user)
             ->will($this->returnValue($userSettings));
 
+        $this->evmExpects([['balance'   => $runningBalance, 'count' => 2]]);
+        $this->objectManager->expects($this->once())->method('flush');
+
         $this->bookingRepository
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('getTotalBookedBetweenByUser')
-            ->with($user, $startDate, $this->equalTo(new DateTime("30 April 2014 23:59:59")))
+            ->with(
+                $user,
+                $startDate,
+                $this->equalTo(new DateTime("31 March 2014 23:59:59"))
+            )
+            ->will($this->returnValue($bookedHours));
+
+        $this->bookingRepository
+            ->expects($this->at(1))
+            ->method('getTotalBookedBetweenByUser')
+            ->with(
+                $user,
+                $this->equalTo(new DateTime("01 April 2014 00:00:00")),
+                $this->equalTo(new DateTime("30 April 2014 23:59:59"))
+            )
             ->will($this->returnValue($bookedHours));
 
         $this->runningBalanceService->recalculateUserRunningBalance($user);
@@ -358,7 +462,6 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ],
         ];
     }
-
 
     public function testSetUserBalance()
     {
@@ -387,5 +490,34 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $userSettings = new UserSettings;
         $userSettings->setFlexStartDate($userStartDate);
         return [$user, $userSettings];
+    }
+
+    /**
+     * @param array $balances
+     */
+    private function evmExpects(array $balances)
+    {
+        $invocationCount = 0;
+        foreach ($balances as $balance) {
+            for ($i = 0; $i < $balance['count']; $i++) {
+                $this->evm
+                    ->expects($this->at($invocationCount++))
+                    ->method('trigger')
+                    ->with(
+                        'addMonthBalance.pre',
+                        null,
+                        ['runningBalance' => $balance['balance']]
+                    );
+
+                $this->evm
+                    ->expects($this->at($invocationCount++))
+                    ->method('trigger')
+                    ->with(
+                        'addMonthBalance.post',
+                        null,
+                        ['runningBalance' => $balance['balance']]
+                    );
+            }
+        }
     }
 }

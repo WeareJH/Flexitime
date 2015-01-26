@@ -7,17 +7,21 @@ use JhFlexiTime\Repository\BalanceRepositoryInterface;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use JhUser\Repository\UserRepositoryInterface;
 use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
+use Zend\EventManager\EventManagerAwareInterface;
 use ZfcUser\Entity\UserInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\DateTime\DateTime;
+use Zend\EventManager\EventManagerAwareTrait;
 
 /**
  * Class RunningBalanceService
  * @package JhFlexiTime\Service
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class RunningBalanceService
+class RunningBalanceService implements EventManagerAwareInterface
 {
+
+    use EventManagerAwareTrait;
 
     /**
      * @var \DateTime
@@ -100,8 +104,13 @@ class RunningBalanceService
                 $date = $userSettings->getFlexStartDate();
             }
 
-            $runningBalance->addBalance(
-                $this->calculateBalance($user, $date, $this->lastMonth->endOfMonth())
+            $this->addMonthBalance(
+                $user,
+                $runningBalance,
+                [
+                    'start' => $date,
+                    'end' => $this->lastMonth->endOfMonth()
+                ]
             );
         }
 
@@ -117,10 +126,15 @@ class RunningBalanceService
             $runningBalance = $this->balanceRepository->findOneByUser($user);
             $userSettings   = $this->userSettingsRepository->findOneByUser($user);
 
+            $monthRanges = $this->getMonthRange(
+                $userSettings->getFlexStartDate(),
+                $this->lastMonth->endOfMonth()
+            );
+
             $this->recalculateRunningBalance(
                 $user,
                 $runningBalance,
-                $userSettings->getFlexStartDate(),
+                $monthRanges,
                 $userSettings->getStartingBalance()
             );
         }
@@ -137,10 +151,16 @@ class RunningBalanceService
     {
         $runningBalance = $this->balanceRepository->findOneByUser($user);
         $userSettings   = $this->userSettingsRepository->findOneByUser($user);
+
+        $monthRanges = $this->getMonthRange(
+            $userSettings->getFlexStartDate(),
+            $this->lastMonth->endOfMonth()
+        );
+
         $this->recalculateRunningBalance(
             $user,
             $runningBalance,
-            $userSettings->getFlexStartDate(),
+            $monthRanges,
             $userSettings->getStartingBalance()
         );
 
@@ -149,20 +169,53 @@ class RunningBalanceService
 
     /**
      * @param UserInterface $user
+     * @param float $balance
+     */
+    public function setUserStartingBalance(UserInterface $user, $balance)
+    {
+        $settings = $this->userSettingsRepository->findOneByUser($user);
+        $settings->setStartingBalance($balance);
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @param UserInterface $user
      * @param RunningBalance $runningBalance
-     * @param DateTime $startDate
+     * @param array $months
      * @param int $initialBalance
      */
     private function recalculateRunningBalance(
         UserInterface $user,
         RunningBalance $runningBalance,
-        DateTime $startDate,
+        array $months,
         $initialBalance
     ) {
+
         $runningBalance->setBalance($initialBalance);
+
+        foreach ($months as $month) {
+            $this->addMonthBalance($user, $runningBalance, $month);
+        }
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param RunningBalance $runningBalance
+     * @param $month
+     */
+    private function addMonthBalance(UserInterface $user, RunningBalance $runningBalance, array $month)
+    {
+        $this->getEventManager()->trigger('addMonthBalance.pre', null, ['runningBalance' => $runningBalance]);
+
         $runningBalance->addBalance(
-            $this->calculateBalance($user, $startDate, $this->lastMonth->endOfMonth())
+            $this->calculateBalance(
+                $user,
+                $month['start'],
+                $month['end']
+            )
         );
+
+        $this->getEventManager()->trigger('addMonthBalance.post', null, ['runningBalance' => $runningBalance]);
     }
 
     /**
@@ -182,13 +235,24 @@ class RunningBalanceService
     }
 
     /**
-     * @param UserInterface $user
-     * @param float $balance
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return array
      */
-    public function setUserStartingBalance(UserInterface $user, $balance)
+    private function getMonthRange(DateTime $start, DateTime $end)
     {
-        $settings = $this->userSettingsRepository->findOneByUser($user);
-        $settings->setStartingBalance($balance);
-        $this->objectManager->flush();
+        $months = $start->getMonthsBetween($end);
+        $monthRanges = [];
+        foreach ($months as $key => $month) {
+            $monthRanges[] = [
+                'start' => $month->startOfMonth(),
+                'end'   => $month->endOfMonth()
+            ];
+
+            if ($key === 0) {
+                $monthRanges[$key]['start'] = $start;
+            }
+        }
+        return $monthRanges;
     }
 }
