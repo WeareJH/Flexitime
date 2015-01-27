@@ -121,4 +121,29 @@ class DateTimeTest extends PHPUnit_Framework_TestCase
         $this->assertNotSame($d, $new);
         $this->assertEquals('30-11-1947 23:59:59', $new->format('d-m-Y H:i:s'));
     }
+
+    /**
+     * @param DateTime $date
+     * @param bool     $expected
+     * @dataProvider previousMonthProvider
+     */
+    public function testIsInPreviousMonth(DateTime $date, $expected)
+    {
+        $subject = new DateTime("11 November 1947 00:00:00");
+        $this->assertEquals($expected, $subject->isInPreviousMonth($date));
+    }
+
+    /**
+     * @return array
+     */
+    public function previousMonthProvider()
+    {
+        return [
+            [new DateTime("31 October 1947 23:59:59"), true],
+            [new DateTime("31 October 1947 00:00:00"), true],
+            [new DateTime("10 November 1940 00:00:00"), true],
+            [new DateTime("11 November 1947 00:00:00"), false],
+            [new DateTime("11 November 2010 00:00:00"), false],
+        ];
+    }
 }

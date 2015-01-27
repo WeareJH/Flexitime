@@ -31,6 +31,15 @@ class DateTime extends \DateTime
     }
 
     /**
+     * @param DateTime $date
+     * @return bool
+     */
+    public function isInPreviousMonth(DateTime $date)
+    {
+        return $date < $this->startOfMonth();
+    }
+
+    /**
      * Immutable function to get the start of this month
      *
      * @return DateTime
