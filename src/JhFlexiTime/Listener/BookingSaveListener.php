@@ -61,7 +61,7 @@ class BookingSaveListener extends AbstractListenerAggregate
         $booking = $e->getParam('booking');
 
         if ($this->date->isInPreviousMonth($booking->getDate())) {
-            $this->runningBalanceService->recalculateUserRunningBalance($booking->getUser());
+            $this->runningBalanceService->reIndexIndividualUserRunningBalance($booking->getUser());
         }
     }
 }

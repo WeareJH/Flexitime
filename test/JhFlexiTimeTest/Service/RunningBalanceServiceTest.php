@@ -136,7 +136,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->objectManager->expects($this->once())->method('flush');
 
-        $this->runningBalanceService->calculatePreviousMonthBalance();
+        $this->runningBalanceService->indexPreviousMonthBalance();
         $this->assertEquals(-92.5, $runningBalance1->getBalance());
         $this->assertEquals(-185, $runningBalance2->getBalance());
     }
@@ -197,7 +197,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->objectManager->expects($this->once())->method('flush');
 
-        $this->runningBalanceService->calculatePreviousMonthBalance();
+        $this->runningBalanceService->indexPreviousMonthBalance();
         $this->assertEquals(7.5, $runningBalance1->getBalance());
         $this->assertEquals(-85, $runningBalance2->getBalance());
     }
@@ -241,7 +241,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->evmExpects([
             ['balance'   => $runningBalance1, 'count' => 1],
             ['balance'   => $runningBalance2, 'count' => 4]
-        ]);
+        ], true);
 
         $this->objectManager->expects($this->once())->method('flush');
 
@@ -288,7 +288,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue(0));
 
-        $this->runningBalanceService->recalculateAllUsersRunningBalance();
+        $this->runningBalanceService->reIndexAllUsersRunningBalance();
         $this->assertEquals(-112.5, $runningBalance1->getBalance());
         $this->assertEquals(-645, $runningBalance2->getBalance());
     }
@@ -332,7 +332,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $this->evmExpects([
             ['balance'   => $runningBalance1, 'count' => 1],
             ['balance'   => $runningBalance2, 'count' => 4]
-        ]);
+        ], true);
 
         $this->objectManager->expects($this->once())->method('flush');
 
@@ -379,7 +379,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue(50));
 
-        $this->runningBalanceService->recalculateAllUsersRunningBalance();
+        $this->runningBalanceService->reIndexAllUsersRunningBalance();
         $this->assertEquals(-12.5, $runningBalance1->getBalance());
         $this->assertEquals(-445, $runningBalance2->getBalance());
     }
@@ -415,7 +415,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ->With($user)
             ->will($this->returnValue($userSettings));
 
-        $this->evmExpects([['balance'   => $runningBalance, 'count' => 2]]);
+        $this->evmExpects([['balance'   => $runningBalance, 'count' => 2]], true);
         $this->objectManager->expects($this->once())->method('flush');
 
         $this->bookingRepository
@@ -438,7 +438,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($bookedHours));
 
-        $this->runningBalanceService->recalculateUserRunningBalance($user);
+        $this->runningBalanceService->reIndexIndividualUserRunningBalance($user);
         $this->assertEquals($expectedBalance, $runningBalance->getBalance());
     }
 
@@ -494,11 +494,24 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param array $balances
+     * @param bool $addReindexPreAndPostEvents
      */
-    private function evmExpects(array $balances)
+    private function evmExpects(array $balances, $addReindexPreAndPostEvents = false)
     {
         $invocationCount = 0;
         foreach ($balances as $balance) {
+
+            if ($addReindexPreAndPostEvents) {
+                $this->evm
+                    ->expects($this->at($invocationCount++))
+                    ->method('trigger')
+                    ->with(
+                        'reIndexUserRunningBalance.pre',
+                        null,
+                        ['runningBalance' => $balance['balance']]
+                    );
+            }
+
             for ($i = 0; $i < $balance['count']; $i++) {
                 $this->evm
                     ->expects($this->at($invocationCount++))
@@ -514,6 +527,17 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
                     ->method('trigger')
                     ->with(
                         'addMonthBalance.post',
+                        null,
+                        ['runningBalance' => $balance['balance']]
+                    );
+            }
+
+            if ($addReindexPreAndPostEvents) {
+                $this->evm
+                    ->expects($this->at($invocationCount++))
+                    ->method('trigger')
+                    ->with(
+                        'reIndexUserRunningBalance.post',
                         null,
                         ['runningBalance' => $balance['balance']]
                     );

@@ -62,10 +62,10 @@ class RunningBalanceCliController extends AbstractActionController
             }
 
             $this->console->writeLine("Recalculating Running Balance for $email", ColorInterface::GREEN);
-            $this->runningBalanceService->recalculateUserRunningBalance($user);
+            $this->runningBalanceService->reIndexIndividualUserRunningBalance($user);
         } else {
             $this->console->writeLine("Recalculating Running Balance for all Users", ColorInterface::GREEN);
-            $this->runningBalanceService->recalculateAllUsersRunningBalance();
+            $this->runningBalanceService->reIndexAllUsersRunningBalance();
 
         }
 
@@ -82,7 +82,7 @@ class RunningBalanceCliController extends AbstractActionController
             "Calculating Running Balance for all Users for previous month",
             ColorInterface::GREEN
         );
-        $this->runningBalanceService->calculatePreviousMonthBalance();
+        $this->runningBalanceService->indexPreviousMonthBalance();
         $this->console->writeLine("Finished! ", ColorInterface::GREEN);
     }
 
@@ -106,7 +106,7 @@ class RunningBalanceCliController extends AbstractActionController
 
         $this->runningBalanceService->setUserStartingBalance($user, $balance);
         //recalculate balance
-        $this->runningBalanceService->recalculateUserRunningBalance($user);
+        $this->runningBalanceService->reIndexIndividualUserRunningBalance($user);
         $this->console->writeLine(
             sprintf("Successfully set User '%s' balance to '%s'! ", $email, $balance),
             ColorInterface::GREEN

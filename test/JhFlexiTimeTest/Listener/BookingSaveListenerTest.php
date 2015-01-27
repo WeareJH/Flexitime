@@ -86,7 +86,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->runningBalanceService
             ->expects($this->once())
-            ->method('recalculateUserRunningBalance')
+            ->method('reIndexIndividualUserRunningBalance')
             ->with($user);
 
         $e = new Event();

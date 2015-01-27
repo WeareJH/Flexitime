@@ -92,7 +92,7 @@ class RunningBalanceService implements EventManagerAwareInterface
      * Calculate the previous month balance for all users
      * and add it to their running balance
      */
-    public function calculatePreviousMonthBalance()
+    public function indexPreviousMonthBalance()
     {
         foreach ($this->userRepository->findAll(false) as $user) {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
@@ -120,7 +120,7 @@ class RunningBalanceService implements EventManagerAwareInterface
     /**
      * Recalculate all user's running balance
      */
-    public function recalculateAllUsersRunningBalance()
+    public function reIndexAllUsersRunningBalance()
     {
         foreach ($this->userRepository->findAll(false) as $user) {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
@@ -131,7 +131,7 @@ class RunningBalanceService implements EventManagerAwareInterface
                 $this->lastMonth->endOfMonth()
             );
 
-            $this->recalculateRunningBalance(
+            $this->reIndexRunningBalance(
                 $user,
                 $runningBalance,
                 $monthRanges,
@@ -147,7 +147,7 @@ class RunningBalanceService implements EventManagerAwareInterface
      *
      * @param UserInterface $user
      */
-    public function recalculateUserRunningBalance(UserInterface $user)
+    public function reIndexIndividualUserRunningBalance(UserInterface $user)
     {
         $runningBalance = $this->balanceRepository->findOneByUser($user);
         $userSettings   = $this->userSettingsRepository->findOneByUser($user);
@@ -157,7 +157,7 @@ class RunningBalanceService implements EventManagerAwareInterface
             $this->lastMonth->endOfMonth()
         );
 
-        $this->recalculateRunningBalance(
+        $this->reIndexRunningBalance(
             $user,
             $runningBalance,
             $monthRanges,
@@ -184,7 +184,7 @@ class RunningBalanceService implements EventManagerAwareInterface
      * @param array $months
      * @param int $initialBalance
      */
-    private function recalculateRunningBalance(
+    private function reIndexRunningBalance(
         UserInterface $user,
         RunningBalance $runningBalance,
         array $months,

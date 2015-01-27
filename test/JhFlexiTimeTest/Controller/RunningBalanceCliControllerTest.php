@@ -60,7 +60,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->once())
-            ->method('calculatePreviousMonthBalance');
+            ->method('indexPreviousMonthBalance');
 
         $this->dispatch(new Request(['scriptname.php', "calc-prev-month-balance"]));
 
@@ -95,12 +95,12 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
              ->expects($this->once())
-             ->method('recalculateUserRunningBalance')
+             ->method('reIndexIndividualUserRunningBalance')
              ->with($user);
 
         $this->runningBalanceService
             ->expects($this->never())
-            ->method('recalculateAllUsersRunningBalance');
+            ->method('reIndexAllUsersRunningBalance');
 
         $this->dispatch(new Request(['scriptname.php', "re-calc-balance-user $email"]));
 
@@ -124,11 +124,11 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->never())
-            ->method('recalculateAllUsersRunningBalance');
+            ->method('reIndexAllUsersRunningBalance');
 
         $this->runningBalanceService
             ->expects($this->never())
-            ->method('recalculateUserRunningBalance');
+            ->method('reIndexIndividualUserRunningBalance');
 
         $this->dispatch(new Request(['scriptname.php', "re-calc-balance-user $email"]));
         $this->assertResponseStatusCode(1);
@@ -153,7 +153,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->once())
-            ->method('recalculateAllUsersRunningBalance');
+            ->method('reIndexAllUsersRunningBalance');
 
         $this->dispatch(new Request(['scriptname.php', "re-calc-balance-all"]));
 
@@ -185,7 +185,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->once())
-            ->method('recalculateUserRunningBalance')
+            ->method('reIndexIndividualUserRunningBalance')
             ->with($user);
 
         $this->dispatch(new Request(['scriptname.php', "set user init-balance $email $balance"]));
@@ -215,7 +215,7 @@ class RunningBalanceCliControllerControllerTest extends AbstractConsoleControlle
 
         $this->runningBalanceService
             ->expects($this->never())
-            ->method('recalculateUserRunningBalance');
+            ->method('reIndexIndividualUserRunningBalance');
 
         $this->dispatch(new Request(['scriptname.php', "set user init-balance $email $balance"]));
 
