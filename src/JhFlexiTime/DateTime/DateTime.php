@@ -2,6 +2,8 @@
 
 namespace JhFlexiTime\DateTime;
 
+use DatePeriod;
+
 /**
  * Class DateTime
  * @package JhFlexiTime\DateTime
@@ -50,5 +52,27 @@ class DateTime extends \DateTime
         $date = clone $this;
         $date->modify('last day of this month 23:59:59');
         return $date;
+    }
+
+    /**
+     * @param DateTime $date
+     * @return DateTime[]
+     */
+    public function getMonthsBetween(DateTime $date)
+    {
+        return array_map(
+            function (\DateTime $date) {
+                $jhDate = new DateTime;
+                $jhDate->setTimestamp($date->getTimestamp());
+                return $jhDate;
+            },
+            iterator_to_array(
+                new DatePeriod(
+                    $this->startOfMonth(),
+                    new \DateInterval('P1M'),
+                    $date
+                )
+            )
+        );
     }
 }
