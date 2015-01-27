@@ -190,12 +190,15 @@ class RunningBalanceService implements EventManagerAwareInterface
         array $months,
         $initialBalance
     ) {
+        $eventData = ['runningBalance' => $runningBalance];
+        $this->getEventManager()->trigger('reIndexUserRunningBalance.pre', null, $eventData);
 
         $runningBalance->setBalance($initialBalance);
-
         foreach ($months as $month) {
             $this->addMonthBalance($user, $runningBalance, $month);
         }
+
+        $this->getEventManager()->trigger('reIndexUserRunningBalance.post', null, $eventData);
     }
 
     /**
@@ -205,17 +208,12 @@ class RunningBalanceService implements EventManagerAwareInterface
      */
     private function addMonthBalance(UserInterface $user, RunningBalance $runningBalance, array $month)
     {
-        $this->getEventManager()->trigger('addMonthBalance.pre', null, ['runningBalance' => $runningBalance]);
+        $eventData = ['runningBalance' => $runningBalance, 'month' => $month['end']];
+        $this->getEventManager()->trigger('addMonthBalance.pre', null, $eventData);
 
-        $runningBalance->addBalance(
-            $this->calculateBalance(
-                $user,
-                $month['start'],
-                $month['end']
-            )
-        );
+        $runningBalance->addBalance($this->calculateBalance($user, $month['start'], $month['end']));
 
-        $this->getEventManager()->trigger('addMonthBalance.post', null, ['runningBalance' => $runningBalance]);
+        $this->getEventManager()->trigger('addMonthBalance.post', null, $eventData);
     }
 
     /**

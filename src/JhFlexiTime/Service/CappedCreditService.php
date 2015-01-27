@@ -31,8 +31,8 @@ class CappedCreditService
      */
     public function __construct(CappedCreditRepositoryInterface $cappedCreditRepository, ObjectManager $objectManager)
     {
-        $this->cappedCreditRepository = $cappedCreditRepository;
-        $this->objectManager = $objectManager;
+        $this->cappedCreditRepository   = $cappedCreditRepository;
+        $this->objectManager            = $objectManager;
     }
 
     /**
@@ -56,5 +56,13 @@ class CappedCreditService
     {
         $this->objectManager->persist($cappedCredit);
         $this->objectManager->flush();
+    }
+
+    /**
+     * @param UserInterface $user
+     */
+    public function clearCappedCreditEntries(UserInterface $user)
+    {
+        $this->cappedCreditRepository->deleteAllByUser($user);
     }
 }

@@ -20,7 +20,8 @@
         "phpunit/phpunit": "4.0.*",
         "squizlabs/php_codesniffer": "1.5.*",
         "satooshi/php-coveralls": "dev-master",
-        "zf-commons/zfc-admin": "0.2.0"
+        "zf-commons/zfc-admin": "0.2.0",
+        "rhumsaa/array_column": "~1.1"
     },
     "repositories": [
         {
