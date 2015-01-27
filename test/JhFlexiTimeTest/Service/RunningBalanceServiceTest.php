@@ -131,7 +131,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
             ));
 
         $invokeCount = $this->evmExpects([new DateTime("30 April 2014 23:59:59")], $runningBalance1, false, 0);
-        $invokeCount = $this->evmExpects([new DateTime("30 April 2014 23:59:59")], $runningBalance2, false, $invokeCount);
+        $this->evmExpects([new DateTime("30 April 2014 23:59:59")], $runningBalance2, false, $invokeCount);
 
         $this->objectManager->expects($this->once())->method('flush');
 
@@ -189,7 +189,7 @@ class RunningBalanceServiceTest extends \PHPUnit_Framework_TestCase
         $invokeCount = $this->bookingRepositoryExpects($user2, $user2Dates, $invokeCount);
 
         $invokeCount = $this->evmExpects([new DateTime("30 April 2014 23:59:59")], $runningBalance1, false, 0);
-        $invokeCount = $this->evmExpects([new DateTime("30 April 2014 23:59:59")], $runningBalance2, false, $invokeCount);
+        $this->evmExpects([new DateTime("30 April 2014 23:59:59")], $runningBalance2, false, $invokeCount);
 
         $this->objectManager->expects($this->once())->method('flush');
 

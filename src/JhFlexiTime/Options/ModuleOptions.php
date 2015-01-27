@@ -139,14 +139,8 @@ class ModuleOptions extends AbstractOptions
                 'limit' => $capLimit
             );
 
-            usort($months, function($a, $b) {
-                $dateA = $a['month'];
-                $dateB = $b['month'];
-
-                if ($dateA == $dateB) {
-                    return 0;
-                }
-                return $dateA > $dateB ? 1 : -1;
+            usort($months, function ($a, $b) {
+                return $a['month'] > $b['month'] ? 1 : -1;
             });
         }
 
