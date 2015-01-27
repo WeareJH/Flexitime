@@ -2,6 +2,7 @@
 
 namespace JhFlexiTime\Listener\Factory;
 
+use JhFlexiTime\DateTime\DateTime;
 use JhFlexiTime\Listener\BookingSaveListener;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -20,11 +21,8 @@ class BookingSaveListenerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         return new BookingSaveListener(
-            $serviceLocator->get('JhFlexiTime\ObjectManager'),
-            $serviceLocator->get('JhFlexiTime\Repository\BalanceRepository'),
-            new \DateTime,
-            $serviceLocator->get('FlexiOptions'),
-            $serviceLocator->get('JhFlexiTime\Repository\UserSettingsRepository')
+            new DateTime,
+            $serviceLocator->get('JhFlexiTime\Service\RunningBalanceService')
         );
     }
 }

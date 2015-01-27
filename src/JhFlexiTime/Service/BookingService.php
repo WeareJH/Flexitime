@@ -97,10 +97,7 @@ class BookingService
 
         $booking = new Booking;
         $booking->setBalance(0 - $this->options->getHoursInDay());
-        $this->hydrator->hydrate($this->inputFilter->getValues(), $booking);
-
-        $totalHours = $this->periodService->calculateHourDiff($booking->getStartTime(), $booking->getEndTime());
-        $booking->setTotal($totalHours);
+        $booking = $this->hydrateBooking($booking);
 
         $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, ['booking' => $booking]);
 
@@ -139,10 +136,7 @@ class BookingService
             ];
         }
 
-        $this->hydrator->hydrate($this->inputFilter->getValues(), $booking);
-
-        $totalHours = $this->periodService->calculateHourDiff($booking->getStartTime(), $booking->getEndTime());
-        $booking->setTotal($totalHours);
+        $booking = $this->hydrateBooking($booking);
 
         $this->getEventManager()->trigger(__FUNCTION__ . '.pre', null, ['booking' => $booking]);
         $this->objectManager->flush();
@@ -313,5 +307,21 @@ class BookingService
         }
 
         return $this->eventManager;
+    }
+
+    /**
+     * @param Booking $booking
+     * @return Booking
+     */
+    protected function hydrateBooking(Booking $booking)
+    {
+        $this->hydrator->hydrate($this->inputFilter->getValues(), $booking);
+        $totalHours = $this->periodService->calculateHourDiff($booking->getStartTime(), $booking->getEndTime());
+        $newBalance = $totalHours - $this->options->getHoursInDay();
+
+        $booking->setBalance($newBalance);
+        $booking->setTotal($totalHours);
+
+        return $booking;
     }
 }

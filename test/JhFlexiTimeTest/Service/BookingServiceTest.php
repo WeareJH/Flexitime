@@ -122,7 +122,7 @@ class BookingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->bookingService->setEventManager($eventManager);
         $ret = $this->bookingService->create($data);
-        $this->assertEquals(-7.5, $ret->getBalance());
+        $this->assertEquals(-5.5, $ret->getBalance());
         $this->assertEquals(2, $ret->getTotal());
     }
 

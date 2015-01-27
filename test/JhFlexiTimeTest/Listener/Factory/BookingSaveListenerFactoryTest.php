@@ -14,29 +14,17 @@ class BookingSaveListenerFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testFactoryProcessesWithoutErrors()
     {
+        $serviceLocator = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
 
-        $serviceLocator   = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
-        $services         = [
-            'JhFlexiTime\ObjectManager' =>
-                $this->getMock('Doctrine\Common\Persistence\ObjectManager'),
-            'JhFlexiTime\Repository\BalanceRepository' =>
-                $this->getMock('JhFlexiTime\Repository\BalanceRepositoryInterface'),
-            'FlexiOptions' =>
-                $this->getMock('JhFlexiTime\Options\ModuleOptions'),
-            'JhFlexiTime\Repository\UserSettingsRepository' =>
-                $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface')
-        ];
+        $service = $this->getMockBuilder('JhFlexiTime\Service\RunningBalanceService')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $serviceLocator
             ->expects($this->any())
             ->method('get')
-            ->will(
-                $this->returnCallback(
-                    function ($serviceName) use ($services) {
-                        return $services[$serviceName];
-                    }
-                )
-            );
+            ->with('JhFlexiTime\Service\RunningBalanceService')
+            ->will($this->returnValue($service));
 
         $factory = new BookingSaveListenerFactory();
         $this->assertInstanceOf('JhFlexiTime\Listener\BookingSaveListener', $factory->createService($serviceLocator));
