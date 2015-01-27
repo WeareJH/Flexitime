@@ -165,6 +165,9 @@ return [
             'JhFlexiTime\Repository\UserSettingsRepository'  => 'JhFlexiTime\Repository\Factory\UserSettingsRepositoryFactory',
             'JhFlexiTime\Entity\UserSettings'                => 'JhFlexiTime\Entity\Factory\UserSettingsFactory',
             'JhFlexiTime\Install\Installer'                  => 'JhFlexiTime\Install\Factory\InstallerFactory',
+            'JhFlexiTime\Repository\CappedCreditRepository'  => 'JhFlexiTime\Repository\Factory\CappedCreditRepositoryFactory',
+            'JhFlexiTime\Repository\BookedCreditRepository'  => 'JhFlexiTime\Repository\Factory\BookedCreditRepositoryFactory',
+
         ],
         'aliases' => [
             'JhFlexiTime\ObjectManager'     => 'Doctrine\ORM\EntityManager',
