@@ -22,11 +22,6 @@ class TimeType extends DoctrineTimeType implements TypeConversionInterface
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         $dateTime = parent::convertToPHPValue($value, $platform);
-
-        if (!$dateTime) {
-            return $dateTime;
-        }
-
         $return = new DateTime();
         $return->setTimestamp($dateTime->getTimestamp());
         return $return;

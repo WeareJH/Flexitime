@@ -7,6 +7,7 @@ use JhFlexiTime\Controller\BookingRestController;
 use JhFlexiTime\DateTime\DateTime;
 use JhFlexiTime\Entity\UserSettings;
 use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
+use JhUser\Entity\User;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
@@ -14,6 +15,7 @@ use Zend\Mvc\Router\RouteMatch;
 use Zend\Mvc\Router\Http\TreeRouteStack as HttpRouter;
 use JhFlexiTimeTest\Util\ServiceManagerFactory;
 use JhFlexiTime\Entity\Booking;
+use Zend\Stdlib\Parameters;
 use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 /**
@@ -38,10 +40,15 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
      */
     protected $userSettingsRepository;
 
+    /**
+     * @var \JhUser\Repository\UserRepositoryInterface
+     */
+    protected $userRepository;
+
     public function setUp()
     {
 
-        $userRepository
+        $this->userRepository
             = $this->getMock('JhUser\Repository\UserRepositoryInterface');
         $this->userSettingsRepository
             = $this->getMock('JhFlexiTime\Repository\UserSettingsRepositoryInterface');
@@ -49,7 +56,7 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->controller = new BookingRestController(
             $this->getBookingService(),
             $this->getTimeCalculatorService(),
-            $userRepository,
+            $this->userRepository,
             $this->userSettingsRepository
         );
 
@@ -179,6 +186,105 @@ class BookingRestControllerTest extends AbstractHttpControllerTestCase
         $this->assertEquals($expectedTime, $result->getVariable('bookings'));
         $this->assertEquals([], $result->getVariable('pagination'));
         $this->assertSame($date, $result->getVariable('date'));
+    }
+
+    public function testGetListCanRetrieveOtherUserRecordsIfHasAuthorization()
+    {
+        $booking    = $this->getMockBooking();
+        $date       = new DateTime("25 March 2014");
+        $startDate  = new DateTime("21 April 2014");
+        $this->user = new User;
+        $this->user->setId(100);
+
+        $this->request->setQuery(new Parameters(['user' => 100]));
+        $this->controller->setDate($date);
+        $this->configureMockBookingService('getUserBookingsForMonth', [$this->user, $date], [$booking]);
+        $this->configureMockBookingService('getPagination', [$date], []);
+        $this->configureMockTimeCalculatorService('getTotals', [$this->user, $startDate, $date], ['some-total', 20]);
+
+        $authMock = $this->getMockBuilder('ZfcRbac\Mvc\Controller\Plugin\IsGranted')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $authMock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with('flexi-time.readOthers')
+            ->will($this->returnValue(true));
+
+        $this->controller->getPluginManager()
+            ->setService('isGranted', $authMock);
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('find')
+            ->with(100)
+            ->will($this->returnValue($this->user));
+
+        $this->userSettingsRepository
+            ->expects($this->once())
+            ->method('findOneByUser')
+            ->with($this->user)
+            ->will($this->returnValue($userSettings));
+
+        $result   = $this->controller->dispatch($this->request);
+        $response = $this->controller->getResponse();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
+        $this->assertTrue(isset($result->bookings));
+        $this->assertTrue(isset($result->pagination));
+        $this->assertTrue(isset($result->date));
+
+        $expectedTime = [
+            'records' => [$booking],
+            'totals'  => ['some-total', 20],
+            'user'    => $this->user,
+        ];
+        $this->assertEquals($expectedTime, $result->getVariable('bookings'));
+        $this->assertEquals([], $result->getVariable('pagination'));
+        $this->assertSame($date, $result->getVariable('date'));
+    }
+
+    public function testGetListWithOtherUserReturnsErrorIfUserNotExists()
+    {
+        $booking    = $this->getMockBooking();
+        $date       = new DateTime("25 March 2014");
+        $startDate  = new DateTime("21 April 2014");
+        $this->user = new User;
+        $this->user->setId(100);
+
+        $this->request->setQuery(new Parameters(['user' => 100]));
+        $this->controller->setDate($date);
+        $authMock = $this->getMockBuilder('ZfcRbac\Mvc\Controller\Plugin\IsGranted')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $authMock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with('flexi-time.readOthers')
+            ->will($this->returnValue(true));
+
+        $this->controller->getPluginManager()
+            ->setService('isGranted', $authMock);
+
+        $userSettings = new UserSettings;
+        $userSettings->setFlexStartDate($startDate);
+
+        $result   = $this->controller->dispatch($this->request);
+        $response = $this->controller->getResponse();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertInstanceOf('Zend\View\Model\JsonModel', $result);
+        $this->assertTrue(isset($result->success));
+        $this->assertTrue(isset($result->message));
+
+        $this->assertFalse($result->getVariable('success'));
+        $this->assertEquals('User does not exist', $result->getVariable('message'));
     }
 
     public function testGetCanBeAccessed()

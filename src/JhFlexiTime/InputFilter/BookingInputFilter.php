@@ -12,13 +12,14 @@ use Zend\Validator\ValidatorInterface;
 use JhFlexiTime\Options\BookingOptionsInterface;
 use JhFlexiTime\Filter\DateTimeFormatter;
 use Zend\Validator\Date;
+use Zend\InputFilter\InputFilter;
 
 /**
  * Class BookingInputFilter
  * @package JhFlexiTime\InputFilter
  * @author Aydin Hassan <aydin@wearejh.com>
  */
-class BookingInputFilter extends BaseInputFilter
+class BookingInputFilter extends InputFilter
 {
 
     //TODO: Get from module config
