@@ -99,12 +99,4 @@ class CappedCredit
     {
         $this->cappedCredit = $cappedCredit;
     }
-
-    /**
-     * @param float $credit
-     */
-    public function subtractCredit($credit)
-    {
-        $this->cappedCredit -= $credit;
-    }
 }

@@ -131,7 +131,7 @@ class ModuleOptions extends AbstractOptions
         $months = [];
         foreach ($caps as $month => $capLimit) {
             if (!is_string($month) || !preg_match('/^(0[1-9])|^(1[0-2])-\d{4}$/', $month)) {
-                throw new \InvalidArgumentException(sprintf('Date should be in the format m-Y. Given: %s', $month));
+                throw new \InvalidArgumentException(sprintf('Date should be in the format m-Y. Given: "%s"', $month));
             }
 
             $months[] = array(
