@@ -143,12 +143,10 @@ class BookedCredit
 
     /**
      * @param string $notes
-     * @return \JhFlexiTime\Entity\Booking
      */
     public function setNotes($notes)
     {
         $this->notes = $notes;
-        return $this;
     }
 
     /**

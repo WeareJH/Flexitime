@@ -33,6 +33,9 @@ class CappedCreditRepositoryFactoryTest extends \PHPUnit_Framework_TestCase
 
 
         $factory = new CappedCreditRepositoryFactory();
-        $this->assertInstanceOf('JhFlexiTime\Repository\CappedCreditRepository', $factory->createService($serviceLocator));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Repository\CappedCreditRepository',
+            $factory->createService($serviceLocator)
+        );
     }
 }

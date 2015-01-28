@@ -33,7 +33,7 @@ class CappedCreditRepository extends EntityRepository implements CappedCreditRep
     {
         $qb = $this->createQueryBuilder('c');
         $qb->select('sum(c.cappedCredit)')
-            ->where('b.user = :user')
+            ->where('c.user = :user')
             ->setParameters(['user' => $user]);
 
         return $qb->getQuery()->getSingleScalarResult();
@@ -49,7 +49,7 @@ class CappedCreditRepository extends EntityRepository implements CappedCreditRep
         $qb = $this->createQueryBuilder('c');
         $qb
             ->delete()
-            ->where('user = :user')
+            ->where('c.user = :user')
             ->setParameter('user', $user)
             ->getQuery()
             ->execute();

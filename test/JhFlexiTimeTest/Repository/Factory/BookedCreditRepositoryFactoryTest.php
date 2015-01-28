@@ -33,6 +33,9 @@ class BookedCreditRepositoryFactoryTest extends \PHPUnit_Framework_TestCase
 
 
         $factory = new BookedCreditRepositoryFactory();
-        $this->assertInstanceOf('JhFlexiTime\Repository\BookedCreditRepository', $factory->createService($serviceLocator));
+        $this->assertInstanceOf(
+            'JhFlexiTime\Repository\BookedCreditRepository',
+            $factory->createService($serviceLocator)
+        );
     }
 }

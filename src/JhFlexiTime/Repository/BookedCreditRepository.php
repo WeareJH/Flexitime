@@ -21,6 +21,8 @@ class BookedCreditRepository extends EntityRepository implements BookedCreditRep
 
     /**
      * @param UserInterface $user
+     * @param bool          $paginate
+     *
      * @return array
      */
     public function findAllByUser(UserInterface $user, $paginate = false)
