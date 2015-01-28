@@ -89,8 +89,8 @@ class CappedCreditListener extends AbstractListenerAggregate
          * If running balance is over allowed credit limit, change it to the limit
          * Store the difference so it may be used for other things. Eg trade for overtime etc.
          */
-        if ($runningBalance->getBalance() > $this->options->getCreditCapForDate($month)) {
-            $creditLimit    = $this->options->getCreditCapForDate($month);
+        $creditLimit = $this->options->getCreditCapForDate($month);
+        if (null !== $creditLimit && $runningBalance->getBalance() > $creditLimit) {
             $overage        = $runningBalance->getBalance() - $creditLimit;
             $runningBalance->setBalance($creditLimit);
 

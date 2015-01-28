@@ -26,6 +26,7 @@ class Module implements
         $sl             = $e->getTarget()->getServiceManager();
         $eventManager   = $e->getTarget()->getEventManager();
         $eventManager->attach($sl->get('JhFlexiTime\Listener\BookingSaveListener'));
+        $eventManager->attach($sl->get('JhFlexiTime\Listener\CappedCreditListener'));
 
         $sharedEvm = $eventManager->getSharedManager();
 
