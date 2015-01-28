@@ -18,8 +18,8 @@ class BookedCreditRepositoryFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $em     = $serviceLocator->get('Doctrine\ORM\EntityManager');
-        $meta   = $em->getClassMetadata('\JhFlexiTime\Entity\BookedCredit');
+        $em     = $serviceLocator->get('JhFlexiTime\ObjectManager');
+        $meta   = $em->getClassMetadata('JhFlexiTime\Entity\BookedCredit');
         return new BookedCreditRepository($em, $meta);
     }
 }

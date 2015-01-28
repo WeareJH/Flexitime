@@ -18,7 +18,7 @@ class CappedCreditRepositoryFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $em     = $serviceLocator->get('Doctrine\ORM\EntityManager');
+        $em     = $serviceLocator->get('JhFlexiTime\ObjectManager');
         $meta   = $em->getClassMetadata('JhFlexiTime\Entity\CappedCredit');
         return new CappedCreditRepository($em, $meta);
     }
