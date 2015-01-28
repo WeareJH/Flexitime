@@ -50,9 +50,19 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
 
         $this->serviceLocator->setService('JhFlexiTime\Listener\BookingSaveListener', $bookingSaveListener);
         $this->eventManager
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('attach')
             ->with($bookingSaveListener);
+
+        $cappedCreditListener = $this->getMockBuilder('JhFlexiTime\Listener\CappedCreditListener')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->serviceLocator->setService('JhFlexiTime\Listener\CappedCreditListener', $cappedCreditListener);
+        $this->eventManager
+            ->expects($this->at(1))
+            ->method('attach')
+            ->with($cappedCreditListener);
 
         $this->sharedEvm
             ->expects($this->at(0))

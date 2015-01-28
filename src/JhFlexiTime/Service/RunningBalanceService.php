@@ -7,17 +7,21 @@ use JhFlexiTime\Repository\BalanceRepositoryInterface;
 use JhFlexiTime\Repository\BookingRepositoryInterface;
 use JhUser\Repository\UserRepositoryInterface;
 use JhFlexiTime\Repository\UserSettingsRepositoryInterface;
+use Zend\EventManager\EventManagerAwareInterface;
 use ZfcUser\Entity\UserInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use JhFlexiTime\DateTime\DateTime;
+use Zend\EventManager\EventManagerAwareTrait;
 
 /**
  * Class RunningBalanceService
  * @package JhFlexiTime\Service
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class RunningBalanceService
+class RunningBalanceService implements EventManagerAwareInterface
 {
+
+    use EventManagerAwareTrait;
 
     /**
      * @var \DateTime
@@ -88,7 +92,7 @@ class RunningBalanceService
      * Calculate the previous month balance for all users
      * and add it to their running balance
      */
-    public function calculatePreviousMonthBalance()
+    public function indexPreviousMonthBalance()
     {
         foreach ($this->userRepository->findAll(false) as $user) {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
@@ -100,8 +104,13 @@ class RunningBalanceService
                 $date = $userSettings->getFlexStartDate();
             }
 
-            $runningBalance->addBalance(
-                $this->calculateBalance($user, $date, $this->lastMonth->endOfMonth())
+            $this->addMonthBalance(
+                $user,
+                $runningBalance,
+                [
+                    'start' => $date,
+                    'end' => $this->lastMonth->endOfMonth()
+                ]
             );
         }
 
@@ -111,16 +120,21 @@ class RunningBalanceService
     /**
      * Recalculate all user's running balance
      */
-    public function recalculateAllUsersRunningBalance()
+    public function reIndexAllUsersRunningBalance()
     {
         foreach ($this->userRepository->findAll(false) as $user) {
             $runningBalance = $this->balanceRepository->findOneByUser($user);
             $userSettings   = $this->userSettingsRepository->findOneByUser($user);
 
-            $this->recalculateRunningBalance(
+            $monthRanges = $this->getMonthRange(
+                $userSettings->getFlexStartDate(),
+                $this->lastMonth->endOfMonth()
+            );
+
+            $this->reIndexRunningBalance(
                 $user,
                 $runningBalance,
-                $userSettings->getFlexStartDate(),
+                $monthRanges,
                 $userSettings->getStartingBalance()
             );
         }
@@ -133,14 +147,20 @@ class RunningBalanceService
      *
      * @param UserInterface $user
      */
-    public function recalculateUserRunningBalance(UserInterface $user)
+    public function reIndexIndividualUserRunningBalance(UserInterface $user)
     {
         $runningBalance = $this->balanceRepository->findOneByUser($user);
         $userSettings   = $this->userSettingsRepository->findOneByUser($user);
-        $this->recalculateRunningBalance(
+
+        $monthRanges = $this->getMonthRange(
+            $userSettings->getFlexStartDate(),
+            $this->lastMonth->endOfMonth()
+        );
+
+        $this->reIndexRunningBalance(
             $user,
             $runningBalance,
-            $userSettings->getFlexStartDate(),
+            $monthRanges,
             $userSettings->getStartingBalance()
         );
 
@@ -149,20 +169,51 @@ class RunningBalanceService
 
     /**
      * @param UserInterface $user
+     * @param float $balance
+     */
+    public function setUserStartingBalance(UserInterface $user, $balance)
+    {
+        $settings = $this->userSettingsRepository->findOneByUser($user);
+        $settings->setStartingBalance($balance);
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @param UserInterface $user
      * @param RunningBalance $runningBalance
-     * @param DateTime $startDate
+     * @param array $months
      * @param int $initialBalance
      */
-    private function recalculateRunningBalance(
+    private function reIndexRunningBalance(
         UserInterface $user,
         RunningBalance $runningBalance,
-        DateTime $startDate,
+        array $months,
         $initialBalance
     ) {
+        $eventData = ['runningBalance' => $runningBalance];
+        $this->getEventManager()->trigger('reIndexUserRunningBalance.pre', null, $eventData);
+
         $runningBalance->setBalance($initialBalance);
-        $runningBalance->addBalance(
-            $this->calculateBalance($user, $startDate, $this->lastMonth->endOfMonth())
-        );
+        foreach ($months as $month) {
+            $this->addMonthBalance($user, $runningBalance, $month);
+        }
+
+        $this->getEventManager()->trigger('reIndexUserRunningBalance.post', null, $eventData);
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param RunningBalance $runningBalance
+     * @param $month
+     */
+    private function addMonthBalance(UserInterface $user, RunningBalance $runningBalance, array $month)
+    {
+        $eventData = ['runningBalance' => $runningBalance, 'month' => $month['end']];
+        $this->getEventManager()->trigger('addMonthBalance.pre', null, $eventData);
+
+        $runningBalance->addBalance($this->calculateBalance($user, $month['start'], $month['end']));
+
+        $this->getEventManager()->trigger('addMonthBalance.post', null, $eventData);
     }
 
     /**
@@ -182,13 +233,24 @@ class RunningBalanceService
     }
 
     /**
-     * @param UserInterface $user
-     * @param float $balance
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return array
      */
-    public function setUserStartingBalance(UserInterface $user, $balance)
+    private function getMonthRange(DateTime $start, DateTime $end)
     {
-        $settings = $this->userSettingsRepository->findOneByUser($user);
-        $settings->setStartingBalance($balance);
-        $this->objectManager->flush();
+        $months = $start->getMonthsBetween($end);
+        $monthRanges = [];
+        foreach ($months as $key => $month) {
+            $monthRanges[] = [
+                'start' => $month->startOfMonth(),
+                'end'   => $month->endOfMonth()
+            ];
+
+            if ($key === 0) {
+                $monthRanges[$key]['start'] = $start;
+            }
+        }
+        return $monthRanges;
     }
 }

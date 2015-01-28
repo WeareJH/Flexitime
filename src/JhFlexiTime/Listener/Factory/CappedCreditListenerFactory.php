@@ -2,27 +2,26 @@
 
 namespace JhFlexiTime\Listener\Factory;
 
-use JhFlexiTime\DateTime\DateTime;
-use JhFlexiTime\Listener\BookingSaveListener;
+use JhFlexiTime\Listener\CappedCreditListener;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class BookingSaveListenerFactory
+ * Class CappedCreditListenerFactory
  * @package JhFlexiTime\Controller\Factory
  * @author Aydin Hassan <aydin@wearejh.com>
  */
-class BookingSaveListenerFactory implements FactoryInterface
+class CappedCreditListenerFactory implements FactoryInterface
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
-     * @return BookingSaveListener
+     * @return CappedCreditListener
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new BookingSaveListener(
-            new DateTime,
-            $serviceLocator->get('JhFlexiTime\Service\RunningBalanceService')
+        return new CappedCreditListener(
+            $serviceLocator->get('JhFlexiTime\Service\CappedCreditService'),
+            $serviceLocator->get('FlexiOptions')
         );
     }
 }
