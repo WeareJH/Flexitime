@@ -21,23 +21,8 @@ class Input extends ZfBaseInput
      */
     public function isValid($context = null)
     {
-        // Empty value needs further validation if continueIfEmpty is set
-        // so don't inject NotEmpty validator which would always
-        // mark that as false
-        if (!$this->continueIfEmpty()) {
-            $this->injectNotEmptyValidator();
-        }
-        $validator = $this->getValidatorChain();
-        $value     = $this->getValue();
-
-        //this is the add line to make the context use the filtered value
-        $context[$this->getName()] = $value;
-        $result    = $validator->isValid($value, $context);
-        if (!$result && $this->hasFallback()) {
-            $this->setValue($this->getFallbackValue());
-            $result = true;
-        }
-
-        return $result;
+        //make the context use the filtered value
+        $context[$this->getName()] =  $this->getValue();
+        return parent::isValid($context);
     }
 }

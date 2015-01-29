@@ -6,6 +6,9 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as BaseDoctrineObject;
 use Doctrine\DBAL\Types\Type;
 
 /**
+ * This class allows the Doctrine Hydrator to delegate
+ * type conversion to the custom Type, if it implements TypeConversionInterface
+ *
  * Class DoctrineObject
  * @package JhFlexiTime\Stdlib\Hydrator
  * @author Aydin Hassan <aydin@hotmail.co.uk>

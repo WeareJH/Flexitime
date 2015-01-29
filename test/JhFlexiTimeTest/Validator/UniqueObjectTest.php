@@ -24,17 +24,33 @@ class UniqueObjectTest extends \PHPUnit_Framework_TestCase
         $this->repository    = $this->getMock('Doctrine\Common\Persistence\ObjectRepository');
     }
 
-    protected function getValidator($fields)
+    protected function getValidator($fields, $useContext = true)
     {
         return $this->validator = new UniqueObject([
             'object_manager'    => $this->objectManager,
             'object_repository' => $this->repository,
             'fields'            => $fields,
-            'use_context'       => true,
+            'use_context'       => $useContext,
         ]);
     }
 
     public function testValidatorPassesIfObjectNotExist()
+    {
+        $validator  = $this->getValidator(['date'], false);
+
+        $date = '12-04-88';
+        $user = 2;
+
+        $this->repository
+            ->expects($this->once())
+            ->method('findOneBy')
+            ->with(['date' => $date])
+            ->will($this->returnValue(null));
+
+        $this->assertTrue($validator->isValid('12-04-88'));
+    }
+
+    public function testValidatorPassesIfObjectNotExistWithNoContext()
     {
         $validator  = $this->getValidator(['date', 'user']);
 
