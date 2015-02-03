@@ -49,7 +49,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
             ->method('attach')
             ->with(
                 'JhFlexiTime\Service\BookingService',
-                'create.pre',
+                'create.post',
                 [$this->bookingSaveListener, 'reindexBalance'],
                 100
             );
@@ -59,7 +59,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
             ->method('attach')
             ->with(
                 'JhFlexiTime\Service\BookingService',
-                'update.pre',
+                'update.post',
                 [$this->bookingSaveListener, 'reindexBalance'],
                 100
             );
@@ -69,7 +69,7 @@ class BookingSaveListenerTest extends \PHPUnit_Framework_TestCase
             ->method('attach')
             ->with(
                 'JhFlexiTime\Service\BookingService',
-                'delete.pre',
+                'delete.post',
                 [$this->bookingSaveListener, 'reindexBalance'],
                 100
             );

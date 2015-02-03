@@ -41,12 +41,12 @@ class BookingSaveListener extends AbstractListenerAggregate
     public function attach(EventManagerInterface $events)
     {
         $sharedEvents = $events->getSharedManager();
-        $this->listeners[]
-            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'create.pre', [$this, 'reindexBalance'], 100);
-        $this->listeners[]
-            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'update.pre', [$this, 'reindexBalance'], 100);
-        $this->listeners[]
-            = $sharedEvents->attach('JhFlexiTime\Service\BookingService', 'delete.pre', [$this, 'reindexBalance'], 100);
+        $this->listeners[] = $sharedEvents
+            ->attach('JhFlexiTime\Service\BookingService', 'create.post', [$this, 'reindexBalance'], 100);
+        $this->listeners[] = $sharedEvents
+            ->attach('JhFlexiTime\Service\BookingService', 'update.post', [$this, 'reindexBalance'], 100);
+        $this->listeners[] = $sharedEvents
+            ->attach('JhFlexiTime\Service\BookingService', 'delete.post', [$this, 'reindexBalance'], 100);
     }
 
     /**
