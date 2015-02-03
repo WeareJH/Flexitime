@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.5"/>
+
+        <title>{{EMAIL SUBJECT}}</title>
+        <meta property="og:title" content="{{EMAIL SUBJECT}}">
+
+        <style type="text/css">
+
+            /* RESET */
+
+            body, #bodyTable, #bodyCell {
+                margin: 0;
+                padding: 0;
+                width: 100% !important;
+                height: 100% !important;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            table {
+                border-spacing: 0;
+                border-collapse: collapse;
+            }
+
+            table, tr, td {
+                vertical-align: top;
+            }
+
+            img, a img {
+                outline: none;
+                border: 0;
+                text-decoration: none;
+                display: block;
+                width: 100%;
+                /*max-width: 100%;*/
+                margin-bottom: 20px;
+            }
+
+            h1, h2, h3, h4, h5, h6, p {
+                margin: 0;
+                padding: 0;
+            }
+
+            hr {
+                border: none;
+                height: 1px;
+                color: #cccccc;
+                background-color: #cccccc;
+            }
+
+            /* CLIENT SPECIFIC */
+
+            .ReadMsgBody {
+                width: 100%;
+            }
+
+            .ExternalClass {
+                width: 100%;
+            }
+
+            /* Force Hotmail/Outlook.com to display emails at full width. */
+
+            .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+                line-height: 100%;
+            }
+
+            /* Force Hotmail/Outlook.com to display line heights normally. */
+
+            table, td {
+                mso-table-lspace: 0pt;
+                mso-table-rspace: 0pt;
+            }
+
+            /* Remove spacing between tables in Outlook 2007 and up. */
+
+            #outlook a {
+                padding: 0;
+            }
+
+            /* Force Outlook 2007 and up to provide a "view in browser" message. */
+
+            img {
+                -ms-interpolation-mode: bicubic;
+            }
+
+            /* Force IE to smoothly render resized images. */
+
+            body, table, td, p, a, li, blockquote {
+                -ms-text-size-adjust: 100%;
+                -webkit-text-size-adjust: 100%;
+            }
+
+            /* Prevent Windows- and Webkit-based mobile platforms from changing declared text sizes. */
+
+            /* LAYOUT */
+
+            body, #bodyTable {
+                background-color: #f5f5f5;
+            }
+
+            #bodyCell {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            #emailBody {
+                background-color: #ffffff;
+                border: 1px solid #eeeeee;
+                border-collapse: separate;
+                /*border-radius: 4px;*/
+            }
+
+            .flexibleContainerCell {
+                padding-top: 20px;
+                padding-right: 20px;
+                padding-left: 20px;
+            }
+
+            .flexibleImage {
+                height: auto;
+            }
+
+            .topShim {
+                padding-top: 20px;
+            }
+
+            .bottomShim {
+                padding-bottom: 20px;
+            }
+
+            /* TYPOGRAPHY */
+
+            body, table.body, h1, h2, h3, h4, h5, h6, p {
+                /*margin: 0;*/
+                /*padding:0;*/
+                color: #000000;
+                /*font-weight: normal;*/
+                font-size: 16px;
+                line-height: 125%;
+                font-family: "Helvetica", "Arial", sans-serif;
+                text-align: left;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                margin-bottom: 20px;
+                color: #000000;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+
+            h4 {
+                font-size: 16px;
+            }
+
+            h5 {
+                font-size: 16px;
+            }
+
+            h6 {
+                font-size: 16px;
+            }
+
+            p, ul, ol {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            ul li, ol li {
+                margin-left: 5px;
+                list-style-position: inside;
+            }
+
+            /*h1, .h1{
+                color: #000000;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 24px;
+                line-height: 125%;
+                text-align: left;
+            }
+
+            h2, .h2{
+                color: #000000;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 20px;
+                line-height: 125%;
+                text-align: left;
+            }
+
+            h3, .h3{
+                color: #000000;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 16px;
+                line-height: 125%;
+                text-align: left;
+            }
+
+            h4, h5, h6{
+                color: #000000;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 20px;
+                line-height: 125%;
+                text-align: left;
+            }*/
+
+            /*.textContent, .textContentLast{
+                color: #000000;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 16px;
+                line-height: 125%;
+                text-align: left;
+                padding-bottom: 20px;
+            }*/
+
+            /*.textContent a, .textContentLast a{
+                color: #666666;
+                text-decoration: underline;
+            }*/
+
+            .imageContent, .imageContentLast {
+                padding-bottom: 20px;
+            }
+
+            /* LINKS */
+
+            a {
+                color: #0033cc;
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: #0033cc !important;
+            }
+
+            a:active {
+                color: #0033cc !important;
+            }
+
+            a:visited {
+                color: #0033cc !important;
+            }
+
+            /* ALIGNMENT */
+
+            table.center, td.center {
+                text-align: center;
+            }
+
+            h1.center,
+            h2.center,
+            h3.center,
+            h4.center,
+            h5.center,
+            h6.center {
+                text-align: center;
+            }
+
+            span.center {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
+            img.center {
+                margin: 0 auto;
+                float: none;
+            }
+
+            /* PANEL */
+
+            .panel {
+                background-color: #ffffff;
+                border: 1px solid #eeeeee;
+            }
+
+            .panelCell {
+                padding-top: 20px;
+                padding-right: 20px;
+                /*padding-bottom: 10px;*/
+                padding-left: 20px;
+            }
+
+            /* HEADER */
+
+            #emailHeader {
+                background: #222222;
+            }
+
+            .headerContent, .headerContentLast {
+                color: #666666;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 12px;
+                line-height: 125%;
+                text-align: center;
+                /*padding-bottom: 10px;*/
+            }
+
+            .headerContent a, .headerContentLast a {
+                color: #666666;
+                text-decoration: underline;
+            }
+
+            /* FOOTER */
+
+            #emailFooter {
+                background: #f5f5f5;
+            }
+
+            .footerContent, .footerContentLast {
+                color: #666666;
+                font-family: "Helvetica", "Arial", sans-serif;
+                font-size: 12px;
+                line-height: 125%;
+                text-align: center;
+                /*padding-bottom: 10px;*/
+            }
+
+            .footerContent a, .footerContentLast a {
+                color: #666666;
+                text-decoration: underline;
+            }
+
+            /* MEDIA QUERIES */
+
+            @media only screen and (max-width: 480px) {
+
+                /*////// CLIENT-SPECIFIC STYLES //////*/
+                body {
+                    width: 100% !important;
+                    min-width: 100% !important;
+                }
+
+                /* Force iOS Mail to render the email at full width. */
+                /*////// GENERAL STYLES //////*/
+                td[id="bodyCell"] {
+                    padding-top: 0 !important;
+                    padding-bottom: 0 !important;
+                    /*padding-right: 10px !important; */
+                    /*padding-left: 10px !important;*/
+                }
+
+                table[id="emailHeader"], table[id="emailBody"], table[id="emailFooter"] {
+                    width: 100% !important;
+                }
+
+                table[class="flexibleContainer"] {
+                    display: block !important;
+                    width: 100% !important;
+                }
+
+                img[class="flexibleImage"] {
+                    width: 100% !important;
+                }
+
+                td[class="textContentLast"], td[class="imageContentLast"] {
+                    padding-top: 20px !important;
+                }
+
+                td[class="stack"] {
+                    display: block !important;
+                    width: 100% !important;
+                }
+
+            }
+        </style>
+        <!--
+            Outlook Conditional CSS
+
+            These two style blocks target Outlook 2007 & 2010 specifically, forcing
+            columns into a single vertical stack as on mobile clients. This is
+            primarily done to avoid the 'page break bug' and is optional.
+
+            More information here:
+            http://templates.mailchimp.com/development/css/outlook-conditional-css
+        -->
+        <!--[if mso 12]>
+        <style type="text/css">
+            .flexibleContainer {
+                display: block !important;
+                width: 100% !important;
+            }
+        </style>
+        <![endif]-->
+        <!--[if mso 14]>
+        <style type="text/css">
+            .flexibleContainer {
+                display: block !important;
+                width: 100% !important;
+            }
+        </style>
+        <![endif]-->
+    </head>
+    <body>
+        <center>
+            <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+                <tr>
+                    <td align="center" valign="top" id="bodyCell">
+
+                        <!-- EMAIL HEADER // -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="600" id="emailHeader">
+                            <tr>
+                                <td align="center" valign="top">
+                                    <!-- CENTERING TABLE // -->
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td align="center" valign="top">
+                                                <!-- RESPONSIVE CONTAINER // -->
+                                                <table border="0" cellpadding="0" cellspacing="0" width="600"
+                                                       class="flexibleContainer">
+                                                    <tr>
+                                                        <td align="center" valign="top" width="100%"
+                                                            class="flexibleContainerCell bottomShim">
+
+
+                                                            <!-- CONTENT TABLE // -->
+                                                            <table border="0" cellpadding="0" cellspacing="0"
+                                                                   width="100%">
+                                                                <tr>
+                                                                    <td valign="top" class="headerContent">
+                                                                        Missed entries in Flex app
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <!-- // CONTENT TABLE -->
+
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <!-- // RESPONSIVE CONTAINER -->
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- // CENTERING TABLE -->
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- // EMAIL HEADER -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="600" id="emailBody">
+                            <tr>
+                                <td align="center" valign="top">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td align="center" valign="top">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="600"
+                                                       class="flexibleContainer">
+                                                    <tr>
+                                                        <td align="center" valign="top" width="600"
+                                                            class="flexibleContainerCell">
+                                                            <table border="0" cellpadding="0" cellspacing="0"
+                                                                   width="100%">
+                                                                <tr>
+                                                                    <td valign="top" class="textContent">
+                                                                        <img src="<?= $this->appUrl ?>/img/flex-trex.jpg">
+                                                                        <h1>
+                                                                            Hi, <?= $this->user->getDisplayName() ?></h1>
+                                                                        <h2>You are missing a few entries</h2>
+                                                                        <p>Please fill out dates:</p>
+
+                                                                        <?php foreach ($this->missedDates as $date): ?>
+                                                                            <p><?= $date->format('jS F'); ?></p>
+                                                                        <?php endforeach; ?>
+
+                                                                        <p>Kind regards, Flex T-Rex</p>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </body>
+</html>
