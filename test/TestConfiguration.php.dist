@@ -7,9 +7,11 @@ return [
         'ZfcUser',
         'ZfcUserDoctrineORM',
         'ScnSocialAuthDoctrineORM',
+        'JhHubBase',
         'JhUser',
-		'JhFlexiTime',
-		'ZfcAdmin',
+        'JhFlexiTime',
+        'ZfcAdmin',
+        'AcMailer',
     ],
     'module_listener_options' => [
         'config_glob_paths' => [

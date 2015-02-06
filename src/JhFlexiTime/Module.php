@@ -39,6 +39,11 @@ class Module implements
 
         //add roles to users created via ZfcUser
         $sharedEvm->attach('ZfcUser\Service\User', 'register.post', [$this, 'onRegister']);
+
+        $notificationService = $sl->get('JhHubBase\Notification\NotificationService');
+        $notificationService->addHandler(
+            $sl->get('JhFlexiTime\NotificationHandler\MissedBookingEmailNotificationHandler')
+        );
     }
 
     /**

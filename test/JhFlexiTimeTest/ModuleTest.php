@@ -3,6 +3,7 @@
 namespace JhFlexiTimeTest;
 
 use JhFlexiTime\Module;
+use JhHubBase\Notification\NotificationService;
 use JhUser\Entity\User;
 use Zend\ServiceManager\ServiceManager;
 
@@ -77,6 +78,14 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
             ->expects($this->at(1))
             ->method('attach')
             ->with('ZfcUser\Service\User', 'register.post', [$module, 'onRegister']);
+
+
+        $notificationService = new NotificationService;
+        $this->serviceLocator->setService('JhHubBase\Notification\NotificationService', $notificationService);
+        $this->serviceLocator->setService(
+            'JhFlexiTime\NotificationHandler\MissedBookingEmailNotificationHandler',
+            $this->getMock('JhHubBase\Notification\NotificationHandlerInterface')
+        );
 
         $module->onBootstrap($event);
     }

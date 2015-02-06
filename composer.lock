@@ -4,8 +4,68 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e00ab683b01a8a3210c8dd1c3328fb14",
+    "hash": "ae988f3cef7f04118f5c727f42e776b9",
     "packages": [
+        {
+            "name": "acelaya/zf2-acmailer",
+            "version": "v4.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/acelaya/ZF2-AcMailer.git",
+                "reference": "5bb9cca16ff6425170e4c5f39f8517218ea15a82"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/acelaya/ZF2-AcMailer/zipball/5bb9cca16ff6425170e4c5f39f8517218ea15a82",
+                "reference": "5bb9cca16ff6425170e4c5f39f8517218ea15a82",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.23",
+                "zendframework/zend-eventmanager": "~2.2",
+                "zendframework/zend-loader": "~2.2",
+                "zendframework/zend-mail": "~2.2",
+                "zendframework/zend-mime": "~2.2",
+                "zendframework/zend-modulemanager": "~2.2",
+                "zendframework/zend-mvc": "~2.2",
+                "zendframework/zend-servicemanager": "~2.2",
+                "zendframework/zend-stdlib": "~2.2",
+                "zendframework/zend-view": "~2.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~1.0",
+                "zendframework/zendframework": "~2.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AcMailer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Alejandro Celaya Alastrué",
+                    "email": "alejandro@alejandrocelaya.com",
+                    "homepage": "http://www.alejandrocelaya.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Mail sending module for Zend Framework 2",
+            "homepage": "https://github.com/acelaya/ZF2-AcMailer",
+            "keywords": [
+                "mail",
+                "module",
+                "php",
+                "zend",
+                "zf2"
+            ],
+            "time": "2015-01-03 16:37:47"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.2.3",
@@ -423,17 +483,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineModule.git",
-                "reference": "3bbbb532d5a467db514a971d667d3852a80909c6"
+                "reference": "4ca1d6a06808ae172430b725679db7746015b7a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/3bbbb532d5a467db514a971d667d3852a80909c6",
-                "reference": "3bbbb532d5a467db514a971d667d3852a80909c6",
+                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/4ca1d6a06808ae172430b725679db7746015b7a4",
+                "reference": "4ca1d6a06808ae172430b725679db7746015b7a4",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": ">=2.4,<2.6-dev",
-                "php": ">=5.3.23",
+                "php": ">=5.4",
                 "symfony/console": "~2.3",
                 "zendframework/zend-authentication": "~2.3",
                 "zendframework/zend-cache": "~2.3",
@@ -497,7 +557,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2015-01-08 20:44:25"
+            "time": "2015-01-28 23:04:30"
         },
         {
             "name": "doctrine/doctrine-orm-module",
@@ -939,17 +999,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.6.3",
+            "version": "v2.6.4",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "6ac6491ff60c0e5a941db3ccdc75a07adbb61476"
+                "reference": "e44154bfe3e41e8267d7a3794cd9da9a51cfac34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/6ac6491ff60c0e5a941db3ccdc75a07adbb61476",
-                "reference": "6ac6491ff60c0e5a941db3ccdc75a07adbb61476",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/e44154bfe3e41e8267d7a3794cd9da9a51cfac34",
+                "reference": "e44154bfe3e41e8267d7a3794cd9da9a51cfac34",
                 "shasum": ""
             },
             "require": {
@@ -992,7 +1052,55 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2015-01-06 17:50:02"
+            "time": "2015-01-25 04:39:26"
+        },
+        {
+            "name": "wearejh/hub-base",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WeareJH/HubBase.git",
+                "reference": "fe37a44a5406399aa206848baa577b5ebe503948"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WeareJH/HubBase/zipball/fe37a44a5406399aa206848baa577b5ebe503948",
+                "reference": "fe37a44a5406399aa206848baa577b5ebe503948",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-module": "dev-master as 0.8.0",
+                "php": ">=5.4",
+                "wearejh/installer": "dev-master",
+                "wearejh/jh-user": "~1.0",
+                "zendframework/zendframework": "2.3.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.4",
+                "satooshi/php-coveralls": "dev-master",
+                "squizlabs/php_codesniffer": "~2.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JhHubBase\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aydin Hassan",
+                    "email": "aydin@hotmail.co.uk"
+                }
+            ],
+            "description": "A ZF2 Module for shared functionality across JH Hub Modules",
+            "support": {
+                "source": "https://github.com/WeareJH/HubBase/tree/master",
+                "issues": "https://github.com/WeareJH/HubBase/issues"
+            },
+            "time": "2015-02-03 14:52:16"
         },
         {
             "name": "wearejh/installer",
@@ -1307,16 +1415,16 @@
         },
         {
             "name": "zf-commons/zfc-rbac",
-            "version": "2.4.1",
+            "version": "2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ZF-Commons/zfc-rbac.git",
-                "reference": "1c6a7f1c4d776e8e4a52ec8bd5c0cb074f685d77"
+                "reference": "42f466656ad9730025a6bbbfd4144ac2f3abb64c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/1c6a7f1c4d776e8e4a52ec8bd5c0cb074f685d77",
-                "reference": "1c6a7f1c4d776e8e4a52ec8bd5c0cb074f685d77",
+                "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/42f466656ad9730025a6bbbfd4144ac2f3abb64c",
+                "reference": "42f466656ad9730025a6bbbfd4144ac2f3abb64c",
                 "shasum": ""
             },
             "require": {
@@ -1379,7 +1487,7 @@
                 "rbac",
                 "zf2"
             ],
-            "time": "2014-12-01 17:09:18"
+            "time": "2015-01-26 11:29:23"
         },
         {
             "name": "zf-commons/zfc-user",
@@ -1660,16 +1768,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "2.0.14",
+            "version": "2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "ca158276c1200cc27f5409a5e338486bc0b4fc94"
+                "reference": "34cc484af1ca149188d0d9e91412191e398e0b67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ca158276c1200cc27f5409a5e338486bc0b4fc94",
-                "reference": "ca158276c1200cc27f5409a5e338486bc0b4fc94",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/34cc484af1ca149188d0d9e91412191e398e0b67",
+                "reference": "34cc484af1ca149188d0d9e91412191e398e0b67",
                 "shasum": ""
             },
             "require": {
@@ -1682,7 +1790,7 @@
             },
             "require-dev": {
                 "ext-xdebug": ">=2.1.4",
-                "phpunit/phpunit": "~4.1"
+                "phpunit/phpunit": "~4"
             },
             "suggest": {
                 "ext-dom": "*",
@@ -1701,9 +1809,6 @@
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                ""
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
@@ -1721,7 +1826,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-12-26 13:28:33"
+            "time": "2015-01-24 10:06:35"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2467,17 +2572,17 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.6.3",
+            "version": "v2.6.4",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Config.git",
-                "reference": "d94f222eff99a22ce313555b78642b4873418d56"
+                "reference": "a9f781ba1221067d1f07c8cec0bc50f81b8d7408"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Config/zipball/d94f222eff99a22ce313555b78642b4873418d56",
-                "reference": "d94f222eff99a22ce313555b78642b4873418d56",
+                "url": "https://api.github.com/repos/symfony/Config/zipball/a9f781ba1221067d1f07c8cec0bc50f81b8d7408",
+                "reference": "a9f781ba1221067d1f07c8cec0bc50f81b8d7408",
                 "shasum": ""
             },
             "require": {
@@ -2511,21 +2616,21 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "http://symfony.com",
-            "time": "2015-01-03 08:01:59"
+            "time": "2015-01-21 20:57:55"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.6.3",
+            "version": "v2.6.4",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "40ff70cadea3785d83cac1c8309514b36113064e"
+                "reference": "f75989f3ab2743a82fe0b03ded2598a2b1546813"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/40ff70cadea3785d83cac1c8309514b36113064e",
-                "reference": "40ff70cadea3785d83cac1c8309514b36113064e",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/f75989f3ab2743a82fe0b03ded2598a2b1546813",
+                "reference": "f75989f3ab2743a82fe0b03ded2598a2b1546813",
                 "shasum": ""
             },
             "require": {
@@ -2569,11 +2674,11 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
-            "time": "2015-01-05 14:28:40"
+            "time": "2015-02-01 16:10:57"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.6.3",
+            "version": "v2.6.4",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
@@ -2620,7 +2725,7 @@
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v2.6.3",
+            "version": "v2.6.4",
             "target-dir": "Symfony/Component/Stopwatch",
             "source": {
                 "type": "git",
@@ -2667,17 +2772,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.6.3",
+            "version": "v2.6.4",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "82462a90848a52c2533aa6b598b107d68076b018"
+                "reference": "60ed7751671113cf1ee7d7778e691642c2e9acd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/82462a90848a52c2533aa6b598b107d68076b018",
-                "reference": "82462a90848a52c2533aa6b598b107d68076b018",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/60ed7751671113cf1ee7d7778e691642c2e9acd8",
+                "reference": "60ed7751671113cf1ee7d7778e691642c2e9acd8",
                 "shasum": ""
             },
             "require": {
@@ -2710,7 +2815,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2015-01-03 15:33:07"
+            "time": "2015-01-25 04:39:26"
         },
         {
             "name": "zf-commons/zfc-admin",
@@ -2777,10 +2882,12 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "doctrine/doctrine-module": 20,
+        "wearejh/hub-base": 20,
         "wearejh/installer": 20,
         "satooshi/php-coveralls": 20
     },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.4"
     },
