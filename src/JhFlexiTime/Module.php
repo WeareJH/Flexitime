@@ -102,7 +102,9 @@ class Module implements
             'calc-prev-month-balance' =>
                 "Calculate the previous month balance for all users and add it on to their running balance",
             'set user init-balance <userEmail> <balance>' =>
-                "Set a user's starting balance"
+                "Set a user's starting balance",
+            'notify-missing-bookings' =>
+                'Send reminder e-mail to any user who has missed bookings for the period specified in the config'
         ];
     }
 
