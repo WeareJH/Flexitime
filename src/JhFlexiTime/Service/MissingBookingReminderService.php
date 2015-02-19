@@ -74,7 +74,7 @@ class MissingBookingReminderService
             $missingBookings = $this->findMissingBookingsForUser($user, $period);
 
             if (count($missingBookings) > 0) {
-                $notification = new MissingBookingsNotification($missingBookings, $period);
+                $notification = new MissingBookingsNotification($period, $missingBookings);
                 $this->notificationService->notify($notification, $user);
             }
         }
