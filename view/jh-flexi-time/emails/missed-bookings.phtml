@@ -468,6 +468,8 @@
                                                                         <h1>
                                                                             Hi, <?= $this->user->getDisplayName() ?></h1>
                                                                         <h2>You are missing a few entries</h2>
+
+                                                                        <img src="<?= $this->randomFailGif ?>">
                                                                         <p>Please fill out dates:</p>
 
                                                                         <?php foreach ($this->missedDates as $date): ?>
@@ -476,6 +478,15 @@
 
                                                                         <p>Kind regards, Flex T-Rex</p>
                                                                     </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <table cellspacing="0" cellpadding="0" style="margin-bottom:20px;">
+                                                                        <tr>
+                                                                            <td align="center" width="300" height="40" bgcolor="#000091" style="color: #ffffff; display: block;">
+                                                                                <a href="<?= $this->appUrl ?>/flexi-time" style="font-size:16px; font-weight: bold; font-family: Helvetica, Arial, sans-serif; text-decoration: none; line-height:40px; width:100%; display:inline-block"><span style="color: #FFFFFF">Go to Flex</span></a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </tr>
                                                             </table>
                                                         </td>

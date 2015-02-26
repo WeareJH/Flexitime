@@ -13,11 +13,13 @@ class MissedBookingEmailNotificationHandlerTest extends PHPUnit_Framework_TestCa
 {
     protected $handler;
     protected $mailService;
+    protected $giphy;
 
     public function setUp()
     {
         $this->mailService = $this->getMock('\AcMailer\Service\MailServiceInterface');
-        $this->handler = new MissedBookingEmailNotificationHandler($this->mailService, new ModuleOptions);
+        $this->giphy = $this->getMock('rfreebern\Giphy');
+        $this->handler = new MissedBookingEmailNotificationHandler($this->mailService, new ModuleOptions, $this->giphy);
     }
 
     public function testShouldHandle()
@@ -62,6 +64,52 @@ class MissedBookingEmailNotificationHandlerTest extends PHPUnit_Framework_TestCa
         $this->mailService
             ->expects($this->once())
             ->method('send');
+
+        $this->handler->handle($notification, $user);
+    }
+
+    public function testHandleWithRandomGiphyImage()
+    {
+        $user = new User;
+        $user->setEmail('aydin@hotmail.co.uk');
+        $notification = new MissingBookingsNotification([], []);
+
+        $this->mailService
+            ->expects($this->once())
+            ->method('setSubject')
+            ->with('Missing Bookings');
+
+        $message = $this->getMock('Zend\Mail\Message');
+        $this->mailService
+            ->expects($this->any())
+            ->method('getMessage')
+            ->will($this->returnValue($message));
+
+        $message
+            ->expects($this->once())
+            ->method('setTo')
+            ->with(['aydin@hotmail.co.uk']);
+
+        $this->mailService
+            ->expects($this->once())
+            ->method('setTemplate')
+            ->with($this->isInstanceOf('Zend\View\Model\ViewModel'));
+
+        $this->mailService
+            ->expects($this->once())
+            ->method('send');
+
+        $giphyData = (object) [
+            'data' => (object) [
+                'image_original_url' => 'some/url',
+            ],
+        ];
+
+        $this->giphy
+            ->expects($this->once())
+            ->method('random')
+            ->with('fail')
+            ->will($this->returnValue($giphyData));
 
         $this->handler->handle($notification, $user);
     }

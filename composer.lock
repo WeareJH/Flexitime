@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ae988f3cef7f04118f5c727f42e776b9",
+    "hash": "833475a3cef954d2058ebb6609080331",
     "packages": [
         {
             "name": "acelaya/zf2-acmailer",
@@ -483,18 +483,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineModule.git",
-                "reference": "4ca1d6a06808ae172430b725679db7746015b7a4"
+                "reference": "086b081b4dfb2b808b7edc8065023814feb9a139"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/4ca1d6a06808ae172430b725679db7746015b7a4",
-                "reference": "4ca1d6a06808ae172430b725679db7746015b7a4",
+                "url": "https://api.github.com/repos/doctrine/DoctrineModule/zipball/086b081b4dfb2b808b7edc8065023814feb9a139",
+                "reference": "086b081b4dfb2b808b7edc8065023814feb9a139",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": ">=2.4,<2.6-dev",
                 "php": ">=5.4",
-                "symfony/console": "~2.3",
+                "symfony/console": "~2.3|~3.0",
                 "zendframework/zend-authentication": "~2.3",
                 "zendframework/zend-cache": "~2.3",
                 "zendframework/zend-mvc": "~2.3",
@@ -557,7 +557,7 @@
                 "module",
                 "zf2"
             ],
-            "time": "2015-01-28 23:04:30"
+            "time": "2015-02-22 22:56:55"
         },
         {
             "name": "doctrine/doctrine-orm-module",
@@ -886,6 +886,48 @@
             "time": "2014-07-11 20:25:12"
         },
         {
+            "name": "rfreebern/giphy-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rfreebern/giphy-php.git",
+                "reference": "acbab41a1a1b7328b30b276160b3c7f87db0d38e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rfreebern/giphy-php/zipball/acbab41a1a1b7328b30b276160b3c7f87db0d38e",
+                "reference": "acbab41a1a1b7328b30b276160b3c7f87db0d38e",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "rfreebern": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC0"
+            ],
+            "authors": [
+                {
+                    "name": "Ryan Freebern",
+                    "email": "ryan@freebern.org",
+                    "homepage": "http://rnf.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A library implementing access to the Giphy API.",
+            "keywords": [
+                "gif",
+                "gifs",
+                "giphy",
+                "images",
+                "search"
+            ],
+            "time": "2014-01-19 22:02:19"
+        },
+        {
             "name": "socalnick/scn-social-auth",
             "version": "1.15.2",
             "source": {
@@ -1199,16 +1241,16 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.4",
+            "version": "2.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b"
+                "reference": "886063aa5aee7476b77c380e25ecfacb2ee5ff4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zf2/zipball/c878e047ab1c5dcfb201974bdff607be54ccb54b",
-                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b",
+                "url": "https://api.github.com/repos/zendframework/zf2/zipball/886063aa5aee7476b77c380e25ecfacb2ee5ff4c",
+                "reference": "886063aa5aee7476b77c380e25ecfacb2ee5ff4c",
                 "shasum": ""
             },
             "require": {
@@ -1313,7 +1355,7 @@
                 "framework",
                 "zf2"
             ],
-            "time": "2015-01-14 16:44:17"
+            "time": "2015-02-18 19:48:16"
         },
         {
             "name": "zendframework/zendxml",
@@ -2884,6 +2926,7 @@
         "doctrine/doctrine-module": 20,
         "wearejh/hub-base": 20,
         "wearejh/installer": 20,
+        "rfreebern/giphy-php": 20,
         "satooshi/php-coveralls": 20
     },
     "prefer-stable": false,
