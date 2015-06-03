@@ -53,7 +53,6 @@ class MissingBookingReminderServiceTest extends PHPUnit_Framework_TestCase
         $this->userRepository
             ->expects($this->once())
             ->method('findAll')
-            ->with(true)
             ->will($this->returnValue([$user]));
 
         $this->options->setRemindStart('11 November 2014');
