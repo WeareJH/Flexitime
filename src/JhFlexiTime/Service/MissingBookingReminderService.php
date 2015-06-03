@@ -70,7 +70,7 @@ class MissingBookingReminderService
     public function findAndNotifyMissingBookings()
     {
         $period = $this->options->getRemindPeriod();
-        foreach ($this->userRepository->findAll(true) as $user) {
+        foreach ($this->userRepository->findAll() as $user) {
             $missingBookings = $this->findMissingBookingsForUser($user, $period);
 
             if (count($missingBookings) > 0) {
