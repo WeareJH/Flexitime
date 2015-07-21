@@ -10,7 +10,7 @@ php:
 
 install:
   - composer self-update
-  - composer install
+  - composer install --prefer-source
 
 before_script:
   - mkdir -p build/logs
@@ -28,6 +28,7 @@ after_script:
 matrix:
   allow_failures:
     - php: hhvm
+    - php: 7
 
 notifications:
   slack: jh:CplQ8j20QUCT1nLGKH1XNxrO
