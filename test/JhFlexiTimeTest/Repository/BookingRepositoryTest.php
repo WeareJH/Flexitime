@@ -232,10 +232,9 @@ class BookingRepositoryTest extends \PHPUnit_Framework_TestCase
         $bookingFixture = new SingleBookingInMonth($user, new DateTime);
         $this->fixtureExecutor->execute([$bookingFixture]);
 
-        $this->setExpectedException(
-            'Doctrine\ORM\ORMException',
-            'The identifier date is missing for a query of JhFlexiTime\Entity\Booking'
-        );
+        $message  = 'Binding an entity with a composite primary key to a query is not supported. You should split the';
+        $message .= ' parameter into the explicit fields and bind them separately.';
+        $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException', $message);
         $this->repository->find($bookingFixture->getBooking()->getId());
     }
 
