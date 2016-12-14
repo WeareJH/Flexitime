@@ -2,15 +2,13 @@ sudo: false
 language: php
 
 php:
-  - 5.4
-  - 5.5
   - 5.6
   - 7
-  - hhvm
+  - 7.1
 
 install:
   - composer self-update
-  - composer install --prefer-source
+  - composer install --prefer-dist
 
 before_script:
   - mkdir -p build/logs
@@ -24,11 +22,6 @@ after_script:
   - php vendor/bin/coveralls -v
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
-
-matrix:
-  allow_failures:
-    - php: hhvm
-    - php: 7
 
 notifications:
   slack: jh:CplQ8j20QUCT1nLGKH1XNxrO
