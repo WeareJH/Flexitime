@@ -136,5 +136,27 @@ class BookingFieldset extends Fieldset
                 'class' => 'form-control input-sm',
             ]
         ]);
+
+        $this->add([
+            'type'    => 'Zend\Form\Element\Select',
+            'name'    => 'logType',
+            'options' => [
+                'label' => 'Work Log Type',
+                'label_attributes' => [
+                    'class' => 'col-sm-4 control-label',
+                ],
+                'value_options' => [
+                    '0' => 'Working Day',
+                    '1' => 'Flexi Day',
+                    '2' => 'Flexi Half Day',
+                    '3' => 'Annual Leave',
+                ],
+            ],
+            'attributes' => [
+                'id'    => 'book-logtype',
+                'class' => 'form-control input-sm',
+                'value' => '0',
+            ],
+        ]);
     }
 }
