@@ -323,7 +323,8 @@ $(function() {
             'date'      : date,
             'startTime' : row.find("#book-starttime").val(),
             'endTime'   : row.find("#book-endtime").val(),
-            'notes'     : row.find("#book-notes").val()
+            'notes'     : row.find("#book-notes").val(),
+            'logType'   : row.find("#book-logtype").val()
         }
 
         if(type == "edit") {
