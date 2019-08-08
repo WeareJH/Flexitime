@@ -121,6 +121,12 @@ class BookingInputFilter extends InputFilter
         }
         $this->add($endTime);
 
+        //work log type
+        $logType = new Input('logType');
+        $logType->setRequired(true);
+
+        $this->add($logType);
+
         //notes
         $notes = new Input('notes');
         $notes->setRequired(false);

@@ -146,10 +146,10 @@ class BookingFieldset extends Fieldset
                     'class' => 'col-sm-4 control-label',
                 ],
                 'value_options' => [
-                    '0' => 'Working Day',
-                    '1' => 'Flexi Day',
-                    '2' => 'Flexi Half Day',
-                    '3' => 'Annual Leave',
+                    'workingDay' => 'Working Day',
+                    'flexiDay' => 'Flexi Day',
+                    'flexiHalfDay' => 'Flexi Half Day',
+                    'annualLeave' => 'Annual Leave',
                 ],
             ],
             'attributes' => [
