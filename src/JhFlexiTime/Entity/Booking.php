@@ -62,6 +62,12 @@ class Booking implements JsonSerializable
 
     /** @var string
      *
+     * @ORM\Column(type="string", name="log_type", length=255, nullable=false)
+     */
+    protected $logType;
+
+    /** @var string
+     *
      * @ORM\Column(type="string", length=512, nullable=true)
      */
     protected $notes = null;
@@ -74,6 +80,7 @@ class Booking implements JsonSerializable
         $this->date         = new DateTime("today");
         $this->startTime    = new DateTime('09:00:00');
         $this->endTime      = new DateTime('17:30:00');
+        $this->logType      = "workingDay";
     }
 
     /**
@@ -216,6 +223,24 @@ class Booking implements JsonSerializable
     }
 
     /**
+     * @param string $logType
+     * @return \JhFlexiTime\Entity\Booking
+     */
+    public function setLogType($logType)
+    {
+        $this->logType = $logType;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogType()
+    {
+        return $this->logType;
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize()
@@ -228,6 +253,7 @@ class Booking implements JsonSerializable
             'endTime'   => $this->endTime->format('H:i'),
             'total'     => $this->total,
             'balance'   => $this->balance,
+            'logType'   => $this->logType,
             'notes'     => $this->notes,
         ];
     }
